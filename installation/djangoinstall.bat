@@ -1,0 +1,1 @@
+%1\python\python.exe %2\gitstack\django\setup.py install

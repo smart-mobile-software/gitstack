@@ -1,0 +1,14 @@
+<div id="dialog-form" title="Add user">
+	Select the users you would like to add to this repository.<br />
+	You can select multiple users by holding the Ctrl key.<br /><br />
+	<div id="selectui">
+		<ul id="addRepoUserList" class="ui-selectable selectable">
+			{% for user in user_list %}
+				<li class="ui-widget-content">{{ user }}</li>
+			{% empty %}
+				<b>No user available</b>
+			{% endfor %}
+
+		</ul>
+	</div>
+</div>

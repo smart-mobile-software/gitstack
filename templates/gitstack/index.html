@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+
+<noscript> <!-- Show a notification if the user has disabled javascript -->
+				<div class="notification error png_bg">
+					<div>
+						Javascript is disabled or is not supported by your browser. Please <a href="http://browsehappy.com/" title="Upgrade to a better browser">upgrade</a> your browser or <a href="http://www.google.com/support/bin/answer.py?answer=23852" title="Enable Javascript in your browser">enable</a> Javascript to navigate the interface properly.
+					</div>
+				</div>
+			</noscript>
+			
+			<!-- Page Head -->
+			<h2>Repositories</h2>
+			<p id="page-intro">Create and manage your repositories</p>
+			
+			
+			
+			<div class="content-box"><!-- Start Content Box -->
+				
+				<div class="content-box-header">
+					
+					<h3>Repositories</h3>
+					
+					
+					
+					<div class="clear"></div>
+					
+				</div> <!-- End .content-box-header -->
+				
+				<div class="content-box-content">
+					
+					<div class="tab-content default-tab" id="tab1"> <!-- This is the target div. id must match the href of this div's tab -->
+						
+						<table>
+							
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Command to clone</th>
+									<th>Action</th>
+								</tr>
+								
+							</thead>
+
+							<tbody id="repoList">
+
+							</tbody>
+							
+						</table>
+						
+					</div> <!-- End #tab1 -->
+					
+					
+				</div> <!-- End .content-box-content -->
+				
+			</div> <!-- End .content-box -->
+			
+			
+			<div class="clear"></div>
+			
+			<div class="content-box"><!-- Start Content Add repo -->
+				
+				<div class="content-box-header">
+					
+					<h3>Create repository</h3>
+
+					<div class="clear"></div>
+					
+				</div> <!-- End .content-box-header -->
+				
+				<div class="content-box-content">
+					
+					<form action="" onsubmit="return false;">
+							
+							<fieldset> <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+								{% csrf_token %}
+
+								<p>
+									<label>Name</label>
+										<input class="text-input small-input" type="text" id="txtRepoName" name="small-input" />  
+										<br /><small>The name of your repository</small>
+								</p>
+								
+								
+								<p>
+									<input id="btnCreateRepo" class="button" type="submit" value="Create" />
+								</p>
+								
+							</fieldset>
+							
+							<div class="clear"></div><!-- End .clear -->
+							
+					</form>
+						
+					
+					
+					
+				</div> <!-- End .content-box-content -->
+				
+			</div> <!-- End .content-box -->
+			
+			
+			<div class="clear"></div>
+			
+			
+			
+{% endblock %}
