@@ -10,7 +10,7 @@ class Apache:
     def restart():
         subprocess.Popen(settings.INSTALL_DIR + '/apache/bin/httpd.exe -n "GitStack" -k restart')
 
-class User(models.Model):
+class User:
     def __unicode__(self):
         return self.username
     
@@ -71,7 +71,7 @@ class User(models.Model):
         
         
 
-class Repository(models.Model):
+class Repository:
     def __unicode__(self):
         return self.name
     

@@ -154,6 +154,8 @@ LOGGING = {
     }
 }
 
+LOGIN_URL = '/registration/login/'
+
 REPOSITORIES_PATH = 'C:/dev/gitstack/repositories'
 GIT_PATH = 'C:/dev/gitstack/git/bin/git.exe'
 INSTALL_DIR = 'C:/dev/gitstack'

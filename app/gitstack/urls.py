@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, url
-
+from django.contrib.auth.views import login
 urlpatterns = patterns('gitstack.views',
     # standart user interface
     url(r'^$', 'index'),
@@ -7,6 +7,10 @@ urlpatterns = patterns('gitstack.views',
     url(r'^repository/(?P<repo_name>.+)/user/$', 'repository_user'),
     # add users dialog
     url(r'^repository/(?P<repo_name>.+)/user/add/$', 'add_repo_user_dialog'),
+    
+    # settings tab
+    url(r'^settings/', 'settings'),
+
     
     
     # rest stuff
@@ -23,6 +27,8 @@ urlpatterns = patterns('gitstack.views',
     
     # to delete an user
     url(r'^rest/user/(?P<username>.+)/$', 'rest_user_action'),
+    
+    
     
     
     

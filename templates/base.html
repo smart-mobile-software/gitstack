@@ -70,10 +70,10 @@
 		  var uvOptions = {};
 		  (function() {
 			var uv = document.createElement('script'); uv.type = 'text/javascript'; uv.async = true;
-			uv.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'widget.uservoice.com/LilakFr9zrSzX4OaEYEQQ.js';
+			uv.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'widget.uservoice.com/H3EWB4HjVO3IEsH8e5dxw.js';
 			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(uv, s);
 		  })();
-		</script>		
+		</script>	
 	</head>
   
 	<body><div id="body-wrapper"> <!-- Wrapper for the radial gradient background -->
@@ -98,6 +98,11 @@
 						Users
 					</a> 
 				</li>
+				<li>
+					<a href="/gitstack/settings/" class="nav-top-item no-submenu"> <!-- Add the class "no-submenu" to menu items with no sub menu -->
+						Settings
+					</a> 
+				</li>
 				
 			</ul> <!-- End #main-nav -->
 			
@@ -105,6 +110,17 @@
 		
 		<div id="main-content"> <!-- Main Content Section with everything -->
 			<!-- Start Notifications -->
+			{% if messages %}
+				{% for message in messages %}
+				<div style="visibility:visible;" class="notification {{ message.tags }} png_bg">
+					<a style="visibility:visible;" href="#" class="close"><img src="/static/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+					<div>
+						{{ message }}
+					</div>
+				</div>
+				{{ message }}
+				{% endfor %}
+			{% endif %}
 			
 			<div class="notification attention png_bg">
 				<a href="#" class="close"><img src="/static/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
@@ -139,7 +155,7 @@
 			
 			<div id="footer">
 				<small>
-						&#169; Copyright 2011 Smart Mobile Software
+						&#169; Copyright 2011 - {% now "Y" %} Smart Mobile Software
 				</small>
 			</div><!-- End #footer -->
 		</div> <!-- End #main-content -->

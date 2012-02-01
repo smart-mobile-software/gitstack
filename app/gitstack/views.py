@@ -3,12 +3,18 @@ from django.shortcuts import render_to_response
 from gitstack.models import Repository, User
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+
 import json
 
 # repositories section
+@login_required
 def index(request):
-    # Show welcome page
     return render_to_response('gitstack/index.html', context_instance=RequestContext(request))
+    
+
 
 # user management on a repository
 def repository_user(request, repo_name):
@@ -30,9 +36,30 @@ def add_repo_user_dialog(request, repo_name):
                                                               'user_list': user_list }, context_instance=RequestContext(request))
 
 # user management section
-def users(request):    
+def users(request):  
     return render_to_response('gitstack/users.html', context_instance=RequestContext(request))
+   
 
+# settings section
+def settings(request):    
+    if request.method == 'GET':  
+        # first visit on the settings page
+        return render_to_response('gitstack/settings.html', context_instance=RequestContext(request))
+        
+    if request.method == 'POST':
+        # try to set the new password to the admin
+        # retrieve the form values
+        old_password = request.POST['txtOldPassword']
+        new_password1 = request.POST['txtNewPassword1']
+        new_password2 = request.POST['txtNewPassword2']
+        messages.info(request, 'Good try.')
+
+        return render_to_response('gitstack/settings.html', context_instance=RequestContext(request))
+        # check if the two new password are the same
+        
+        
+
+        return HttpResponse("grrr")
 
 # user rest api
 @csrf_exempt
