@@ -5,6 +5,8 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth import authenticate
+
 
 
 import json
@@ -176,5 +178,25 @@ def rest_repo_user_all(request, repo_name):
     json_reply = json.dumps(repo.retrieve_all_users())
     return HttpResponse(json_reply)
     
+# change admin password
+def rest_admin(request):
+    # update the user
+    if request.method == 'PUT':
+        # retrieve the credentials from the json
+        passwords = json.loads(request.raw_post_data)
+        # Get the old password and new password
+        old_password = passwords['oldPassword']
+        new_password = passwords['newPassword']
+        # Check of the old password is correct 
+        user = authenticate(username='admin', password=old_password)
+        if user is not None:
+            # Change the password
+            user.set_password(new_password)
+            user.save()
+            return HttpResponse("User successfully updated")
+        else:
+            return HttpResponseServerError("Your current administrator password is not correct.")
+
+
 
 

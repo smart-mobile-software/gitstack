@@ -110,18 +110,6 @@
 		
 		<div id="main-content"> <!-- Main Content Section with everything -->
 			<!-- Start Notifications -->
-			{% if messages %}
-				{% for message in messages %}
-				<div style="visibility:visible;" class="notification {{ message.tags }} png_bg">
-					<a style="visibility:visible;" href="#" class="close"><img src="/static/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
-					<div>
-						{{ message }}
-					</div>
-				</div>
-				{{ message }}
-				{% endfor %}
-			{% endif %}
-			
 			<div class="notification attention png_bg">
 				<a href="#" class="close"><img src="/static/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
 				<div>

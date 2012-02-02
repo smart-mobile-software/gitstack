@@ -28,6 +28,9 @@ urlpatterns = patterns('gitstack.views',
     # to delete an user
     url(r'^rest/user/(?P<username>.+)/$', 'rest_user_action'),
     
+    # change admin password
+    url(r'^rest/admin/$', 'rest_admin'),
+    
     
     
     
