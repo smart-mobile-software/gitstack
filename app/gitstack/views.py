@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate
-
+import re
 
 
 import json
@@ -19,10 +19,12 @@ def index(request):
 
 
 # user management on a repository
+@login_required
 def repository_user(request, repo_name):
         return render_to_response('gitstack/repository_user.html', {'repo_name': repo_name }, context_instance=RequestContext(request))
     
 # add repo user dialog
+@login_required
 def add_repo_user_dialog(request, repo_name):
     # retrieve all the users
     user_list = User.retrieve_all()
@@ -38,11 +40,13 @@ def add_repo_user_dialog(request, repo_name):
                                                               'user_list': user_list }, context_instance=RequestContext(request))
 
 # user management section
+@login_required
 def users(request):  
     return render_to_response('gitstack/users.html', context_instance=RequestContext(request))
    
 
 # settings section
+@login_required
 def settings(request):    
     if request.method == 'GET':  
         # first visit on the settings page
@@ -120,6 +124,12 @@ def rest_repository(request):
     if request.method == 'POST':
         name=request.POST['name']
         try:
+            # check the repo name
+            matcher = re.compile("^[A-Za-z]\w{2,}$")
+            if matcher.match(name) is None:
+                raise Exception("Please enter an alphanumeric name without spaces")
+            if(name == ""):
+                raise Exception("Please enter a non empty name")
             # create the repo
             repository = Repository(name)
             repository.create()

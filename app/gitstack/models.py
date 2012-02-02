@@ -95,15 +95,21 @@ class Repository:
             # retrieve all the users
             repo_config = open(settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf","r")
             user_line_matcher = re.compile('Require user ')
-            
             for line in repo_config:
                 # Try to match the line
                 match = user_line_matcher.search(line)
-                    # if the user line is found
+                # if the user line is found
                 if match:
                     # print all the users
                     all_users_str = line[match.end():].rstrip()
+                    # if no users
+                    if(len(all_users_str) == 0):
+                        # return an empty list
+                        return all_users
+                    
                     all_users = all_users_str.split(' ')
+            
+
                       
             repo_config.close()
 
@@ -179,12 +185,24 @@ class Repository:
                 # add the users again
                 for user in all_users:
                     self.add_user(user)
+            else:
+                # just create an config file without users
+                self.add_user('')
+            
         except IOError as e:
             print 'Error ' + e.strerror
     
     # delete the repository
     def delete(self):
-        if self.name in Repository.retrieve_all().__str__():
+            
+        is_exist = False
+        repo_list = Repository.retrieve_all()
+        # for each element of the list check if the repo exist
+        for repo in repo_list:
+            if(repo.__unicode__() == self.name):
+                is_exist = True
+
+        if is_exist:
             fullname = self.name + '.git'
             # change directory to anywhere
             os.chdir(settings.INSTALL_DIR)
@@ -238,4 +256,22 @@ class Repository:
         
         # change to another directory
         os.chdir(settings.INSTALL_DIR)
+        
+        # Create an apache config file for the repository
+        config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf"
+        repo_config = open(config_file_path,"a")
+        template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template.conf',"r")
+        # for each line try to replace username or location
+        for line in template_repo_config:
+            # replace username
+            line = line.replace("USER_NAME","")
+            # replace repository name
+            line = line.replace("REPO_NAME",self.name)
+            # write the new config file
+            repo_config.write(line)
+    
+        # close the files
+        repo_config.close()
+        template_repo_config.close()
+        Apache.restart()
         
