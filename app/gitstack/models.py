@@ -23,6 +23,12 @@ class User:
         # check if the user does not already exist
         if self.username in User.retrieve_all():
             raise Exception("User already exist")
+        # if there are no users, create a file
+        if len(User.retrieve_all()) == 0:
+            passord_file = open(settings.INSTALL_DIR + '/data/passwdfile', 'w')
+            passord_file.write('')
+            passord_file.close()
+            pass
         # change directory to the password file
         os.chdir(settings.INSTALL_DIR + '/data')
         # Apache tool to create an user
@@ -62,11 +68,21 @@ class User:
         
     @staticmethod    
     def retrieve_all():
-        # open password file
-        password_file = open(settings.INSTALL_DIR + '/data/passwdfile',"r")
-        # read the users
-        users_name = map(lambda foo: foo.split(':')[0], password_file)
-        password_file.close()
+        password_file_path = settings.INSTALL_DIR + '/data/passwdfile'
+        users_name = []
+        
+        # check if the file exist
+        if os.path.isfile(password_file_path):
+            # the file exist
+            # open password file
+            password_file = open(password_file_path,"r")
+            # read the users
+            users_name = map(lambda foo: foo.split(':')[0], password_file)
+            password_file.close()
+        else:
+            # the file does not exist : no users
+            users_name = []
+
         return users_name
         
         
