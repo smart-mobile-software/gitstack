@@ -3,7 +3,7 @@
 !include "MUI2.nsh"
 !include "EnvVarUpdate.nsh"
 Name "GitStack"
-!define VERSION "1.0"
+!define VERSION "1.1"
 OutFile "GitStack ${VERSION}.exe"
 #InstallDir "$PROGRAMFILES\GitStack"
 InstallDir "C:\GitStack"
@@ -150,10 +150,8 @@ Section "Uninstall"
 	ExecWait '"wmic" product where name="Python 2.7.2" call uninstall'
 	# Remove GitStack installation path
 	RMDir /r "$INSTDIR\app"
-	RMDir /r "$INSTDIR\data"
 	RMDir /r "$INSTDIR\git"
 	RMDir /r "$INSTDIR\templates"
-	RMDir /r "$INSTDIR\apache"
 	RMDir /r "$INSTDIR\python"
 	Delete "$INSTDIR\uninstall.exe"
 	
