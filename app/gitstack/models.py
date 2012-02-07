@@ -204,6 +204,7 @@ class Repository:
             else:
                 # just create an config file without users
                 self.add_user('')
+            Apache.restart()
             
         except IOError as e:
             print 'Error ' + e.strerror
