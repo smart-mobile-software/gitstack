@@ -284,6 +284,8 @@ class Repository:
             line = line.replace("USER_NAME","")
             # replace repository name
             line = line.replace("REPO_NAME",self.name)
+            #password file path
+            line = line.replace("PASSFILE_PATH",settings.INSTALL_DIR + '/data/passwdfile')
             # write the new config file
             repo_config.write(line)
     
