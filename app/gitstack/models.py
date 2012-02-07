@@ -1,5 +1,4 @@
-from django.db import models
-import os, subprocess, ConfigParser, logging, shutil, re
+import subprocess, ConfigParser, logging, shutil, re, os, ctypes
 from django.conf import settings
 
 logger = logging.getLogger('console')
@@ -8,7 +7,8 @@ logger = logging.getLogger('console')
 class Apache:
     @staticmethod
     def restart():
-        subprocess.Popen(settings.INSTALL_DIR + '/apache/bin/httpd.exe -n "GitStack" -k restart')
+        # http://code.google.com/p/modwsgi/wiki/ReloadingSourceCode#Restarting_Windows_Apache
+        ctypes.windll.libhttpd.ap_signal_parent(1)
 
 class User:
     def __unicode__(self):
@@ -113,7 +113,7 @@ class Repository:
                       
             repo_config.close()
 
-        except IOError as e:
+        except IOError:
             # No users
             pass
         
