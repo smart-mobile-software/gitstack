@@ -271,7 +271,7 @@ $(document).ready(function(){
 								success: function(data) {
 									// user successfully delete
 									showMessage("success", data);
-									refreshUserList();
+									setTimeout(refreshUserList,500)
 								},
 								error: function(error) {
 									alert(error.responseText);
@@ -352,7 +352,9 @@ $(document).ready(function(){
 		$.post("/gitstack/rest/user/", { username: username, password : password, csrfmiddlewaretoken: csrf} )
 		.success(function() {
 			showMessage("success", 'The user has been successfully created');
-			refreshUserList();
+			setTimeout(refreshUserList,500)
+
+			//refreshUserList();
 		})
 		.error(function(error) {
 			showMessage("error", error.responseText);
