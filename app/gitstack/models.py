@@ -8,7 +8,12 @@ class Apache:
     @staticmethod
     def restart():
         # http://code.google.com/p/modwsgi/wiki/ReloadingSourceCode#Restarting_Windows_Apache
-        ctypes.windll.libhttpd.ap_signal_parent(1)
+        try:
+            # when is running unser mod_wsgi
+            ctypes.windll.libhttpd.ap_signal_parent(1)
+        except:
+            # when running on django development server
+            subprocess.Popen(settings.INSTALL_DIR + '/apache/bin/httpd.exe -n "GitStack" -k restart')
 
 class User:
     def __unicode__(self):
@@ -167,21 +172,8 @@ class Repository:
             os.rename(config_file_path + ".tmp", config_file_path)
         
         else:
-            # the file does not exist
-            repo_config = open(config_file_path,"a")
-            template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template.conf',"r")
-            # for each line try to replace username or location
-            for line in template_repo_config:
-                # replace username
-                line = line.replace("USER_NAME",username)
-                # replace repository name
-                line = line.replace("REPO_NAME",self.name)
-                # write the new config file
-                repo_config.write(line)
-        
-            # close the files
-            repo_config.close()
-            template_repo_config.close()
+            # Create the configuration file
+            self.create_config_file()
 
         # restart apache
         Apache.restart()
@@ -275,6 +267,12 @@ class Repository:
         os.chdir(settings.INSTALL_DIR)
         
         # Create an apache config file for the repository
+        self.create_config_file()
+        
+        Apache.restart()
+        
+    # create an apache configuration file
+    def create_config_file(self):
         config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf"
         repo_config = open(config_file_path,"a")
         template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template.conf',"r")
@@ -292,5 +290,4 @@ class Repository:
         # close the files
         repo_config.close()
         template_repo_config.close()
-        Apache.restart()
-        
+       

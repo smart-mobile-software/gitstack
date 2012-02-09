@@ -149,7 +149,8 @@ Section "Uninstall"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GitStack"
 	# Uninstall apache
 	ExecWait "net stop GitStack"
-	ExecWait '"wmic" product where name="Apache HTTP Server 2.2.21" call uninstall'
+	ExecWait '"$INSTDIR\apache\bin\httpd.exe" -k uninstall -n "GitStack"'
+	ExecWait '"wmic" product where name="Apache HTTP Server 2.2.22" call uninstall'
 	# Uninstall python
 	ExecWait '"wmic" product where name="Python 2.7.2" call uninstall'
 	# Remove GitStack installation path
