@@ -89,6 +89,8 @@ Section
 	ExecWait '"msiexec" /i $TEMP\gitstack\httpd.msi /passive ALLUSERS=1 SERVERADMIN=admin@localhost SERVERNAME=localhost SERVERDOMAIN=localhost SERVERPORT=80 INSTALLDIR="$INSTDIR\apache" SERVICEINTERNALNAME=GitStack SERVICENAME=GitStack INSTALLLEVEL=1'
 	# Remove apache start menu
 	RMDir /r "$SMPROGRAMS\Apache HTTP Server 2.2"
+	# Add a rule for the port 80 in the windows firewall
+	ExecWait "netsh advfirewall firewall add rule name=GitStack service=GitStack protocol=TCP dir=in localport=80 action=allow"
 	
 	# Set the path to portable git
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\git\cmd" ; Append  
@@ -139,6 +141,7 @@ Section
 	# Start menu shortcuts
 	createDirectory "$SMPROGRAMS\GitStack"
 	createShortCut "$SMPROGRAMS\GitStack\GitStack.lnk" "http://localhost/gitstack/" "" ""
+	
 SectionEnd
 
 ##############################################
@@ -151,6 +154,9 @@ Section "Uninstall"
 	ExecWait "net stop GitStack"
 	ExecWait '"$INSTDIR\apache\bin\httpd.exe" -k uninstall -n "GitStack"'
 	ExecWait '"wmic" product where name="Apache HTTP Server 2.2.22" call uninstall'
+	# remove the firewall rule
+	ExecWait "netsh advfirewall firewall delete rule name=GitStack"
+	
 	# Uninstall python
 	ExecWait '"wmic" product where name="Python 2.7.2" call uninstall'
 	# Remove GitStack installation path
