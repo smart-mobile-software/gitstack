@@ -3,7 +3,7 @@
 !include "MUI2.nsh"
 !include "EnvVarUpdate.nsh"
 Name "GitStack"
-!define VERSION "1.1"
+!define VERSION "1.2"
 OutFile "GitStack ${VERSION}.exe"
 #InstallDir "$PROGRAMFILES\GitStack"
 InstallDir "C:\GitStack"
@@ -76,6 +76,9 @@ Section
 	
 	# Install python
 	ExecWait '"$TEMP\gitstack\installpython.bat" $INSTDIR'
+	# Remove python start menu
+	SetShellVarContext all
+	RMDir /r "$SMPROGRAMS\Python 2.7"
 	
 	# Register python path
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\python" ; Append  
@@ -84,7 +87,8 @@ Section
 	
 	# Install apache
 	ExecWait '"msiexec" /i $TEMP\gitstack\httpd.msi /passive ALLUSERS=1 SERVERADMIN=admin@localhost SERVERNAME=localhost SERVERDOMAIN=localhost SERVERPORT=80 INSTALLDIR="$INSTDIR\apache" SERVICEINTERNALNAME=GitStack SERVICENAME=GitStack INSTALLLEVEL=1'
-	
+	# Remove apache start menu
+	RMDir /r "$SMPROGRAMS\Apache HTTP Server 2.2"
 	
 	# Set the path to portable git
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\git\cmd" ; Append  
