@@ -59,6 +59,8 @@ FunctionEnd
 # Install section
 #############################################
 Section
+	# Set restore point
+	SysRestore::StartRestorePoint "Installed GitStack"
 	# Copy files
 	SetOutPath "$INSTDIR\app"
 	File /r "app\*.*"
@@ -142,6 +144,9 @@ Section
 	createDirectory "$SMPROGRAMS\GitStack"
 	createShortCut "$SMPROGRAMS\GitStack\GitStack.lnk" "http://localhost/gitstack/" "" ""
 	
+	# End the restore point
+	SysRestore::FinishRestorePoint
+	
 SectionEnd
 
 ##############################################
@@ -149,6 +154,8 @@ SectionEnd
 ##############################################
  
 Section "Uninstall"
+	# Start restore point
+	SysRestore::StartUnRestorePoint "Uninstalled GitStack"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GitStack"
 	# Uninstall apache
 	ExecWait "net stop GitStack"
@@ -175,5 +182,8 @@ Section "Uninstall"
 	delete "$SMPROGRAMS\GitStack\GitStack.lnk"
 	# Try to remove the Start Menu folder - this will only happen if it is empty
 	RMDir "$SMPROGRAMS\GitStack"
+	
+	# Finish restore point
+	SysRestore::FinishRestorePoint
 SectionEnd
  
