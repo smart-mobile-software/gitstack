@@ -1,5 +1,3 @@
-# TODO : REPLACE Apache Version
-
 !include "MUI2.nsh"
 !include "EnvVarUpdate.nsh"
 Name "GitStack"
@@ -34,14 +32,7 @@ ShowInstDetails nevershow
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "license.txt"
 !insertmacro MUI_PAGE_DIRECTORY
-
-/*
-Var REPOSITORIES_DIR
-
-PageEx directory
-	DirText "Select where you would like to store your git repositories" "Repositories folder" "Browse..." "Select a folder to store your repositories"
-	DirVar $REPOSITORIES_DIR
-PageExEnd*/
+!insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_RUN 
 !define MUI_FINISHPAGE_RUN_TEXT "Launch GitStack"
@@ -58,7 +49,7 @@ FunctionEnd
 #############################################
 # Install section
 #############################################
-Section
+Section "GitStack" sectionGitStack
 	# Set restore point
 	SysRestore::StartRestorePoint "Installed GitStack"
 	# Copy files
@@ -66,8 +57,6 @@ Section
 	File /r "app\*.*"
 	SetOutPath "$INSTDIR\data"
 	File /r "data\data.db"
-	SetOutPath "$INSTDIR\git"
-	File /r "git\*.*"
 	SetOutPath "$INSTDIR\templates"
 	File /r "templates\*.*"
 	
@@ -75,6 +64,8 @@ Section
 	File /r "installation\*.*"
 	
 	WriteUninstaller "uninstall.exe"
+	
+	
 	
 	# Install python
 	ExecWait '"$TEMP\gitstack\installpython.bat" $INSTDIR'
@@ -87,15 +78,17 @@ Section
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\python\Scripts" ; Append  
 	ExecWait '"$TEMP\gitstack\djangoinstall.bat" "$INSTDIR" "$TEMP"' $0
 	
-	# Install apache
+	# Install apache 
+	# remove prevous apache config file (to remove in GitStack 1.3)
+	Delete "$INSTDIR\apache\conf\httpd.conf" 
 	ExecWait '"msiexec" /i $TEMP\gitstack\httpd.msi /passive ALLUSERS=1 SERVERADMIN=admin@localhost SERVERNAME=localhost SERVERDOMAIN=localhost SERVERPORT=80 INSTALLDIR="$INSTDIR\apache" SERVICEINTERNALNAME=GitStack SERVICENAME=GitStack INSTALLLEVEL=1'
+	# Apache config
 	# Remove apache start menu
 	RMDir /r "$SMPROGRAMS\Apache HTTP Server 2.2"
+	
+
 	# Add a rule for the port 80 in the windows firewall
 	ExecWait "netsh advfirewall firewall add rule name=GitStack service=GitStack protocol=TCP dir=in localport=80 action=allow"
-	
-	# Set the path to portable git
-	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\git\cmd" ; Append  
 	
 	# Copy mod_wsgi 3.3 python 2.7 in apache directory
 	SetOutPath "$INSTDIR\apache\modules"
@@ -118,19 +111,6 @@ Section
 	# Update the apache configuration files
 	ExecWait '"$TEMP\gitstack\rewriteapacheconfig.bat" $INSTDIR $TEMP' $0
 
-	
-	# Fix portable git
-	SetOutPath "$INSTDIR\git\libexec\git-core"
-	File "git\bin\libiconv2.dll"
-	File "git\bin\libiconv-2.dll"
-	
-	
-	# restart apache service
-	ExecWait "net stop GitStack"
-	ExecWait "net start GitStack"
-	
-	
-	
 	# Add an entry in Add/Remove folder
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GitStack" "DisplayName" "GitStack"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GitStack" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -144,10 +124,35 @@ Section
 	createDirectory "$SMPROGRAMS\GitStack"
 	createShortCut "$SMPROGRAMS\GitStack\GitStack.lnk" "http://localhost/gitstack/" "" ""
 	
+	# Restart the apache service
+	ExecWait "net stop GitStack"
+	ExecWait "net start GitStack"
+	
 	# End the restore point
 	SysRestore::FinishRestorePoint
 	
 SectionEnd
+LangString DESC_sectionGitStack ${LANG_ENGLISH} "Install GitStack user interface and web server."
+
+# Installation of msysgit
+Section "Git (recommended)" sectionGit
+	SetOutPath "$INSTDIR\git"
+	File /r "git\*.*"
+	# Fix portable git
+	SetOutPath "$INSTDIR\git\libexec\git-core"
+	File "git\bin\libiconv2.dll"
+	File "git\bin\libiconv-2.dll"
+	# Set the path to portable git
+	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\git\cmd" ; Append  
+SectionEnd
+LangString DESC_sectionGit ${LANG_ENGLISH} "Install Git (msysgit). Unchecking this option is discouraged. GitStack will work only with git installed on your system. Please read our documentation if you would like to install your own version of Git."
+
+# Register the sections descriptions
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${sectionGitStack} $(DESC_sectionGitStack)
+  !insertmacro MUI_DESCRIPTION_TEXT ${sectionGit} $(DESC_sectionGit)
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
+
 
 ##############################################
 # Uninstall section
@@ -171,6 +176,8 @@ Section "Uninstall"
 	RMDir /r "$INSTDIR\git"
 	RMDir /r "$INSTDIR\templates"
 	RMDir /r "$INSTDIR\python"
+	# Main apache config file
+	Delete "$INSTDIR\apache\conf\httpd.conf"
 	Delete "$INSTDIR\uninstall.exe"
 	
 	# Remove the added environment variables
