@@ -11,7 +11,7 @@ $(document).ready(function(){
 	
 	// get the list of all repositories
 	var refreshRepoList = function(){
-		$.get('/gitstack/rest/repository/', function(repoList){
+		$.get('/rest/repository/', function(repoList){
 			$("#repoList").html('');
 			var i = 0;
 			var j = 0
@@ -44,7 +44,7 @@ $(document).ready(function(){
 	$("#btnDelete").click(function(event){
 		// perform the request to delete the user
 		$.ajax({
-			url: '/gitstack/rest/repository/test25/',
+			url: '/rest/repository/test25/',
 			type: 'DELETE',
 			success: function(data) {
 				// user successfully delete
@@ -62,7 +62,7 @@ $(document).ready(function(){
 		var repoName = $("#txtRepoName").val();
 		var csrf = $('input[name="csrfmiddlewaretoken"]').val();
 		// Create
-		$.post("/gitstack/rest/repository/", { name: repoName, csrfmiddlewaretoken: csrf} )
+		$.post("/rest/repository/", { name: repoName, csrfmiddlewaretoken: csrf} )
 		.success(function() {
 			$('#successMessageBox').show();
 			$('#successMessage').html('The repository has been successfully created').show();
@@ -95,7 +95,7 @@ $(document).ready(function(){
 						Delete: function() {
 							// perform the request to delete the repo
 							$.ajax({
-								url: '/gitstack/rest/repository/' + reponame + '/',
+								url: '/rest/repository/' + reponame + '/',
 								type: 'DELETE',
 								success: function(data) {
 									// repo successfully delete
@@ -149,7 +149,7 @@ $(document).ready(function(){
 					$( ".ui-selected", this ).each(function() {
 						// add each user to the repository
 						// retrieve the current repository name
-						var url = '/gitstack/rest/repository/' + $('#currentRepo').html() + '/user/' + $(this).text() + '/';
+						var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + $(this).text() + '/';
 						$.post(url, function(data) {
 							showMessage("success", "Changes successfully saved");
 							refreshRepoUserList();
@@ -171,7 +171,7 @@ $(document).ready(function(){
 	
 	// get the list of all the users added to the repository
 	var refreshRepoUserList = function(){
-		var url = '/gitstack/rest/repository/' + $('#currentRepo').html() + '/user/';
+		var url = '/rest/repository/' + $('#currentRepo').html() + '/user/';
 		$.get(url, function(repoUserList){
 			$("#repoUserList").html('');
 			var i = 0;
@@ -203,7 +203,7 @@ $(document).ready(function(){
 		$(".deleteRepoUser").click(function(event){
 			var username = $(this).closest("tr").attr("class");
 			// perform the request to delete the user
-			var url = '/gitstack/rest/repository/' + $('#currentRepo').html() + '/user/' + username + '/';
+			var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + username + '/';
 			$.ajax({
 				url: url,
 				type: 'DELETE',
@@ -227,7 +227,7 @@ $(document).ready(function(){
 	
 	// get the list of all users
 	var refreshUserList = function(){
-		$.get('/gitstack/rest/user/', function(userList){
+		$.get('/rest/user/', function(userList){
 			$("#userList").html('');
 			var i = 0;
 			var j = 0
@@ -266,7 +266,7 @@ $(document).ready(function(){
 						Delete: function() {
 							// perform the request to delete the user
 							$.ajax({
-								url: '/gitstack/rest/user/' + username + '/',
+								url: '/rest/user/' + username + '/',
 								type: 'DELETE',
 								success: function(data) {
 									// user successfully delete
@@ -311,7 +311,7 @@ $(document).ready(function(){
 						if(password === password2){
 							// proceed to the update
 							$.ajax({
-								url: '/gitstack/rest/user/',
+								url: '/rest/user/',
 								type: 'PUT',
 								contentType: 'application/json',
 								data: '{"username": "' + username + '","password": "' + password + '"}',
@@ -349,7 +349,7 @@ $(document).ready(function(){
 		var password = $("#txtPassword").val();
 		var csrf = $('input[name="csrfmiddlewaretoken"]').val();
 		// Create
-		$.post("/gitstack/rest/user/", { username: username, password : password, csrfmiddlewaretoken: csrf} )
+		$.post("/rest/user/", { username: username, password : password, csrfmiddlewaretoken: csrf} )
 		.success(function() {
 			showMessage("success", 'The user has been successfully created');
 			setTimeout(refreshUserList,500)
@@ -376,7 +376,7 @@ $(document).ready(function(){
 			// Call the rest interface to change the admin password
 			// proceed to the update
 			$.ajax({
-				url: '/gitstack/rest/admin/',
+				url: '/rest/admin/',
 				type: 'PUT',
 				contentType: 'application/json',
 				data: '{"oldPassword": "' + old_password + '","newPassword": "' + new_password1 + '"}',
