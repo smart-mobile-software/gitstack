@@ -23,6 +23,10 @@ class User:
     def __init__(self, username, password):
         self.username = username
         self.password = password
+        
+    # equality test  
+    def __eq__(self, other) : 
+        return self.username == other.username
     
     def create(self):
         # check if the user does not already exist
@@ -99,6 +103,10 @@ class Repository:
     # contructor
     def __init__(self, name):
         self.name = name
+    
+    # equality test  
+    def __eq__(self, other) : 
+        return self.name == other.name
         
     @staticmethod     
     def retrieve_all():
