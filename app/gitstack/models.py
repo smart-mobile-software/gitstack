@@ -155,33 +155,32 @@ class Repository:
         # where the config file for this repo will be stored
         config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf"
         # If file does not exist
-        if os.path.exists(config_file_path):
-            
-            # if the file exist
-            # open the file
-            repo_config_old = open(config_file_path,"r")
-            repo_config = open(config_file_path + ".tmp","a")
-            # set up the patterns
-            # user line matcher
-            user_line_matcher = re.compile('Require user ')
-            for line in repo_config_old:
-                # Try to match the line
-                match = user_line_matcher.search(line)
-                # if the user line is found
-                if match:
-                    # add the new user to the line
-                    repo_config.write(line.rstrip() + ' ' + username + '\n')
-                else:
-                    repo_config.write(line)
-            repo_config.close()
-            repo_config_old.close()
-            # replace old config by new config
-            os.remove(config_file_path)
-            os.rename(config_file_path + ".tmp", config_file_path)
-        
-        else:
+        if not os.path.exists(config_file_path):
             # Create the configuration file
             self.create_config_file()
+            
+        # if the file exist
+        # open the file
+        repo_config_old = open(config_file_path,"r")
+        repo_config = open(config_file_path + ".tmp","a")
+        # set up the patterns
+        # user line matcher
+        user_line_matcher = re.compile('Require user ')
+        for line in repo_config_old:
+            # Try to match the line
+            match = user_line_matcher.search(line)
+            # if the user line is found
+            if match:
+                # add the new user to the line
+                repo_config.write(line.rstrip() + ' ' + username + '\n')
+            else:
+                repo_config.write(line)
+        repo_config.close()
+        repo_config_old.close()
+        # replace old config by new config
+        os.remove(config_file_path)
+        os.rename(config_file_path + ".tmp", config_file_path)
+                    
 
         # restart apache
         Apache.restart()
