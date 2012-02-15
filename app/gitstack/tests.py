@@ -1,69 +1,151 @@
 from models import Repository, User
 from django.test import TestCase
+from django.test.client import Client
 import time
 
 
 class SimpleTest(TestCase):
-    # Create 3 repos
-    def test_create_repo(self):
-        repo1 = Repository("repo1")
-        repo1.create()
-        repo2 = Repository("repo2")
-        repo2.create()
-        repo3 = Repository("repo3")
-        repo3.create()
-        repo_list = [repo1, repo2, repo3]
-
-        # check the list of created repos
-        repositories = Repository.retrieve_all()
-        self.assertEqual(repositories, repo_list)
-        
-    # delete one repo
-    def test_delete_repo(self):
-        repo1 = Repository("repo1")
-        repo2 = Repository("repo2")
-        # delete the repo 3
-        repo3 = Repository("repo3")
-        repo3.delete()
-        repo_list = [repo1, repo2]
-        repositories = Repository.retrieve_all()
-        self.assertEqual(repositories, repo_list)
-        
-    '''
-    # create 3 users
-    def test_create_user1(self):
-        user1 = User("user1", "user1")
-        user1.create()
-        
-    def test_create_user2(self):
-        user1 = User("user2", "user2")
-        user1.create()
-        
-    def test_create_user3(self):
-        user1 = User("user3", "user3")
-        user1.create()
-        
-    def test_create_user(self):
-        time.sleep(1)
-        user_list = ["user1", "user2", "user3"]
-        # check that all users have been created
-        users = User.retrieve_all()
-        self.assertEqual(users, user_list)
     
-    '''    
-    # delete all repositories & users
-    def test_cleanup(self):
+    ###################
+    # Set up
+    ###################
+    def setUp(self):
+        self.c = Client()
+        # create repositories
+        self.create_repos()
+        # create users
+        self.create_users()
         
+        
+    def tearDown(self):
+        # delete repos
         repositories = Repository.retrieve_all()
         for repo in repositories:
             repo.delete()
-            
+
+        # delete users
         users = User.retrieve_all()
         for user in users:
             # create the user
             userObj = User(user, '')
             userObj.delete()
+            time.sleep(0.1)
+
+    # create repositories
+    def create_repos(self):
+        self.assertEqual(self.c.post('/rest/repository/', { 'name' : 'repo1' }).status_code, 200) 
+        self.assertEqual(self.c.post('/rest/repository/', { 'name' : 'repo2' }).status_code, 200) 
+        self.assertEqual(self.c.post('/rest/repository/', { 'name' : 'repo3' }).status_code, 200)
+    
+    # create users    
+    def create_users(self):
+        self.assertEqual(self.c.post('/rest/user/', { 'username' : 'user1', 'password' : 'user1' }).status_code, 200)
+        time.sleep(0.1)
+        self.assertEqual(self.c.post('/rest/user/', { 'username' : 'user2', 'password' : 'user2' }).status_code, 200)
+        time.sleep(0.1)
+        self.assertEqual(self.c.post('/rest/user/', { 'username' : 'user3', 'password' : 'user3' }).status_code, 200)
+        time.sleep(0.1)
+        
+    ######################
+    # Repositories 
+    #####################
+    
+    # create repo
+    def test_repo_create(self):
+        self.assertEqual(self.c.post('/rest/repository/', { 'name' : 'repo4' }).status_code, 200) 
+        response = self.c.get('/rest/repository/')
+        self.assertEqual(response.content, '["repo1", "repo2", "repo3", "repo4"]')
+                
+
+    # retrieve repositories
+    def test_repo_retrieve(self):
+        response = self.c.get('/rest/repository/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, '["repo1", "repo2", "repo3"]')
+        
+    
+    # delete a repository
+    def test_repo_delete(self):
+        response = self.c.delete('/rest/repository/repo3/')
+        self.assertEqual(response.status_code, 200)
+        response = self.c.get('/rest/repository/')
+        self.assertEqual(response.content, '["repo1", "repo2"]')
+        
+    ######################
+    # Users 
+    #####################
+        
+    # remove 
+    def test_user_remove(self):
+        response = self.c.delete('/rest/user/user3/')
+        self.assertEqual(response.status_code, 200)
+        time.sleep(0.1)
+        response = self.c.get('/rest/user/')
+        self.assertEqual(response.content, '["user1", "user2"]')
+        
+    # update a user password
+    def test_user_change_password(self):
+        response = self.c.put('/rest/user/', data='{"username":"user3", "password":"test"}', content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        
+    # create 
+    def test_user_create(self):
+        self.assertEqual(self.c.post('/rest/user/', { 'username' : 'user4', 'password' : 'user4' }).status_code, 200)
+        time.sleep(0.1)
+        response = self.c.get('/rest/user/')
+        self.assertEqual(response.content, '["user1", "user2", "user3", "user4"]')
+        
+    # retrieve
+    def test_user_retrieve(self):
+        response = self.c.get('/rest/user/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, '["user1", "user2", "user3"]')
+        
+    #########################
+    # Repository user management
+    ########################
+    
+    # add an user to a repo
+    def test_repo_add_user(self):
+        self.assertEqual(self.c.post('/rest/repository/repo1/user/user1/').status_code, 200)
+        response = self.c.get('/rest/repository/repo1/user/')
+        self.assertEqual(response.content, '["user1"]')
+    
+    # remove an user to a repo
+    '''
+    def test_repo_remove_user(self):
+        self.assertEqual(self.c.post('/rest/repository/repo1/user/user1/').status_code, 200)
+        self.assertEqual(self.c.post('/rest/repository/repo1/user/user2/').status_code, 200)
+        self.assertEqual(self.c.delete('/rest/repository/repo1/user/user2/').status_code, 200)
+        response = self.c.get('/rest/repository/repo1/user/')
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.content, '["user1"]')
+    '''
+    
+    # retrieve users added to a repo
+    def test_repo_retrieve_user(self):
+        self.assertEqual(self.c.post('/rest/repository/repo1/user/user1/').status_code, 200)
+        self.assertEqual(self.c.post('/rest/repository/repo1/user/user2/').status_code, 200)
+        
+        response = self.c.get('/rest/repository/repo1/user/')
+        self.assertEqual(response.content, '["user1", "user2"]')
+ 
+
+        
+        
+    
+        
+
+
+
+        
+    
             
+    
+        
+            
+    
     
             
 
