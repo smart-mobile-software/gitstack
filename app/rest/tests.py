@@ -112,7 +112,6 @@ class SimpleTest(TestCase):
         self.assertEqual(response.content, '["user1"]')
     
     # remove an user to a repo
-    '''
     def test_repo_remove_user(self):
         self.assertEqual(self.c.post('/rest/repository/repo1/user/user1/').status_code, 200)
         self.assertEqual(self.c.post('/rest/repository/repo1/user/user2/').status_code, 200)
@@ -121,7 +120,6 @@ class SimpleTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(response.content, '["user1"]')
-    '''
     
     # retrieve users added to a repo
     def test_repo_retrieve_user(self):

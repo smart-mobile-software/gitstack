@@ -20,13 +20,17 @@ class User:
         return self.username
     
     # contructor
-    def __init__(self, username, password):
+    def __init__(self, username, password=""):
         self.username = username
         self.password = password
         
     # equality test  
     def __eq__(self, other) : 
         return self.username == other.username
+    
+    # representation in a list
+    #def __repr__(self):
+    #    return self.__unicode__()
     
     def create(self):
         # check if the user does not already exist
@@ -107,6 +111,10 @@ class Repository:
     # equality test  
     def __eq__(self, other) : 
         return self.name == other.name
+    
+    # representation in a list
+    #def __repr__(self):
+    #    return self.__unicode__()
         
     @staticmethod     
     def retrieve_all():
@@ -119,7 +127,9 @@ class Repository:
     
     # retrieve all the users of the repository
     def retrieve_all_users(self):
-        all_users = []
+        all_users_obj = []
+        all_users_str = []
+        
         try:
             # retrieve all the users
             repo_config = open(settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf","r")
@@ -134,7 +144,7 @@ class Repository:
                     # if no users
                     if(len(all_users_str) == 0):
                         # return an empty list
-                        return all_users
+                        return []
                     
                     all_users = all_users_str.split(' ')
             
@@ -144,14 +154,19 @@ class Repository:
 
         except IOError:
             # No users
-            pass
+            pass     
         
-        return all_users
+        # for each user, create a user object
+        for username in all_users:
+            user = User(username)
+            all_users_obj.append(user)
+           
+        return all_users_obj
 
 
     
     # Add read and write permissions to a user on the repository
-    def add_user(self, username):
+    def add_user(self, user):
         # where the config file for this repo will be stored
         config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf"
         # If file does not exist
@@ -172,7 +187,7 @@ class Repository:
             # if the user line is found
             if match:
                 # add the new user to the line
-                repo_config.write(line.rstrip() + ' ' + username + '\n')
+                repo_config.write(line.rstrip() + ' ' + user.username + '\n')
             else:
                 repo_config.write(line)
         repo_config.close()
@@ -186,7 +201,7 @@ class Repository:
         Apache.restart()
     
     # remove the read/write access to an user
-    def remove_user(self, username):
+    def remove_user(self, user):
         config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf"
         try:
             # Check the number of users
@@ -195,7 +210,7 @@ class Repository:
             # delete the file
             os.remove(config_file_path)
             # remove the user in the list
-            all_users.remove(username)
+            all_users.remove(user)
             if(len(all_users) > 0):
                 # add the users again
                 for user in all_users:

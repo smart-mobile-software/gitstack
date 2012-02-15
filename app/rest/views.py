@@ -107,12 +107,14 @@ def rest_repo_user(request, repo_name, username):
     if request.method == 'POST':
         # Get the repository and add the user
         repo = Repository(repo_name)
-        repo.add_user(username)
+        user = User(username)
+        repo.add_user(user)
         return HttpResponse("User " + username + " added to " + repo_name)
     if request.method == 'DELETE':
         # Remove the user from the repository
         repo = Repository(repo_name)
-        repo.remove_user(username)
+        user = User(username)
+        repo.remove_user(user)
         return HttpResponse("User " + username + " deleted from " + repo_name)
 
 
@@ -122,7 +124,9 @@ def rest_repo_user(request, repo_name, username):
 def rest_repo_user_all(request, repo_name):
     # Get the repository and add the user
     repo = Repository(repo_name)
-    json_reply = json.dumps(repo.retrieve_all_users())
+    users = repo.retrieve_all_users()
+    users_name = map(lambda foo: foo.__unicode__(), users)
+    json_reply = json.dumps(users_name)
     return HttpResponse(json_reply)
     
 # change admin password
