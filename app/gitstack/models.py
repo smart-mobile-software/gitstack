@@ -29,8 +29,8 @@ class User:
         return self.username == other.username
     
     # representation in a list
-    #def __repr__(self):
-    #    return self.__unicode__()
+    def __repr__(self):
+        return self.__unicode__()
     
     def create(self):
         # check if the user does not already exist
@@ -113,8 +113,8 @@ class Repository:
         return self.name == other.name
     
     # representation in a list
-    #def __repr__(self):
-    #    return self.__unicode__()
+    def __repr__(self):
+        return self.__unicode__()
         
     @staticmethod     
     def retrieve_all():
