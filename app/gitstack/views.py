@@ -51,18 +51,4 @@ def settings(request):
         # first visit on the settings page
         return render_to_response('gitstack/settings.html', context_instance=RequestContext(request))
         
-    if request.method == 'POST':
-        # try to set the new password to the admin
-        # retrieve the form values
-        old_password = request.POST['txtOldPassword']
-        new_password1 = request.POST['txtNewPassword1']
-        new_password2 = request.POST['txtNewPassword2']
-        messages.info(request, 'Good try.')
-
-        return render_to_response('gitstack/settings.html', context_instance=RequestContext(request))
-        # check if the two new password are the same
-        
-        
-
-        return HttpResponse("grrr")
     
