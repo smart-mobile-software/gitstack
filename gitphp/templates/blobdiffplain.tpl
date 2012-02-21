@@ -1,0 +1,1 @@
+{$filediff->GetDiff($file, false)}

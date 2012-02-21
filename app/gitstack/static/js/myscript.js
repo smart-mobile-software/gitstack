@@ -21,6 +21,7 @@ $(document).ready(function(){
 				textToInsert[j++] = '<td>' + repoList[i] + '</td>\n';
 				textToInsert[j++] = '<td>git clone http://localhost/' + repoList[i] + '.git</td>\n';
 				textToInsert[j++] = '<td><!-- Icons -->';
+				textToInsert[j++] = '<a href="/gitphp/index.php?p=' + repoList[i] + '.git&a=summary" title="Browse"><img src="/static/images/icons/magnifier.png" alt="Browse" /></a>';
 				textToInsert[j++] = '<a href="/gitstack/repository/' + repoList[i] + '/user/" class="editUsers" title="Users"><img src="/static/images/icons/users.png" alt="Users" /></a>';
 				textToInsert[j++] = '<a class="deleteRepo" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a>';
 				textToInsert[j++] = '</td>';

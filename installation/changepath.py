@@ -10,6 +10,8 @@ import re, os, sys
 # settings.py
 # django.wsgi
 # wsgi.conf
+# gitphp.conf (for apache)
+# gitphp.conf.php
 # installation.bat
 # special :
 # in settings.py GIT_PATH
@@ -45,6 +47,8 @@ os.chdir(sys.argv[2])
 # replace program path
 replacePathFile("wsgi.conf",strFromUnix, strToUnix)
 replacePathFile("main.conf",strFromUnix, strToUnix)
+replacePathFile("gitphp.conf",strFromUnix, strToUnix)
+replacePathFile(strToUnix + "/gitphp/config/gitphp.conf.php",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/app/settings.py",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/app/django.wsgi",strFromUnix, strToUnix)
 
