@@ -348,18 +348,24 @@ $(document).ready(function(){
 		// get the repository name
 		var username = $("#txtUsername").val();
 		var password = $("#txtPassword").val();
-		var csrf = $('input[name="csrfmiddlewaretoken"]').val();
-		// Create
-		$.post("/rest/user/", { username: username, password : password, csrfmiddlewaretoken: csrf} )
-		.success(function() {
-			showMessage("success", 'The user has been successfully created');
-			setTimeout(refreshUserList,500)
+		
+		// Check the length of the password
+		if(password.length == 0)
+			showMessage("error", "The password should not be empty");
+		else {
+			var csrf = $('input[name="csrfmiddlewaretoken"]').val();
+			// Create
+			$.post("/rest/user/", { username: username, password : password, csrfmiddlewaretoken: csrf} )
+			.success(function() {
+				showMessage("success", 'The user has been successfully created');
+				setTimeout(refreshUserList,500)
 
-			//refreshUserList();
-		})
-		.error(function(error) {
-			showMessage("error", error.responseText);
-		});
+				//refreshUserList();
+			})
+			.error(function(error) {
+				showMessage("error", error.responseText);
+			});
+		}
 	});
 	
 	/////////////////////////////////
