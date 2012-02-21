@@ -1,14 +1,8 @@
-from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from gitstack.models import Repository, User
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 
-import json, re
-from django.contrib.auth import authenticate
-from django.http import HttpResponse, HttpResponseServerError
-from django.views.decorators.csrf import csrf_exempt
 
 # repositories section
 @login_required
