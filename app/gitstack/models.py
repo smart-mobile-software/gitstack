@@ -15,6 +15,51 @@ class Apache:
             # when running on django development server
             subprocess.Popen(settings.INSTALL_DIR + '/apache/bin/httpd.exe -n "GitStack" -k restart')
 
+class ApacheConfigParser:
+    def __init__(self, repo_name):
+        self.repo_name = repo_name
+    
+    # return all the users added to config file
+    def retrieve_users(self):
+        all_users_obj = []
+        all_users_str = []
+        all_users = []
+        try:
+            # retrieve all the users
+            repo_config = open(settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.repo_name + ".conf","r")
+            user_line_matcher = re.compile('Require user ')
+            for line in repo_config:
+                # Try to match the line
+                match = user_line_matcher.search(line)
+                # if the user line is found
+                if match:
+                    # print all the users
+                    all_users_str = line[match.end():].rstrip()
+                    # if no users
+                    if(len(all_users_str) == 0):
+                        # return an empty list
+                        return []
+                    
+                    all_users = all_users_str.split(' ')
+            
+
+                      
+            repo_config.close()
+
+        except IOError:
+            # No users
+            pass     
+        
+        # for each user, create a user object
+        for username in all_users:
+            user = User(username)
+            all_users_obj.append(user)
+           
+        return all_users_obj
+    
+    
+    
+    
 class User:
     def __unicode__(self):
         return self.username
@@ -82,21 +127,27 @@ class User:
     @staticmethod    
     def retrieve_all():
         password_file_path = settings.INSTALL_DIR + '/data/passwdfile'
-        users_name = []
-        
+        all_users = []
+        user_list_obj = []
+                 
         # check if the file exist
         if os.path.isfile(password_file_path):
             # the file exist
             # open password file
             password_file = open(password_file_path,"r")
             # read the users
-            users_name = map(lambda foo: foo.split(':')[0], password_file)
+            all_users = map(lambda foo: foo.split(':')[0], password_file)
             password_file.close()
         else:
             # the file does not exist : no users
-            users_name = []
+            all_users = []
+            
+        # for each user, create a user object
+        for username in all_users:
+            user = User(username)
+            user_list_obj.append(user)
 
-        return users_name
+        return user_list_obj
         
         
 
@@ -106,7 +157,11 @@ class Repository:
     
     # contructor
     def __init__(self, name):
+        # repo name
         self.name = name
+        # user list
+        self.user_list = []
+        self.load()
     
     # equality test  
     def __eq__(self, other) : 
@@ -115,6 +170,45 @@ class Repository:
     # representation in a list
     def __repr__(self):
         return self.__unicode__()
+    
+    # load a repository from an apache configuration file
+    def load(self):
+        parser = ApacheConfigParser(self.name)
+        # retrieve the list of users
+        self.user_list = parser.retrieve_users()
+    
+    # save the repository in an apache configuration file
+    def save(self):
+        # add info to the file
+        config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf"
+        # remove the old configuration file
+        if os.path.isfile(config_file_path):
+            os.remove(config_file_path)
+        
+        repo_config = open(config_file_path,"a")
+        template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template.conf',"r")
+        # create a list of users
+        str_user_list = ''
+        for u in self.user_list:
+            str_user_list = str_user_list + u.username + ' '
+            
+        # for each line try to replace username or location
+        for line in template_repo_config:
+            # replace username
+            line = line.replace("USER_LIST",str_user_list)
+            # replace repository name
+            line = line.replace("REPO_NAME",self.name)
+            #password file path
+            line = line.replace("PASSFILE_PATH",settings.INSTALL_DIR + '/data/passwdfile')
+            # write the new config file
+            repo_config.write(line)
+    
+        # close the files
+        repo_config.close()
+        template_repo_config.close()
+        
+        # restart apache
+        Apache.restart()
         
     @staticmethod     
     def retrieve_all():
@@ -127,101 +221,17 @@ class Repository:
     
     # retrieve all the users of the repository
     def retrieve_all_users(self):
-        all_users_obj = []
-        all_users_str = []
-        
-        try:
-            # retrieve all the users
-            repo_config = open(settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf","r")
-            user_line_matcher = re.compile('Require user ')
-            for line in repo_config:
-                # Try to match the line
-                match = user_line_matcher.search(line)
-                # if the user line is found
-                if match:
-                    # print all the users
-                    all_users_str = line[match.end():].rstrip()
-                    # if no users
-                    if(len(all_users_str) == 0):
-                        # return an empty list
-                        return []
-                    
-                    all_users = all_users_str.split(' ')
-            
-
-                      
-            repo_config.close()
-
-        except IOError:
-            # No users
-            pass     
-        
-        # for each user, create a user object
-        for username in all_users:
-            user = User(username)
-            all_users_obj.append(user)
-           
-        return all_users_obj
+        return self.user_list
 
 
     
     # Add read and write permissions to a user on the repository
     def add_user(self, user):
-        # where the config file for this repo will be stored
-        config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf"
-        # If file does not exist
-        if not os.path.exists(config_file_path):
-            # Create the configuration file
-            self.create_config_file()
-            
-        # if the file exist
-        # open the file
-        repo_config_old = open(config_file_path,"r")
-        repo_config = open(config_file_path + ".tmp","a")
-        # set up the patterns
-        # user line matcher
-        user_line_matcher = re.compile('Require user ')
-        for line in repo_config_old:
-            # Try to match the line
-            match = user_line_matcher.search(line)
-            # if the user line is found
-            if match:
-                # add the new user to the line
-                repo_config.write(line.rstrip() + ' ' + user.username + '\n')
-            else:
-                repo_config.write(line)
-        repo_config.close()
-        repo_config_old.close()
-        # replace old config by new config
-        os.remove(config_file_path)
-        os.rename(config_file_path + ".tmp", config_file_path)
-                    
-
-        # restart apache
-        Apache.restart()
+        self.user_list.append(user)
     
     # remove the read/write access to an user
     def remove_user(self, user):
-        config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf"
-        try:
-            # Check the number of users
-            all_users = self.retrieve_all_users()
-            
-            # delete the file
-            os.remove(config_file_path)
-            # remove the user in the list
-            all_users.remove(user)
-            if(len(all_users) > 0):
-                # add the users again
-                for user in all_users:
-                    self.add_user(user)
-            else:
-                # just create an config file without users
-                self.add_user('')
-            Apache.restart()
-            
-        except IOError as e:
-            print 'Error ' + e.strerror
+        self.user_list.remove(user)
     
     # delete the repository
     def delete(self):
@@ -289,27 +299,6 @@ class Repository:
         os.chdir(settings.INSTALL_DIR)
         
         # Create an apache config file for the repository
-        self.create_config_file()
+        self.save()
         
-        Apache.restart()
-        
-    # create an apache configuration file
-    def create_config_file(self):
-        config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf"
-        repo_config = open(config_file_path,"a")
-        template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template.conf',"r")
-        # for each line try to replace username or location
-        for line in template_repo_config:
-            # replace username
-            line = line.replace("USER_NAME","")
-            # replace repository name
-            line = line.replace("REPO_NAME",self.name)
-            #password file path
-            line = line.replace("PASSFILE_PATH",settings.INSTALL_DIR + '/data/passwdfile')
-            # write the new config file
-            repo_config.write(line)
-    
-        # close the files
-        repo_config.close()
-        template_repo_config.close()
-       
+     

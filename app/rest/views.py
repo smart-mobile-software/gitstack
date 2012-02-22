@@ -18,8 +18,12 @@ def rest_user(request):
             return HttpResponse("User created")
         # get retrieve_all the users
         if request.method == 'GET':
-            users_name = User.retrieve_all()
-            json_reply = json.dumps(users_name)
+            # convert list of objects to list of strings
+            user_list_str = []
+            user_list_obj = User.retrieve_all()
+            for user in user_list_obj:   
+                user_list_str.append(user.username)
+            json_reply = json.dumps(user_list_str)
             return HttpResponse(json_reply)
         # update the user
         if request.method == 'PUT':
@@ -109,12 +113,14 @@ def rest_repo_user(request, repo_name, username):
         repo = Repository(repo_name)
         user = User(username)
         repo.add_user(user)
+        repo.save()
         return HttpResponse("User " + username + " added to " + repo_name)
     if request.method == 'DELETE':
         # Remove the user from the repository
         repo = Repository(repo_name)
         user = User(username)
         repo.remove_user(user)
+        repo.save()
         return HttpResponse("User " + username + " deleted from " + repo_name)
 
 
@@ -147,6 +153,7 @@ def rest_admin(request):
             return HttpResponse("User successfully updated")
         else:
             return HttpResponseServerError("Your current administrator password is not correct.")
+
 
 
 

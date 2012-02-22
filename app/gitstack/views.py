@@ -17,7 +17,6 @@ def repository_user(request, repo_name):
         return render_to_response('gitstack/repository_user.html', {'repo_name': repo_name }, context_instance=RequestContext(request))
     
 # add repo user dialog
-@login_required
 def add_repo_user_dialog(request, repo_name):
     # retrieve all the users
     user_list = User.retrieve_all()
