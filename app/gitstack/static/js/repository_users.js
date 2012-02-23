@@ -53,17 +53,42 @@ $(document).ready(function(){
 		$.get(url, function(repoUserList){
 			$("#repoUserList").html('');
 			var i = 0;
-			var j = 0
+			//var j = 0
 			var textToInsert = [];
+		
 			for(i; i < repoUserList.length; i++){
-				textToInsert[j++] = '<tr class=' + repoUserList[i] + '>';
-				textToInsert[j++] = '<td>' + repoUserList[i] + '</td>\n';
-				textToInsert[j++] = '<td><input class="readRepoUser" type="checkbox" /></td>\n';
-				textToInsert[j++] = '<td><input class="writeRepoUser" type="checkbox" /></td>\n';
-				textToInsert[j++] = '<td><!-- Icons -->';
-				textToInsert[j++] = '<a class="deleteRepoUser" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a>';
-				textToInsert[j++] = '</td>';
-				textToInsert[j++] = '</tr>\n';			
+				// Get permissions for each user
+				var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + repoUserList[i] + '/';
+				$.ajax({
+					url: url,
+					context: repoUserList[i],
+					type: "GET",
+					dateType: "json",
+					success: function(permissions){
+						var j = 0;
+						textToInsert[j++] = '<tr class=' + this + '>';
+						textToInsert[j++] = '<td>' + this + '</td>\n';
+						
+						if(permissions['read'] === true)
+							textToInsert[j++] = '<td><input class="readRepoUser permissionsUser" type="checkbox" checked="checked" /></td>\n';
+						else
+							textToInsert[j++] = '<td><input class="readRepoUser permissionsUser" type="checkbox" /></td>\n';
+						if(permissions['write'] === true)
+							textToInsert[j++] = '<td><input class="writeRepoUser permissionsUser" type="checkbox" checked="checked" /></td>\n';
+						else
+							textToInsert[j++] = '<td><input class="writeRepoUser permissionsUser" type="checkbox" /></td>\n';
+						textToInsert[j++] = '<td><!-- Icons -->';
+						textToInsert[j++] = '<a class="deleteRepoUser" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a>';
+						textToInsert[j++] = '</td>';
+						textToInsert[j++] = '</tr>\n';
+
+						$('#repoUserList').append(textToInsert.join(''));
+						// register the new elements
+						bindRepoUserBehaviors();
+					},
+					
+				});
+				
 			}
 			
 			// if no user in the repo
@@ -71,13 +96,13 @@ $(document).ready(function(){
 				// print a nice message
 				$('#repoUserList').append("<td>You have not added any user yet</td><td></td><td></td>");
 			}
-			$('#repoUserList').append(textToInsert.join(''));
-			// register the new elements
-			bindRepoUserBehaviors();
 		}, "json");
 	};
 	
 	var bindRepoUserBehaviors = function() {
+		$(".deleteRepoUser").unbind('click');
+		$(".permissionsUser").unbind('click');
+
 		// Delete a specified user
 		$(".deleteRepoUser").click(function(event){
 			var username = $(this).closest("tr").attr("class");
@@ -95,6 +120,46 @@ $(document).ready(function(){
 					alert(error.responseText);
 				}
 			});
+		});
+		
+		// Delete a specified user
+		$(".permissionsUser").click(function(event){
+			alert('ok');
+			// Get the checkbox
+			// Get the username
+			var username = $(this).closest("tr").attr("class");
+			// Check if read or write checkbox
+			var isRead = false;
+			if($(this).closest("input").hasClass('readRepoUser') === true)
+				isRead = true;
+
+				
+			var isChecked = false;
+			// Check current status of the checkbox
+			if($(this).closest("input").attr("checked"))
+				isChecked = true;
+				
+			// Perform the request to update the user
+			var data = '';
+			if(isRead === true)
+				data = '{"read": ' + isChecked +'}';
+			else
+				data = '{"write": ' + isChecked +'}';
+
+			var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + username + '/';
+			$.ajax({
+				url: url,
+				type: 'PUT',
+				contentType: 'application/json',
+				data: data,
+				success: function(data) {
+					showMessage("success", data);
+				},
+				error: function(error) {
+					showMessage("error", error.responseText);
+				}
+			});
+						
 		});
 	};
 	

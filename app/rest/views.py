@@ -141,15 +141,22 @@ def rest_repo_user(request, repo_name, username):
     if request.method == 'PUT':
         # retrieve the credentials from the json
         permissions = json.loads(request.raw_post_data)
+
         # Get the old password and new password
         if 'read' in permissions:
             # add the read permission to the repo
             if permissions['read']:
                 repo.add_user_read(user)
+                repo.save()
+                return HttpResponse('yeah !!')
+
         if 'write' in permissions:
             # add the write permission to the repo
             if permissions['write']:
                 repo.add_user_write(user)
+                repo.save()
+        return HttpResponse("Permissions updated")
+
 
     
 # Get all the users on a specific repository
