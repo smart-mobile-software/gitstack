@@ -150,37 +150,14 @@ def rest_repo_user(request, repo_name, username):
             # add the write permission to the repo
             if permissions['write']:
                 repo.add_user_write(user)
-        
-        
+
     
-@csrf_exempt
-def rest_repo_user_write(request, repo_name, username):
-    # Add user
-    if request.method == 'POST':
-        # Get the repository and add the user
-        repo = Repository(repo_name)
-        user = User(username)
-        repo.add_user_write(user)
-        repo.save()
-        return HttpResponse("User " + username + " added to " + repo_name)
-    if request.method == 'DELETE':
-        # Remove the user from the repository
-        repo = Repository(repo_name)
-        user = User(username)
-        repo.remove_user_write(user)
-        repo.save()
-        return HttpResponse("Write permission of " + username + " removed from " + repo_name)
-    
-
-
-
-
 # Get all the users on a specific repository
 @csrf_exempt
 def rest_repo_user_all(request, repo_name):
     # Get the repository and add the user
     repo = Repository(repo_name)
-    users = repo.retrieve_all_users()
+    users = repo.user_list
     users_name = map(lambda foo: foo.__unicode__(), users)
     json_reply = json.dumps(users_name)
     return HttpResponse(json_reply)

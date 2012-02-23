@@ -150,7 +150,7 @@ $(document).ready(function(){
 					$( ".ui-selected", this ).each(function() {
 						// add each user to the repository
 						// retrieve the current repository name
-						var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + $(this).text() + '/read/';
+						var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + $(this).text() + '/';
 						$.post(url, function(data) {
 							showMessage("success", "Changes successfully saved");
 							refreshRepoUserList();
@@ -205,7 +205,7 @@ $(document).ready(function(){
 		$(".deleteRepoUser").click(function(event){
 			var username = $(this).closest("tr").attr("class");
 			// perform the request to delete the user
-			var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + username + '/read/';
+			var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + username + '/';
 			$.ajax({
 				url: url,
 				type: 'DELETE',

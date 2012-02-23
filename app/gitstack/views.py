@@ -22,7 +22,7 @@ def add_repo_user_dialog(request, repo_name):
     user_list = User.retrieve_all()
     # get the users already added to the repository
     repository = Repository(repo_name)
-    repository_user_list = repository.retrieve_all_users()
+    repository_user_list = repository.user_list
     
     # substract the repository users from the user list
     for repository_user in repository_user_list:

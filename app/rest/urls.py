@@ -6,8 +6,6 @@ urlpatterns = patterns('rest.views',
     # rest stuff
     # Add/Remove users on a repository
     url(r'^repository/(?P<repo_name>.+)/user/(?P<username>.+)/$', 'rest_repo_user'),
-    # TODO: to delete
-    url(r'^repository/(?P<repo_name>.+)/user/(?P<username>.+)/write/$', 'rest_repo_user_write'),
     
     # Get all the users on a specific repository
     url(r'^repository/(?P<repo_name>.+)/user/$', 'rest_repo_user_all'),
