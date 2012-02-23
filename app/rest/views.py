@@ -107,21 +107,71 @@ def rest_repo_action(request, repo_name):
 # Add/Remove users on a repository
 @csrf_exempt
 def rest_repo_user(request, repo_name, username):
+    repo = Repository(repo_name)
+    user = User(username)
+
+    # Add user
+    if request.method == 'POST':
+        # Get the repository and add the user
+        repo.add_user(user)
+        repo.save()
+        return HttpResponse("User " + username + " added to " + repo_name)
+    # Delete the user
+    if request.method == 'DELETE':
+        # Remove the user from the repository
+        repo.remove_user(user)
+        repo.save()
+        return HttpResponse("Read permission of " + username + " removed from " + repo_name)
+    # Get the user permissions
+    if request.method == 'GET':
+        permissions = {'read' : False, 'write' : False}
+        # retrieve the list of read and write users
+        user_read_list = repo.user_read_list
+        user_write_list = repo.user_read_list
+        # check if the user has read and write access
+        if user in user_read_list:
+            permissions['read'] = True
+        if user in user_write_list:
+            permissions['write'] = True
+            
+        # reply with the json permission object
+        json_reply = json.dumps(permissions)
+        return HttpResponse(json_reply)
+    
+    if request.method == 'PUT':
+        # retrieve the credentials from the json
+        permissions = json.loads(request.raw_post_data)
+        # Get the old password and new password
+        if 'read' in permissions:
+            # add the read permission to the repo
+            if permissions['read']:
+                repo.add_user_read(user)
+        if 'write' in permissions:
+            # add the write permission to the repo
+            if permissions['write']:
+                repo.add_user_write(user)
+        
+        
+    
+@csrf_exempt
+def rest_repo_user_write(request, repo_name, username):
     # Add user
     if request.method == 'POST':
         # Get the repository and add the user
         repo = Repository(repo_name)
         user = User(username)
-        repo.add_user(user)
+        repo.add_user_write(user)
         repo.save()
         return HttpResponse("User " + username + " added to " + repo_name)
     if request.method == 'DELETE':
         # Remove the user from the repository
         repo = Repository(repo_name)
         user = User(username)
-        repo.remove_user(user)
+        repo.remove_user_write(user)
         repo.save()
-        return HttpResponse("User " + username + " deleted from " + repo_name)
+        return HttpResponse("Write permission of " + username + " removed from " + repo_name)
+    
+
 
 
 

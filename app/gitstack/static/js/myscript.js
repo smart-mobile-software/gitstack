@@ -150,7 +150,7 @@ $(document).ready(function(){
 					$( ".ui-selected", this ).each(function() {
 						// add each user to the repository
 						// retrieve the current repository name
-						var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + $(this).text() + '/';
+						var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + $(this).text() + '/read/';
 						$.post(url, function(data) {
 							showMessage("success", "Changes successfully saved");
 							refreshRepoUserList();
@@ -181,7 +181,8 @@ $(document).ready(function(){
 			for(i; i < repoUserList.length; i++){
 				textToInsert[j++] = '<tr class=' + repoUserList[i] + '>';
 				textToInsert[j++] = '<td>' + repoUserList[i] + '</td>\n';
-				textToInsert[j++] = '<td>Read/Write</td>\n';
+				textToInsert[j++] = '<td><input class="readRepoUser" type="checkbox" /></td>\n';
+				textToInsert[j++] = '<td><input class="writeRepoUser" type="checkbox" /></td>\n';
 				textToInsert[j++] = '<td><!-- Icons -->';
 				textToInsert[j++] = '<a class="deleteRepoUser" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a>';
 				textToInsert[j++] = '</td>';
@@ -204,7 +205,7 @@ $(document).ready(function(){
 		$(".deleteRepoUser").click(function(event){
 			var username = $(this).closest("tr").attr("class");
 			// perform the request to delete the user
-			var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + username + '/';
+			var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + username + '/read/';
 			$.ajax({
 				url: url,
 				type: 'DELETE',
