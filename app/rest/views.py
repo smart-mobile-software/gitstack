@@ -124,7 +124,7 @@ def rest_repo_user(request, repo_name, username):
         # Remove the user from the repository
         repo.remove_user(user)
         repo.save()
-        return HttpResponse("Read permission of " + username + " removed from " + repo_name)
+        return HttpResponse(username + " removed from " + repo_name)
     # Get the user permissions
     if request.method == 'GET':
         permissions = {'read' : False, 'write' : False}

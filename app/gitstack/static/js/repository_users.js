@@ -94,7 +94,7 @@ $(document).ready(function(){
 			// if no user in the repo
 			if ( repoUserList.length === 0){
 				// print a nice message
-				$('#repoUserList').append("<td>You have not added any user yet</td><td></td><td></td>");
+				$('#repoUserList').append("<td>You have not added any user yet</td><td></td><td></td><td></td>");
 			}
 		}, "json");
 	};
