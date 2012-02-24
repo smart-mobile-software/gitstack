@@ -15,10 +15,12 @@ $(document).ready(function(){
 			var j = 0
 			var textToInsert = [];
 			for(i; i < userList.length; i++){
+				if(userList[i] !== 'everyone'){
 				textToInsert[j++] = '<tr class=' + userList[i] + '>';
 				textToInsert[j++] = '<td>' + userList[i] + '</td>\n';
 				textToInsert[j++] = '<td><!-- Icons --><a href="#" class="editUser" title="Change password"><img src="/static/images/icons/pencil.png" alt="Edit" /></a><a class="deleteUser" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a></td>';
-				textToInsert[j++] = '</tr>';			
+				textToInsert[j++] = '</tr>';	
+				}				
 			}
 			$('#userList').append(textToInsert.join(''));
 

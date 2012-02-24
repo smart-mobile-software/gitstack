@@ -18,128 +18,56 @@ class Apache:
 class ApacheConfigParser:
     def __init__(self, repo_name):
         self.repo_name = repo_name
+        self.user_list = []
+        self.user_read_list = []
+        self.user_write_list = []
         
-    def retrieve_users(self):
-        all_users_obj = []
-        all_users_str = []
-        all_users = []
+    # retrieve users from config file
+    def load_users(self):
         try:
-            # retrieve all the users
+            # setup config gile
             repo_config = open(settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.repo_name + ".conf","r")
-            user_line_matcher = re.compile('# Added user list : ')
-            # the first match is read permissions and second match is write permission
+            added_line_matcher = re.compile('# Added user list : ')
+            read_line_matcher = re.compile('# read user list : ')
+            write_line_matcher = re.compile('# write user list : ')
+            
+            # for each line
             for line in repo_config:
                 # Try to match the line
-                match = user_line_matcher.search(line)
-                # if the user line is found
-                if match:
-                    # print all the users
-                    all_users_str = line[match.end():].rstrip()
-                    # if no users
-                    if(len(all_users_str) == 0):
-                        # return an empty list
-                        return []
+                added_match = added_line_matcher.search(line)
+                read_match = read_line_matcher.search(line)
+                write_match = write_line_matcher.search(line)
+                # if there is a match
+                if added_match or read_match or write_match:
+                    # read the user string list
+                    if added_match:
+                        match = added_match
+                    if read_match:
+                        match = read_match
+                    if write_match:
+                        match = write_match
                     
-                    all_users = all_users_str.split(' ')
-            
-
-                      
-            repo_config.close()
-
-        except IOError:
-            # No users
-            pass     
-        
-        # for each user, create a user object
-        for username in all_users:
-            user = User(username)
-            all_users_obj.append(user)
-           
-        return all_users_obj
-    # return all the users added to config file
-    def retrieve_users_read(self):
-        all_users_obj = []
-        all_users_str = []
-        all_users = []
-        try:
-            # retrieve all the users
-            repo_config = open(settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.repo_name + ".conf","r")
-            user_line_matcher = re.compile('Require user ')
-            # the first match is read permissions and second match is write permission
-            nb_match = 0
-            for line in repo_config:
-                # Try to match the line
-                match = user_line_matcher.search(line)
-                # if the user line is found
-                if match:
-                    nb_match = nb_match + 1
-                    if(nb_match == 1):
-                        # print all the users
-                        all_users_str = line[match.end():].rstrip()
-                        # if no users
-                        if(len(all_users_str) == 0):
-                            # return an empty list
-                            return []
-                        
+                    all_users_str = line[match.end():].rstrip()
+                    all_users_obj = []
+                    # if no users
+                    if(len(all_users_str) > 0):
                         all_users = all_users_str.split(' ')
-            
-
-                      
-            repo_config.close()
-
+                        # for each user, create a user object
+                        for username in all_users:
+                            user = User(username)
+                            all_users_obj.append(user)
+                    # depending on the match, the add user list to the correct user list (added, read or write)
+                    # read the user string list
+                    if added_match:
+                        self.user_list = all_users_obj
+                    if read_match:
+                        self.user_read_list = all_users_obj
+                    if write_match:
+                        self.user_write_list = all_users_obj
+                
         except IOError:
-            # No users
-            pass     
-        
-        # for each user, create a user object
-        for username in all_users:
-            user = User(username)
-            all_users_obj.append(user)
-           
-        return all_users_obj
-    
-    # return all the users added to config file
-    def retrieve_users_write(self):
-        all_users_obj = []
-        all_users_str = []
-        all_users = []
-        try:
-            # retrieve all the users
-            repo_config = open(settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.repo_name + ".conf","r")
-            user_line_matcher = re.compile('Require user ')
-            # the first match is read permissions and second match is write permission
-            nb_match = 0
-            for line in repo_config:
-                # Try to match the line
-                match = user_line_matcher.search(line)
-                # if the user line is found
-                if match:
-                    nb_match = nb_match + 1
-                    # the first match is read permissions and second match is write permission
-                    if(nb_match == 2):
-                        # print all the users
-                        all_users_str = line[match.end():].rstrip()
-                        # if no users
-                        if(len(all_users_str) == 0):
-                            # return an empty list
-                            return []
-                        
-                        all_users = all_users_str.split(' ')
-            
-
-                      
-            repo_config.close()
-
-        except IOError:
-            # No users
-            pass     
-        
-        # for each user, create a user object
-        for username in all_users:
-            user = User(username)
-            all_users_obj.append(user)
-           
-        return all_users_obj
+            pass
+            #raise Exception("Could not load the configuration file")    
     
     
     
@@ -234,6 +162,9 @@ class User:
             user = User(username)
             user_list_obj.append(user)
 
+        # add the user "everyone"
+        everyone = User("everyone")
+        user_list_obj.append(everyone)
         return user_list_obj
         
         
@@ -266,10 +197,11 @@ class Repository:
     # load a repository from an apache configuration file
     def load(self):
         parser = ApacheConfigParser(self.name)
+        parser.load_users()
         # retrieve the list of users
-        self.user_list = parser.retrieve_users()
-        self.user_read_list = parser.retrieve_users_read()
-        self.user_write_list = parser.retrieve_users_write()
+        self.user_list = parser.user_list
+        self.user_read_list = parser.user_read_list
+        self.user_write_list = parser.user_write_list
                
     
     # save the repository in an apache configuration file
@@ -294,14 +226,27 @@ class Repository:
         for u in self.user_list:
             str_user_list = str_user_list + u.username + ' '
             
+        # get the user everyone
+        everyone = User("everyone")
+            
         # for each line try to replace username or location
         for line in template_repo_config:
             # add the list of users
-            # replace username
-            line = line.replace("ALL_USER_LIST",str_user_list)
+            # replace username   
+            line = line.replace("ALL_USER_LIST",str_user_list)         
             line = line.replace("READ_USER_LIST",str_user_read_list)
             line = line.replace("WRITE_USER_LIST",str_user_write_list)
             
+            if everyone in self.user_read_list:
+                line = line.replace("READ_PERMISSIONS","Allow from All")
+            else:
+                line = line.replace("READ_PERMISSIONS","Require user " + str_user_read_list)
+            
+            if everyone in self.user_write_list:
+                line = line.replace("WRITE_PERMISSIONS","Allow from All")
+            else:
+                line = line.replace("WRITE_PERMISSIONS","Require user " + str_user_write_list)
+        
             # replace repository name
             line = line.replace("REPO_NAME",self.name)
             #password file path

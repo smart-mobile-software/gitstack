@@ -1,4 +1,5 @@
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError,\
+    HttpResponseBadRequest
 from gitstack.models import Repository, User
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
@@ -33,16 +34,7 @@ def rest_user(request):
             user = User(credentials['username'], credentials['password'])
             user.update()
             return HttpResponse("User successfully updated")
-        # delete the user
-        '''
-        if request.method == 'DELETE':
-            # retrieve the username from the json
-            credentials = json.loads(request.raw_post_data)
-            user = User(credentials['username'], "")
-            # delete the user
-            user.delete()
-            return HttpResponse(user.username + " has been deleted")
-            '''
+        
     except Exception as e:
         return HttpResponseServerError(e)
 
@@ -52,7 +44,7 @@ def rest_user_action(request, username):
     try:
         if request.method == 'DELETE':
             # retrieve the username from the json
-            user = User(username, "")
+            user = User(username)
             # delete the user
             user.delete()
             return HttpResponse(username + " has been deleted")
