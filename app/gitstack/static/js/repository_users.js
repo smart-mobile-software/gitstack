@@ -30,12 +30,13 @@ $(document).ready(function(){
 						var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + $(this).text() + '/';
 						$.post(url, function(data) {
 							showMessage("success", "Changes successfully saved");
-							refreshRepoUserList();
 						}).error(function(error) {
 							showMessage("error", error.responseText);
 						});
 						
 					});
+					
+					refreshRepoUserList();
 					
 					
 					$( this ).dialog( "close" );
@@ -63,12 +64,11 @@ $(document).ready(function(){
 					url: url,
 					context: repoUserList[i],
 					type: "GET",
-					dateType: "json",
+					dataType: "json",
 					success: function(permissions){
 						var j = 0;
 						textToInsert[j++] = '<tr class=' + this + '>';
 						textToInsert[j++] = '<td>' + this + '</td>\n';
-						
 						if(permissions['read'] === true)
 							textToInsert[j++] = '<td><input class="readRepoUser permissionsUser" type="checkbox" checked="checked" /></td>\n';
 						else
@@ -124,7 +124,6 @@ $(document).ready(function(){
 		
 		// Delete a specified user
 		$(".permissionsUser").click(function(event){
-			alert('ok');
 			// Get the checkbox
 			// Get the username
 			var username = $(this).closest("tr").attr("class");

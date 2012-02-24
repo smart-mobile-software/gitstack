@@ -34,6 +34,7 @@ def rest_user(request):
             user.update()
             return HttpResponse("User successfully updated")
         # delete the user
+        '''
         if request.method == 'DELETE':
             # retrieve the username from the json
             credentials = json.loads(request.raw_post_data)
@@ -41,7 +42,7 @@ def rest_user(request):
             # delete the user
             user.delete()
             return HttpResponse(user.username + " has been deleted")
-            
+            '''
     except Exception as e:
         return HttpResponseServerError(e)
 
@@ -54,7 +55,7 @@ def rest_user_action(request, username):
             user = User(username, "")
             # delete the user
             user.delete()
-            return HttpResponse(user.username + " has been deleted")
+            return HttpResponse(username + " has been deleted")
     except Exception as e:
         return HttpResponseServerError(e)
 
@@ -114,6 +115,8 @@ def rest_repo_user(request, repo_name, username):
     if request.method == 'POST':
         # Get the repository and add the user
         repo.add_user(user)
+        repo.add_user_read(user)
+        repo.add_user_write(user)
         repo.save()
         return HttpResponse("User " + username + " added to " + repo_name)
     # Delete the user
@@ -127,7 +130,7 @@ def rest_repo_user(request, repo_name, username):
         permissions = {'read' : False, 'write' : False}
         # retrieve the list of read and write users
         user_read_list = repo.user_read_list
-        user_write_list = repo.user_read_list
+        user_write_list = repo.user_write_list
         # check if the user has read and write access
         if user in user_read_list:
             permissions['read'] = True
@@ -147,15 +150,18 @@ def rest_repo_user(request, repo_name, username):
             # add the read permission to the repo
             if permissions['read']:
                 repo.add_user_read(user)
-                repo.save()
-                return HttpResponse('yeah !!')
+            else:
+                repo.remove_user_read(user)
 
         if 'write' in permissions:
             # add the write permission to the repo
             if permissions['write']:
                 repo.add_user_write(user)
-                repo.save()
-        return HttpResponse("Permissions updated")
+            else:
+                repo.remove_user_write(user)
+                
+        repo.save()
+        return HttpResponse(user.username + "'s permissions updated")
 
 
     

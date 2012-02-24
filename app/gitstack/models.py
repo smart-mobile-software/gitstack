@@ -165,7 +165,7 @@ class User:
     
     def create(self):
         # check if the user does not already exist
-        if self.username in User.retrieve_all():
+        if self in User.retrieve_all():
             raise Exception("User already exist")
         # if there are no users, create a file
         if len(User.retrieve_all()) == 0:
@@ -180,7 +180,7 @@ class User:
         
     # update user's password
     def update(self):
-        if self.username in User.retrieve_all():
+        if self in User.retrieve_all():
             # change directory to the password file
             os.chdir(settings.INSTALL_DIR + '/data')
             # Apache tool to create an user
@@ -190,7 +190,7 @@ class User:
     
     # delete the user
     def delete(self):
-        if self.username in User.retrieve_all():
+        if self in User.retrieve_all():
             # change directory to the password file
             os.chdir(settings.INSTALL_DIR + '/data')
             # Apache tool to delete an user
@@ -203,9 +203,10 @@ class User:
                 user_list = repository.retrieve_all_users()
 
                 # if the user exist in the repo
-                if self.username in user_list:
+                if self in user_list:
                     # remove the user
-                    repository.remove_user(self.username)
+                    repository.remove_user(self)
+                    repository.save()
             
         else:
             raise Exception(self.username + " does not exist")
@@ -341,7 +342,12 @@ class Repository:
     def add_user_read(self, user):
         # check if the user is already in the user list
         if user in self.user_list:
-            self.user_read_list.append(user)
+            # if user is not already added
+            if user not in self.user_read_list:
+                self.user_read_list.append(user)
+            else:
+                raise Exception(user.username + " has already read permissions on " + self.name)
+
         else:
             raise Exception(user.username + " has to be added in the repository before setting read/write permissions")
         
@@ -350,7 +356,11 @@ class Repository:
     def add_user_write(self, user):
         # check if the user is already in the user list
         if user in self.user_list:
-            self.user_write_list.append(user)
+            # if user is not already added
+            if user not in self.user_write_list:
+                self.user_write_list.append(user)
+            else:
+                raise Exception(user.username + " has already write permissions on " + self.name)
         else:
             raise Exception(user.username + " has to be added in the repository before setting read/write permissions")
         
