@@ -39,6 +39,8 @@ include_once(GITPHP_INCLUDEDIR . 'version.php');
 
 require_once(GITPHP_INCLUDEDIR . 'Util.class.php');
 
+require_once(GITPHP_INCLUDEDIR . 'Authentication.class.php');
+
 require_once(GITPHP_INCLUDEDIR . 'Config.class.php');
 
 require_once(GITPHP_INCLUDEDIR . 'Resource.class.php');
@@ -147,7 +149,13 @@ try {
 		}*/
 	}
 	unset($exe);
-
+	
+	/*
+	 * Authentification
+	 */
+    $auth = new GitPHP_Authentication();
+	$auth->authenticate();
+	
 	/*
 	 * Project list
 	 */

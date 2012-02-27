@@ -9,6 +9,13 @@
  * @package GitPHP
  * @subpackage Config
  */
+ 
+ /*
+  * Apache repository configuration files
+  *
+  */
+$gitphp_conf['apacherepo'] = 'C:/dev/gitstack/apache/conf/gitstack';
+
 
 /*
  * projectroot
@@ -45,7 +52,7 @@ $gitphp_conf['diffbin'] = 'C:/dev/gitstack/git/bin/diff.exe';
  * You will need to create a directory 'cache' and make it
  * writable by the server
  */
-// $gitphp_conf['cache'] = true;
+$gitphp_conf['cache'] = false;
 
 /*
  * objectcache
@@ -55,7 +62,7 @@ $gitphp_conf['diffbin'] = 'C:/dev/gitstack/git/bin/diff.exe';
  * This can be used in place of the template cache, or
  * in addition to it for the maximum benefit.
  */
-//$gitphp_conf['objectcache'] = true;
+$gitphp_conf['objectcache'] = false;
 
 /*
  * compat
