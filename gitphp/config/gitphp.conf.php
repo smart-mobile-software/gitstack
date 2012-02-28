@@ -74,3 +74,4 @@ $gitphp_conf['objectcache'] = false;
  * your projects.
  */
 $gitphp_conf['compat'] = false;
+$gitphp_conf['title'] = "GitStack Web";

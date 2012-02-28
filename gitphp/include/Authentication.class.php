@@ -15,6 +15,7 @@
  */
 class GitPHP_Authentication
 {
+	/*
 	private $project_name = '';
 	
 	
@@ -26,6 +27,7 @@ class GitPHP_Authentication
 	// Authenticate the user
 	public function authenticate()
 	{
+	/*
 		// Get the project name
 		if(isset($_GET['p'])){
 			$this->project_name = $_GET['p'];
@@ -83,7 +85,7 @@ class GitPHP_Authentication
 				return $userList;
 			}
 		}
-		/*
+		
 		$handle = fopen($repo_config . '/' . $repo_name . '.conf', "r");
 		
 		if ($handle) {
@@ -97,7 +99,7 @@ class GitPHP_Authentication
 			}
 			fclose($handle);
 
-		}*/
+		}
 	}
-	
+	*/
 }

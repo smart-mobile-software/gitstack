@@ -153,8 +153,8 @@ try {
 	/*
 	 * Authentification
 	 */
-    $auth = new GitPHP_Authentication();
-	$auth->authenticate();
+    //$auth = new GitPHP_Authentication();
+	//$auth->authenticate();
 	
 	/*
 	 * Project list

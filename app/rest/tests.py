@@ -1,7 +1,7 @@
 from gitstack.models import Repository, User
 from django.test import TestCase
 from django.test.client import Client
-import time
+import time, json
 
 
 class SimpleTest(TestCase):
@@ -27,9 +27,9 @@ class SimpleTest(TestCase):
         users = User.retrieve_all()
         for user in users:
             # create the user
-            userObj = User(user, '')
-            userObj.delete()
-            time.sleep(0.1)
+            if user.username != 'everyone':
+                user.delete()
+                time.sleep(0.1)
 
     # create repositories
     def create_repos(self):
@@ -81,9 +81,9 @@ class SimpleTest(TestCase):
         self.assertEqual(response.status_code, 200)
         time.sleep(0.1)
         response = self.c.get('/rest/user/')
-        self.assertEqual(response.content, '["user1", "user2"]')
+        self.assertEqual(response.content, '["user1", "user2", "everyone"]')
         
-    # update a user password
+    # update a user pas
     def test_user_change_password(self):
         response = self.c.put('/rest/user/', data='{"username":"user3", "password":"test"}', content_type='application/json')
         self.assertEqual(response.status_code, 200)
@@ -93,17 +93,21 @@ class SimpleTest(TestCase):
         self.assertEqual(self.c.post('/rest/user/', { 'username' : 'user4', 'password' : 'user4' }).status_code, 200)
         time.sleep(0.1)
         response = self.c.get('/rest/user/')
-        self.assertEqual(response.content, '["user1", "user2", "user3", "user4"]')
+        self.assertEqual(response.content, '["user1", "user2", "user3", "user4", "everyone"]')
         
     # retrieve
     def test_user_retrieve(self):
         response = self.c.get('/rest/user/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '["user1", "user2", "user3"]')
+        self.assertEqual(response.content, '["user1", "user2", "user3", "everyone"]')
         
     #########################
     # Repository user management
     ########################
+    
+    #
+    # add user to a repo
+    #
     
     # add an user to a repo
     def test_repo_add_user(self):
@@ -128,6 +132,61 @@ class SimpleTest(TestCase):
         
         response = self.c.get('/rest/repository/repo1/user/')
         self.assertEqual(response.content, '["user1", "user2"]')
+    
+    #
+    # read permission
+    #
+    
+    # add read permission
+    def test_repo_add_read_user(self):
+        # the user1 has read rights by default
+        self.assertEqual(self.c.post('/rest/repository/repo1/user/user1/').status_code, 200)
+        # Check if the user1 has the read rights
+        response = self.c.get('/rest/repository/repo1/user/user1/')
+        permissions = json.loads(response.content)
+        self.assertEqual(permissions['read'], True)
+        
+    # remove read permission
+    def test_repo_remove_read_user(self):
+        # the user1 has read rights by default
+        self.assertEqual(self.c.post('/rest/repository/repo1/user/user1/').status_code, 200)
+        # remove the read rights
+        self.assertEqual(self.c.put('/rest/repository/repo1/user/user1/',data='{"read":false}', content_type='application/json').status_code, 200)
+
+        # Check if the user1 has the read rights
+        response = self.c.get('/rest/repository/repo1/user/user1/')
+        permissions = json.loads(response.content)
+        self.assertEqual(permissions['read'], False)
+    
+    #
+    # write permission
+    #
+        
+    def test_repo_add_write_user(self):
+        # the user1 has read rights by default
+        self.assertEqual(self.c.post('/rest/repository/repo1/user/user1/').status_code, 200)
+        # Check if the user1 has the read rights
+        response = self.c.get('/rest/repository/repo1/user/user1/')
+        permissions = json.loads(response.content)
+        self.assertEqual(permissions['write'], True)   
+        
+    # remove write permission
+    def test_repo_remove_write_user(self):
+        # the user1 has read rights by default
+        self.assertEqual(self.c.post('/rest/repository/repo1/user/user1/').status_code, 200)
+        # remove the read rights
+        self.assertEqual(self.c.put('/rest/repository/repo1/user/user1/',data='{"write":false}', content_type='application/json').status_code, 200)
+
+        # Check if the user1 has the read rights
+        response = self.c.get('/rest/repository/repo1/user/user1/')
+        permissions = json.loads(response.content)
+        self.assertEqual(permissions['write'], False)
+        
+    
+        
+    ################################
+    # Gitphp web access
+    ################################
  
 
         

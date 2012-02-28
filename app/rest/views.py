@@ -1,9 +1,11 @@
-from django.http import HttpResponse, HttpResponseServerError,\
-    HttpResponseBadRequest
-from gitstack.models import Repository, User
+from django.http import HttpResponse, HttpResponseServerError
+from gitstack.models import Repository, User, Apache
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
-import json, re
+from django.conf import settings
+
+import json, re, os
+
 
 # user rest api
 @csrf_exempt
@@ -40,25 +42,39 @@ def rest_user(request):
 
 # web interface (gitweb) rest api
 @csrf_exempt
-def rest_repo_web_interface(request, repo_name):
+def webinterface(request):
     try:
-        repo = Repository(repo_name)
         # get if the web interface is enabled
+        
+        gitphp_path = settings.INSTALL_DIR + '/apache/conf/gitstack/gitphp.conf'
         if request.method == 'GET':
-            # create a dictionary with the enabled parameter
-            permissions = {'enabled' : repo.web_interface}
+            # check if the file gitphp.conf exist
+            isEnabled = False
+            if os.path.isfile(gitphp_path):
+                isEnabled = True
+            
+            permissions = {'enabled' : isEnabled}
     
             json_reply = json.dumps(permissions)
             return HttpResponse(json_reply)
+        
         # update the web interface permissions
         if request.method == 'PUT':
             # retrieve the dictionary from the request
             web_interface_dic = json.loads(request.raw_post_data)
             # update the repository
-            repo.web_interface = web_interface_dic['enabled']
-            repo.save()
+            isEnabled = web_interface_dic['enabled']
+            # rename the file to enable or disable the web interface
+            if isEnabled:
+                os.rename(gitphp_path + '.disabled', gitphp_path)
+            else:
+                os.rename(gitphp_path, gitphp_path + '.disabled')
+
+            # restart apache 
+            Apache.restart()
+            
             # create the message
-            if repo.web_interface:
+            if isEnabled:
                 message = "Web interface successfully enabled"
             else:
                 message = "Web interface successfully disabled"

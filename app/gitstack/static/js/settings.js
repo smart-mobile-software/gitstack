@@ -38,6 +38,51 @@ $(document).ready(function(){
 	
 	});
 	
+	//////////////////////////////
+	// web based repository browsing
+	/////////////////////////////////
+	// update the checkbox for the web interface
+	var refreshWebinterface = function(){
+		//alert('hello');
+		var url = '/rest/webinterface/';
+		$.get(url, function(webinterface){
+			// if the web interface is enabled
+			if(webinterface['enabled'] == true)
+				// check the box
+				$('input[name=webinterface]').attr('checked', true);
+
+		}, "json");
+	};
+	
+	// Click on the checkbox, enable or disable the web interface
+	$("#webinterface").click(function(event){
+		// Get the status of the checkbox
+		isChecked = false;
+		if($('input[name=webinterface]').attr('checked') === 'checked')
+			isChecked = true;
+		
+		// Setup the data to be send to the server
+		data = '{"enabled": ' + isChecked +'}';
+		
+		var url = '/rest/webinterface/';
+		// Proceed to the request
+		$.ajax({
+			url: url,
+			type: 'PUT',
+			contentType: 'application/json',
+			data: data,
+			success: function(data) {
+				showMessage("success", data);
+			},
+			error: function(error) {
+				showMessage("error", error.responseText);
+			}
+		});
+					
+	});
+	
+	refreshWebinterface();
+	
 	/////////////////////////////////
 	// Handle notifications 
 	///////////////////////////////
