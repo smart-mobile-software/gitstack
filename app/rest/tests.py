@@ -30,6 +30,9 @@ class SimpleTest(TestCase):
             if user.username != 'everyone':
                 user.delete()
                 time.sleep(0.1)
+                
+        
+
 
     # create repositories
     def create_repos(self):
@@ -187,7 +190,25 @@ class SimpleTest(TestCase):
     ################################
     # Gitphp web access
     ################################
- 
+    # Check if the web access is enabled
+    
+    def test_web_access(self):
+        # The web interface should be enabled by default
+        response = self.c.get('/rest/webinterface/')
+        permissions = json.loads(response.content)
+        self.assertEqual(permissions['enabled'], True)
+        
+    def test_web_access_disable(self):
+        # Disable the web interface        
+        self.assertEqual(self.c.put('/rest/webinterface/',data='{"enabled":false}', content_type='application/json').status_code, 200)
+        # Check that the web interface is disabled
+        response = self.c.get('/rest/webinterface/')
+        permissions = json.loads(response.content)
+        self.assertEqual(permissions['enabled'], False)
+        # make sure the web interface is enabled                
+        self.assertEqual(self.c.put('/rest/webinterface/',data='{"enabled":true}', content_type='application/json').status_code, 200)
+    
+        
 
         
         
