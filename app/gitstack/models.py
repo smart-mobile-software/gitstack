@@ -21,6 +21,7 @@ class ApacheConfigParser:
         self.user_list = []
         self.user_read_list = []
         self.user_write_list = []
+        self.web_interface = False
         
     # retrieve users from config file
     def load_users(self):
@@ -30,13 +31,15 @@ class ApacheConfigParser:
             added_line_matcher = re.compile('# Added user list : ')
             read_line_matcher = re.compile('# read user list : ')
             write_line_matcher = re.compile('# write user list : ')
-            
+            web_interface_matcher = re.compile('# web interface : ')
+
             # for each line
             for line in repo_config:
                 # Try to match the line
                 added_match = added_line_matcher.search(line)
                 read_match = read_line_matcher.search(line)
                 write_match = write_line_matcher.search(line)
+                web_interface_match = web_interface_matcher.search(line)
                 # if there is a match
                 if added_match or read_match or write_match:
                     # read the user string list
@@ -64,6 +67,14 @@ class ApacheConfigParser:
                         self.user_read_list = all_users_obj
                     if write_match:
                         self.user_write_list = all_users_obj
+                # if there is a match
+                if web_interface_match:
+                    web_interface_str = line[web_interface_match.end():].rstrip()
+                    if web_interface_str == 'true':
+                        self.web_interface = True
+                    else:
+                        self.web_interface = False
+
                 
         except IOError:
             pass
@@ -183,6 +194,8 @@ class Repository:
         self.user_read_list = []
         # users with write permission
         self.user_write_list = []
+        # enable/disable web interface
+        self.web_interface = False
         
         self.load()
     
@@ -202,6 +215,7 @@ class Repository:
         self.user_list = parser.user_list
         self.user_read_list = parser.user_read_list
         self.user_write_list = parser.user_write_list
+        self.web_interface = parser.web_interface
                
     
     # save the repository in an apache configuration file
@@ -246,7 +260,13 @@ class Repository:
                 line = line.replace("WRITE_PERMISSIONS","Allow from All")
             else:
                 line = line.replace("WRITE_PERMISSIONS","Require user " + str_user_write_list)
-        
+            
+            if self.web_interface:        
+                line = line.replace("WEB_INTERFACE_BOOLEAN","true")
+            else:
+                line = line.replace("WEB_INTERFACE_BOOLEAN","false")
+
+
             # replace repository name
             line = line.replace("REPO_NAME",self.name)
             #password file path
@@ -392,6 +412,9 @@ class Repository:
         
         # change to another directory
         os.chdir(settings.INSTALL_DIR)
+        
+        # enable the web interface by default
+        self.web_interface = True
         
         # Create an apache config file for the repository
         self.save()

@@ -38,6 +38,34 @@ def rest_user(request):
     except Exception as e:
         return HttpResponseServerError(e)
 
+# web interface (gitweb) rest api
+@csrf_exempt
+def rest_repo_web_interface(request, repo_name):
+    try:
+        repo = Repository(repo_name)
+        # get if the web interface is enabled
+        if request.method == 'GET':
+            # create a dictionary with the enabled parameter
+            permissions = {'enabled' : repo.web_interface}
+    
+            json_reply = json.dumps(permissions)
+            return HttpResponse(json_reply)
+        # update the web interface permissions
+        if request.method == 'PUT':
+            # retrieve the dictionary from the request
+            web_interface_dic = json.loads(request.raw_post_data)
+            # update the repository
+            repo.web_interface = web_interface_dic['enabled']
+            repo.save()
+            # create the message
+            if repo.web_interface:
+                message = "Web interface successfully enabled"
+            else:
+                message = "Web interface successfully disabled"
+            return HttpResponse(message)
+        
+    except Exception as e:
+        return HttpResponseServerError(e)
 
 
 def rest_user_action(request, username):

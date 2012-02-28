@@ -10,6 +10,9 @@ urlpatterns = patterns('rest.views',
     # Get all the users on a specific repository
     url(r'^repository/(?P<repo_name>.+)/user/$', 'rest_repo_user_all'),
     
+    # Enable/disable the web interface
+    url(r'^repository/(?P<repo_name>.+)/webinterface/$', 'rest_repo_web_interface'),
+    
     # to delete a repository
     url(r'^repository/(?P<repo_name>.+)/$', 'rest_repo_action'),
     url(r'^user/$', 'rest_user'),
