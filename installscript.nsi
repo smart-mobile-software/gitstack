@@ -59,14 +59,17 @@ Section "GitStack" sectionGitStack
 	File /r "data\data.db"
 	SetOutPath "$INSTDIR\templates"
 	File /r "templates\*.*"
+	SetOutPath "$INSTDIR\php"
+	File /r "php\*.*"
+	SetOutPath "$INSTDIR\gitphp"
+	File /r "gitphp\*.*"
+
 	
 	SetOutPath "$TEMP\gitstack"
 	File /r "installation\*.*"
 	
 	WriteUninstaller "uninstall.exe"
-	
-	
-	
+
 	# Install python
 	ExecWait '"$TEMP\gitstack\installpython.bat" $INSTDIR'
 	# Remove python start menu
@@ -94,6 +97,11 @@ Section "GitStack" sectionGitStack
 	SetOutPath "$INSTDIR\apache\modules"
 	File "installation\mod_wsgi.so"
 	
+	# Install Microsoft Visual C++ 2008 SP1 Redistributable Package (x86) required for php
+	ExecWait '"$TEMP\gitstack\vcredist.exe" /q'
+
+	
+	
 	# add a loadmodule wsgi to the apache config file
 	ExecWait '"$TEMP\gitstack\apacheaddinstructions.bat" $INSTDIR'
 	
@@ -107,6 +115,8 @@ Section "GitStack" sectionGitStack
 	SetOutPath "$INSTDIR\apache\conf\gitstack"
 	File "installation\main.conf"
 	File "installation\wsgi.conf"
+	File "installation\gitphp.conf"
+	
 
 	# Update the apache configuration files
 	ExecWait '"$TEMP\gitstack\rewriteapacheconfig.bat" $INSTDIR $TEMP' $0
@@ -176,6 +186,8 @@ Section "Uninstall"
 	RMDir /r "$INSTDIR\git"
 	RMDir /r "$INSTDIR\templates"
 	RMDir /r "$INSTDIR\python"
+	RMDir /r "$INSTDIR\php"
+	RMDir /r "$INSTDIR\gitphp"
 	# Main apache config file
 	Delete "$INSTDIR\apache\conf\httpd.conf"
 	Delete "$INSTDIR\uninstall.exe"
