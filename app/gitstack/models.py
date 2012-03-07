@@ -98,7 +98,7 @@ class User:
         if self in User.retrieve_all():
             raise Exception("User already exist")
         # if there are no users, create a file
-        if len(User.retrieve_all()) == 0:
+        if len(User.retrieve_all()) == 1:
             passord_file = open(settings.INSTALL_DIR + '/data/passwdfile', 'w')
             passord_file.write('')
             passord_file.close()
@@ -164,9 +164,6 @@ class User:
             user = User(username)
             user_list_obj.append(user)
 
-        # add the user "everyone"
-        everyone = User("everyone")
-        user_list_obj.append(everyone)
         return user_list_obj
         
         

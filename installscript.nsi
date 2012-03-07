@@ -45,11 +45,19 @@ ShowInstDetails nevershow
 Function LaunchLink
   ExecShell "" "$SMPROGRAMS\GitStack\GitStack.lnk"
 FunctionEnd
-
+  
 #############################################
 # Install section
 #############################################
 Section "GitStack" sectionGitStack
+	# Previous GitStack installation
+	ClearErrors
+	ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\GitStack" "UninstallString"
+	IfErrors NotInstalled 0 
+	messageBox MB_OK "Please uninstall the previous version of GitStack before installing a new one."
+	Quit
+	NotInstalled:
+	
 	# Set restore point
 	SysRestore::StartRestorePoint "Installed GitStack"
 	# Copy files
