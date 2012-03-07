@@ -27,9 +27,8 @@ class SimpleTest(TestCase):
         users = User.retrieve_all()
         for user in users:
             # create the user
-            if user.username != 'everyone':
-                user.delete()
-                time.sleep(0.1)
+            user.delete()
+            time.sleep(0.1)
                 
         
 
@@ -84,7 +83,7 @@ class SimpleTest(TestCase):
         self.assertEqual(response.status_code, 200)
         time.sleep(0.1)
         response = self.c.get('/rest/user/')
-        self.assertEqual(response.content, '["user1", "user2", "everyone"]')
+        self.assertEqual(response.content, '["user1", "user2"]')
         
     # update a user pas
     def test_user_change_password(self):
@@ -96,13 +95,13 @@ class SimpleTest(TestCase):
         self.assertEqual(self.c.post('/rest/user/', { 'username' : 'user4', 'password' : 'user4' }).status_code, 200)
         time.sleep(0.1)
         response = self.c.get('/rest/user/')
-        self.assertEqual(response.content, '["user1", "user2", "user3", "user4", "everyone"]')
+        self.assertEqual(response.content, '["user1", "user2", "user3", "user4"]')
         
     # retrieve
     def test_user_retrieve(self):
         response = self.c.get('/rest/user/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '["user1", "user2", "user3", "everyone"]')
+        self.assertEqual(response.content, '["user1", "user2", "user3"]')
         
     #########################
     # Repository user management
