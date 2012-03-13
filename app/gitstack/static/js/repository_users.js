@@ -69,10 +69,14 @@ $(document).ready(function(){
 						var j = 0;
 						textToInsert[j++] = '<tr class=' + this + '>';
 						textToInsert[j++] = '<td>' + this + '</td>\n';
+						textToInsert[j++] = '<td>Read/Write</td>\n';
+						/*
 						if(permissions['read'] === true)
 							textToInsert[j++] = '<td><input class="readRepoUser permissionsUser" type="checkbox" checked="checked" /></td>\n';
 						else
 							textToInsert[j++] = '<td><input class="readRepoUser permissionsUser" type="checkbox" /></td>\n';
+						*/
+						
 						/*
 						if(permissions['write'] === true)
 							textToInsert[j++] = '<td><input class="writeRepoUser permissionsUser" type="checkbox" checked="checked" /></td>\n';
