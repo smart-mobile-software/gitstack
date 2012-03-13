@@ -6,7 +6,6 @@ from django.conf import settings
 
 import json, re, os
 
-
 # user rest api
 @csrf_exempt
 def rest_user(request):
