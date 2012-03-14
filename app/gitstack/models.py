@@ -26,7 +26,7 @@ class ApacheConfigParser:
     def load_users(self):
         try:
             # setup config gile
-            repo_config = open(settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.repo_name + ".conf","r")
+            repo_config = open(settings.INSTALL_DIR + '/apache/conf/gitstack/repositories/' + self.repo_name + ".conf","r")
             added_line_matcher = re.compile('# Added user list : ')
             read_line_matcher = re.compile('# read user list : ')
             write_line_matcher = re.compile('# write user list : ')
@@ -182,7 +182,12 @@ class Repository:
         self.user_read_list = []
         # users with write permission
         self.user_write_list = []
-        
+        # Check that a folder for the repositories configuration files exist
+        config_folder_path = settings.INSTALL_DIR + '/apache/conf/gitstack/repositories'
+        if not os.path.exists(config_folder_path):
+            # create a directory for the configuration files
+            os.makedirs(config_folder_path) 
+           
         self.load()
     
     # equality test  
@@ -205,7 +210,7 @@ class Repository:
     # save the repository in an apache configuration file
     def save(self):
         # add info to the file
-        config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf"
+        config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/repositories/' + self.name + ".conf"
         # remove the old configuration file
         if os.path.isfile(config_file_path):
             os.remove(config_file_path)
@@ -345,7 +350,7 @@ class Repository:
             
             # remove the configuration file if exist
             try:
-                os.remove(settings.INSTALL_DIR + '/apache/conf/gitstack/' + self.name + ".conf")
+                os.remove(settings.INSTALL_DIR + '/apache/conf/gitstack/repositories/' + self.name + ".conf")
             except Exception:
                 pass
         else:
