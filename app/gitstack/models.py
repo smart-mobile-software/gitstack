@@ -389,9 +389,9 @@ class Repository:
         
         # add a gitstack section
         config.add_section('gitstack')
-        config.set('gitstack', 'read_users', '')
-        config.set('gitstack', 'write_users', '')
-        config.set('gitstack', 'added_users', '')
+        config.set('gitstack', 'readusers', '')
+        config.set('gitstack', 'writeusers', '')
+        config.set('gitstack', 'addedusers', '')
 
         
         f = open("config", "w")
