@@ -45,9 +45,9 @@ class RepoConfigParser:
             config.read(settings.REPOSITORIES_PATH + "/" + self.repo_name + ".git" + "/config")
             # load the users
             if config.has_section('gitstack'):
-                self.user_read_list = self.str_users_list_to_obj(config.get('gitstack', 'read_users'))
-                self.user_write_list = self.str_users_list_to_obj(config.get('gitstack', 'write_users'))
-                self.user_list = self.str_users_list_to_obj(config.get('gitstack', 'added_users'))
+                self.user_read_list = self.str_users_list_to_obj(config.get('gitstack', 'readusers'))
+                self.user_write_list = self.str_users_list_to_obj(config.get('gitstack', 'writeusers'))
+                self.user_list = self.str_users_list_to_obj(config.get('gitstack', 'addedusers'))
 
             # split each string list of username
                 
@@ -251,9 +251,9 @@ class Repository:
         config.read(settings.REPOSITORIES_PATH + "/" + self.name + ".git" + "/config")
         
         # add a gitstack section
-        config.set('gitstack', 'read_users', str_user_read_list)
-        config.set('gitstack', 'write_users', str_user_write_list)
-        config.set('gitstack', 'added_users', str_user_list)
+        config.set('gitstack', 'readusers', str_user_read_list)
+        config.set('gitstack', 'writeusers', str_user_write_list)
+        config.set('gitstack', 'addedusers', str_user_list)
         
         f = open(settings.REPOSITORIES_PATH + "/" + self.name + ".git" + "/config", "w")
         config.write(f)
