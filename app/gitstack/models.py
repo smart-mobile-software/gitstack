@@ -15,57 +15,41 @@ class Apache:
             # when running on django development server
             subprocess.Popen(settings.INSTALL_DIR + '/apache/bin/httpd.exe -n "GitStack" -k restart')
 
-class ApacheConfigParser:
+class RepoConfigParser:
     def __init__(self, repo_name):
         self.repo_name = repo_name
         self.user_list = []
         self.user_read_list = []
         self.user_write_list = []
         
+    # convert a list of string usernames into a list of user objects
+    def str_users_list_to_obj(self, str_u_list):
+        obj_u_list = []
+        # check the length of the list
+        if(len(str_u_list) > 0):
+            # split the list
+            all_users = str_u_list.split(' ')
+            # create users
+            for username in all_users:
+                user = User(username)
+                obj_u_list.append(user)
+        
+        # return the list of users
+        return obj_u_list
+        
     # retrieve users from config file
     def load_users(self):
         try:
-            # setup config gile
-            repo_config = open(settings.INSTALL_DIR + '/apache/conf/gitstack/repositories/' + self.repo_name + ".conf","r")
-            added_line_matcher = re.compile('# Added user list : ')
-            read_line_matcher = re.compile('# read user list : ')
-            write_line_matcher = re.compile('# write user list : ')
+            # Load the configuration file
+            config = ConfigParser.ConfigParser()
+            config.read(settings.REPOSITORIES_PATH + "/" + self.repo_name + ".git" + "/config")
+            # load the users
+            if config.has_section('gitstack'):
+                self.user_read_list = self.str_users_list_to_obj(config.get('gitstack', 'read_users'))
+                self.user_write_list = self.str_users_list_to_obj(config.get('gitstack', 'write_users'))
+                self.user_list = self.str_users_list_to_obj(config.get('gitstack', 'added_users'))
 
-            # for each line
-            for line in repo_config:
-                # Try to match the line
-                added_match = added_line_matcher.search(line)
-                read_match = read_line_matcher.search(line)
-                write_match = write_line_matcher.search(line)
-                # if there is a match
-                if added_match or read_match or write_match:
-                    # read the user string list
-                    if added_match:
-                        match = added_match
-                    if read_match:
-                        match = read_match
-                    if write_match:
-                        match = write_match
-                    
-                    all_users_str = line[match.end():].rstrip()
-                    all_users_obj = []
-                    # if no users
-                    if(len(all_users_str) > 0):
-                        all_users = all_users_str.split(' ')
-                        # for each user, create a user object
-                        for username in all_users:
-                            user = User(username)
-                            all_users_obj.append(user)
-                    # depending on the match, the add user list to the correct user list (added, read or write)
-                    # read the user string list
-                    if added_match:
-                        self.user_list = all_users_obj
-                    if read_match:
-                        self.user_read_list = all_users_obj
-                    if write_match:
-                        self.user_write_list = all_users_obj
-                
-
+            # split each string list of username
                 
         except IOError:
             pass
@@ -200,7 +184,7 @@ class Repository:
     
     # load a repository from an apache configuration file
     def load(self):
-        parser = ApacheConfigParser(self.name)
+        parser = RepoConfigParser(self.name)
         parser.load_users()
         # retrieve the list of users
         self.user_list = parser.user_list
@@ -261,6 +245,19 @@ class Repository:
         # close the files
         repo_config.close()
         template_repo_config.close()
+        
+        # save in the repo configuration file
+        config = ConfigParser.ConfigParser()
+        config.read(settings.REPOSITORIES_PATH + "/" + self.name + ".git" + "/config")
+        
+        # add a gitstack section
+        config.set('gitstack', 'read_users', str_user_read_list)
+        config.set('gitstack', 'write_users', str_user_write_list)
+        config.set('gitstack', 'added_users', str_user_list)
+        
+        f = open(settings.REPOSITORIES_PATH + "/" + self.name + ".git" + "/config", "w")
+        config.write(f)
+        f.close()
         
         # restart apache
         Apache.restart()
@@ -389,6 +386,13 @@ class Repository:
         config.read("config")
         config.add_section("http")
         config.set('http', 'receivepack', 'true')
+        
+        # add a gitstack section
+        config.add_section('gitstack')
+        config.set('gitstack', 'read_users', '')
+        config.set('gitstack', 'write_users', '')
+        config.set('gitstack', 'added_users', '')
+
         
         f = open("config", "w")
         config.write(f)
