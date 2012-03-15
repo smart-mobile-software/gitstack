@@ -69,7 +69,12 @@ $(document).ready(function(){
 						var j = 0;
 						textToInsert[j++] = '<tr class=' + this + '>';
 						textToInsert[j++] = '<td>' + this + '</td>\n';
-						textToInsert[j++] = '<td>Read/Write</td>\n';
+						// if user is everyone
+						if(this == 'everyone')
+							// read only permissions
+							textToInsert[j++] = '<td>Read</td>\n';
+						else
+							textToInsert[j++] = '<td>Read/Write</td>\n';
 						/*
 						if(permissions['read'] === true)
 							textToInsert[j++] = '<td><input class="readRepoUser permissionsUser" type="checkbox" checked="checked" /></td>\n';

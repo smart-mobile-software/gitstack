@@ -1,4 +1,4 @@
-import subprocess, ConfigParser, logging, shutil, re, os, ctypes
+import subprocess, ConfigParser, logging, shutil, os, ctypes
 from django.conf import settings
 
 logger = logging.getLogger('console')
@@ -148,6 +148,9 @@ class User:
             user = User(username)
             user_list_obj.append(user)
 
+        # add the iser everyone
+        everyone = User("everyone")
+        user_list_obj.append(everyone)
         return user_list_obj
         
         
@@ -200,7 +203,14 @@ class Repository:
             os.remove(config_file_path)
         
         repo_config = open(config_file_path,"a")
-        template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template.conf',"r")
+        
+        # check if it is a repository has anonymous read or write
+        everyone = User("everyone")
+        if everyone in self.user_read_list:
+            template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template_anonymous_read.conf',"r")
+        else:
+            template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template.conf',"r")
+
         # create a list of users
         str_user_read_list = ''
         str_user_write_list = ''
@@ -224,15 +234,9 @@ class Repository:
             line = line.replace("READ_USER_LIST",str_user_read_list)
             line = line.replace("WRITE_USER_LIST",str_user_write_list)
             
-            if everyone in self.user_read_list:
-                line = line.replace("READ_PERMISSIONS","Allow from All")
-            else:
-                line = line.replace("READ_PERMISSIONS","Require user " + str_user_read_list)
+            line = line.replace("READ_PERMISSIONS","Require user " + str_user_read_list)
             
-            if everyone in self.user_write_list:
-                line = line.replace("WRITE_PERMISSIONS","Allow from All")
-            else:
-                line = line.replace("WRITE_PERMISSIONS","Require user " + str_user_write_list)
+            line = line.replace("WRITE_PERMISSIONS","Require user " + str_user_write_list)
             
 
             # replace repository name
@@ -275,6 +279,7 @@ class Repository:
     def retrieve_all_users(self):
         # add the read and the write users
         all_users = self.user_read_list + self.user_write_list
+        
         # remove the duplicates
         all_users = list(set(all_users))
 
