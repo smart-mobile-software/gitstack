@@ -467,7 +467,12 @@ class Repository:
         config.write(f)
         f.close()
         
+        # add other sections to the repo config
         self.create_gitstack_section()
+        
+        # create the apache config file
+        self.save()
+        
         
         # remove the old directory
         shutil.rmtree(repo_dir, onerror=self.remove_readonly)    
