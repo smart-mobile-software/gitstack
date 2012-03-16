@@ -1,4 +1,4 @@
-import subprocess, ConfigParser, logging, shutil, os, ctypes
+import subprocess, ConfigParser, logging, shutil, os, ctypes, stat
 from django.conf import settings
 
 logger = logging.getLogger('console')
@@ -55,6 +55,24 @@ class RepoConfigParser:
             pass
             #raise Exception("Could not load the configuration file")    
     
+    # remove config file tabulation (make it compatible to python)
+    def remove_tabs(self):
+        # open source and destination
+        repo_dir = settings.REPOSITORIES_PATH + "/" + self.repo_name + ".git/"
+        new_config_file = open(repo_dir + "output","a") 
+        old_config_file = open(repo_dir + "config","r")
+        # for each line remove the tabular
+        for line in old_config_file:
+            line = line.replace("\t","")
+            new_config_file.write(line)
+        # close files
+        new_config_file.close()
+        old_config_file.close()
+        # replace old config by new config
+        os.remove(repo_dir + "config")
+        os.rename(repo_dir + "output", repo_dir + "config")
+        # change to another directory
+        os.chdir(settings.INSTALL_DIR)
     
     
 class User:
@@ -82,7 +100,7 @@ class User:
         if self in User.retrieve_all():
             raise Exception("User already exist")
         # if there are no users, create a file
-        if len(User.retrieve_all()) == 0:
+        if len(User.retrieve_all()) == 1:
             passord_file = open(settings.INSTALL_DIR + '/data/passwdfile', 'w')
             passord_file.write('')
             passord_file.close()
@@ -169,6 +187,13 @@ class Repository:
         self.user_read_list = []
         # users with write permission
         self.user_write_list = []
+        # bared repository (false if not imported in GitStack)
+        # check if the repo is bared or not
+        if os.path.isdir(settings.REPOSITORIES_PATH + "/" + self.name + ".git"):
+            self.bare = True
+        else:
+            self.bare = False
+            
         # Check that a folder for the repositories configuration files exist
         config_folder_path = settings.INSTALL_DIR + '/apache/conf/gitstack/repositories'
         if not os.path.exists(config_folder_path):
@@ -272,7 +297,18 @@ class Repository:
         str_repository_list = os.listdir(settings.REPOSITORIES_PATH)
         repository_list = []
         for str_repository in str_repository_list:
-            repository_list.append(Repository(str_repository.replace('.git', '')))
+            # if the repository does not contains a .git at the end, mark it as converted=false
+            bare = True
+            if str_repository[-4:] == '.git':
+                bare = True
+            else:
+                bare = False
+                
+            # instantiate the repository
+            repo = Repository(str_repository.replace('.git', ''))
+            repo.bare = bare
+            repository_list.append(repo)
+            
         return repository_list
     
     # retrieve all the users of the repository
@@ -348,7 +384,7 @@ class Repository:
             fullname = self.name + '.git'
             # change directory to anywhere
             os.chdir(settings.INSTALL_DIR)
-            shutil.rmtree(settings.REPOSITORIES_PATH + '/' + fullname)
+            shutil.rmtree(settings.REPOSITORIES_PATH + '/' + fullname, onerror=self.remove_readonly)
             
             # remove the configuration file if exist
             try:
@@ -372,23 +408,26 @@ class Repository:
         
         # change directory to the git project
         os.chdir(settings.REPOSITORIES_PATH + "/" + self.name + ".git")
-        # open source and destination
-        new_config_file = open("output","a") 
-        old_config_file = open("config","r")
-        # for each line remove the tabular
-        for line in old_config_file:
-            line = line.replace("\t","")
-            new_config_file.write(line)
-        # close files
-        new_config_file.close()
-        old_config_file.close()
-        # replace old config by new config
-        os.remove("config")
-        os.rename("output", "config")
         
+        # remove whitespaces and tab in config file
+        config_parser = RepoConfigParser(self.name)
+        config_parser.remove_tabs()
+        self.create_gitstack_section()
+        
+        
+        # change to another directory
+        os.chdir(settings.INSTALL_DIR)
+        
+        
+        # Create an apache config file for the repository
+        self.save()
+    
+    # create the gitstack section in the repo config file
+    def create_gitstack_section(self):
         # add retrieve_all the rights to anonymous users
+        config_path = settings.REPOSITORIES_PATH + "/" + self.name + ".git/config"
         config = ConfigParser.ConfigParser()
-        config.read("config")
+        config.read(config_path)
         config.add_section("http")
         config.set('http', 'receivepack', 'true')
         
@@ -399,15 +438,45 @@ class Repository:
         config.set('gitstack', 'addedusers', '')
 
         
-        f = open("config", "w")
+        f = open(config_path, "w")
         config.write(f)
         f.close()
         
-        # change to another directory
-        os.chdir(settings.INSTALL_DIR)
+    # convert a repository to a bare repository
+    def convert_to_bare(self):
+        # Create a new directory for the repo with a correct name (.git at the end)
+        repo_dir = settings.REPOSITORIES_PATH + "/" + self.name
+        # os.makedirs(repo_dir + '.git')
+        # Copy the .git direcotry of the old repo to the new repo
+        shutil.copytree(repo_dir + '/.git', repo_dir + '.git')
+        # remove all the whitespaces in the config file
+        repo_config_parser = RepoConfigParser(self.name)
+        repo_config_parser.remove_tabs()
+        # Add sections options
+        # bare = true
+        # shared = 1
+        # Load the configuration file
+        config = ConfigParser.ConfigParser()
+        config.read(repo_dir + '.git/config')
+        config.set('core', 'bare', 'true')
+        config.set('core', 'shared', '1')
         
+
         
-        # Create an apache config file for the repository
-        self.save()
+        f = open(repo_dir + '.git/config', "w")
+        config.write(f)
+        f.close()
         
+        self.create_gitstack_section()
+        
+        # remove the old directory
+        shutil.rmtree(repo_dir, onerror=self.remove_readonly)    
      
+    # remove a folder which contains read only files    
+    def remove_readonly(self, fn, path, excinfo):
+        if fn is os.rmdir:
+            os.chmod(path, stat.S_IWRITE)
+            os.rmdir(path)
+        elif fn is os.remove:
+            os.chmod(path, stat.S_IWRITE)
+            os.remove(path)

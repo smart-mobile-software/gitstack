@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.conf import settings
 
-import json, re, os
+import json, re, os, jsonpickle #@UnresolvedImport
 
 # user rest api
 @csrf_exempt
@@ -122,23 +122,43 @@ def rest_repository(request):
             # change to the repository directory
             repositories = Repository.retrieve_all()
             # remove the .git at the end
+            
             repositories_name = map(lambda foo: foo.__unicode__(), repositories)
             json_reply = json.dumps(repositories_name)
+            json_reply = jsonpickle.encode(repositories, unpicklable = False)
             return HttpResponse(json_reply)
         except WindowsError as e:
             return HttpResponseServerError(e.strerror)
         
 
-# delete a repository
+# delete or update a repository
 def rest_repo_action(request, repo_name):
-    try:
-        if request.method == 'DELETE':
-            repo = Repository(repo_name)
-            # delete the repo
-            repo.delete()
-            return HttpResponse(repo.name + " has been deleted")
-    except Exception as e:
-        return HttpResponseServerError(e)
+    #try:
+    if request.method == 'DELETE':
+        repo = Repository(repo_name)
+        # delete the repo
+        repo.delete()
+        return HttpResponse(repo.name + " has been deleted")
+    if request.method == 'PUT':
+        repo = Repository(repo_name)
+        # retrieve data sent by the client
+        raw_data = json.loads(request.raw_post_data)
+        # retrieve the bare property
+        bare = raw_data['bare']
+        # if the repository needs to be imported
+        
+        if repo.bare == False and bare == True:
+            # convert the repository
+            repo.convert_to_bare()
+            
+            return HttpResponse("The repository was successfully imported.")
+    
+        return HttpResponseServerError("The repository was not imported successfully.")
+    #except Exception as e:
+    #    return HttpResponseServerError(e)
+    
+    
+    
 
 # Add/Remove users on a repository
 @csrf_exempt

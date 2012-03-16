@@ -1,7 +1,7 @@
 !include "MUI2.nsh"
 !include "EnvVarUpdate.nsh"
 Name "GitStack"
-!define VERSION "1.2"
+!define VERSION "1.3"
 OutFile "GitStack ${VERSION}.exe"
 #InstallDir "$PROGRAMFILES\GitStack"
 InstallDir "C:\GitStack"

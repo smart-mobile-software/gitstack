@@ -16,13 +16,18 @@ $(document).ready(function(){
 			var j = 0
 			var textToInsert = [];
 			for(i; i < repoList.length; i++){
-				textToInsert[j++] = '<tr class=' + repoList[i] + '>';
-				textToInsert[j++] = '<td>' + repoList[i] + '</td>\n';
-				textToInsert[j++] = '<td>git clone http://localhost/' + repoList[i] + '.git</td>\n';
+				textToInsert[j++] = '<tr class=' + repoList[i].name + '>';
+				textToInsert[j++] = '<td>' + repoList[i].name + '</td>\n';
+				textToInsert[j++] = '<td>git clone http://localhost/' + repoList[i].name + '.git</td>\n';
 				textToInsert[j++] = '<td><!-- Icons -->';
-				textToInsert[j++] = '<a href="/web/index.php?p=' + repoList[i] + '.git&a=summary" title="Browse"><img src="/static/images/icons/magnifier.png" alt="Browse" /></a>';
-				textToInsert[j++] = '<a href="/gitstack/repository/' + repoList[i] + '/user/" class="editUsers" title="Users"><img src="/static/images/icons/users.png" alt="Users" /></a>';
-				textToInsert[j++] = '<a class="deleteRepo" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a>';
+				// for normal (bared) repo
+				if(repoList[i].bare == true){
+					textToInsert[j++] = '<a href="/web/index.php?p=' + repoList[i].name + '.git&a=summary" title="Browse"><img src="/static/images/icons/magnifier.png" alt="Browse" /></a>';
+					textToInsert[j++] = '<a href="/gitstack/repository/' + repoList[i].name + '/user/" class="editUsers" title="Users"><img src="/static/images/icons/users.png" alt="Users" /></a>';
+					textToInsert[j++] = '<a class="deleteRepo" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a>';
+				} else {
+					textToInsert[j++] = '<a href="#" class="importRepo" title="Import to GitStack"><img src="/static/images/icons/arrow_in.png" alt="Import to GitStack" /></a>';
+				}
 				textToInsert[j++] = '</td>';
 				textToInsert[j++] = '</tr>\n';			
 			}
@@ -106,6 +111,57 @@ $(document).ready(function(){
 									showMessage("error", error.responseText);
 								}
 							});
+							$( this ).dialog( "close" );
+						},
+						// Abord function
+						Cancel: function() {
+							$( this ).dialog( "close" );
+						}
+					}
+				});
+				
+			$dialog.dialog('open');
+			// prevent the default action, e.g., following a link
+			return false;
+			
+			
+		});
+		
+		// Delete a specified repo
+		$(".importRepo").click(function(event){
+			var reponame = $(this).closest("tr").attr("class");
+			// delete the repo
+			// configure confirm delete dialog
+			var $dialog = $('<div></div>')
+				.html('<br />Would you like to import ' + reponame + ' to GitStack ?')
+				.dialog({
+					autoOpen: false,
+					title: 'Import ' + reponame,
+					modal: true,
+					height:140,
+					buttons: {
+						// delete function
+						Import: function() {
+							// perform the request to delete the repo
+							data = '{"bare": true}';
+							
+							
+							$.ajax({
+								url: '/rest/repository/' + reponame + '/',
+								type: 'PUT',
+								contentType: 'application/json',
+								data: data,
+								success: function(data) {
+									// repo successfully delete
+									showMessage("success", data);
+									refreshRepoList();
+								},
+								error: function(error) {
+									showMessage("error", error.responseText);
+								}
+							});
+							
+							
 							$( this ).dialog( "close" );
 						},
 						// Abord function

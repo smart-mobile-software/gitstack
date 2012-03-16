@@ -54,14 +54,14 @@ class SimpleTest(TestCase):
     def test_repo_create(self):
         self.assertEqual(self.c.post('/rest/repository/', { 'name' : 'repo4' }).status_code, 200) 
         response = self.c.get('/rest/repository/')
-        self.assertEqual(response.content, '["repo1", "repo2", "repo3", "repo4"]')
+        self.assertEqual(response.content, '[{"user_read_list": [], "user_write_list": [], "bare": true, "name": "repo1", "user_list": []}, {"user_read_list": [], "user_write_list": [], "bare": true, "name": "repo2", "user_list": []}, {"user_read_list": [], "user_write_list": [], "bare": true, "name": "repo3", "user_list": []}, {"user_read_list": [], "user_write_list": [], "bare": true, "name": "repo4", "user_list": []}]')
                 
 
     # retrieve repositories
     def test_repo_retrieve(self):
         response = self.c.get('/rest/repository/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '["repo1", "repo2", "repo3"]')
+        self.assertEqual(response.content, '[{"user_read_list": [], "user_write_list": [], "bare": true, "name": "repo1", "user_list": []}, {"user_read_list": [], "user_write_list": [], "bare": true, "name": "repo2", "user_list": []}, {"user_read_list": [], "user_write_list": [], "bare": true, "name": "repo3", "user_list": []}]')
         
     
     # delete a repository
@@ -69,7 +69,7 @@ class SimpleTest(TestCase):
         response = self.c.delete('/rest/repository/repo3/')
         self.assertEqual(response.status_code, 200)
         response = self.c.get('/rest/repository/')
-        self.assertEqual(response.content, '["repo1", "repo2"]')
+        self.assertEqual(response.content, '[{"user_read_list": [], "user_write_list": [], "bare": true, "name": "repo1", "user_list": []}, {"user_read_list": [], "user_write_list": [], "bare": true, "name": "repo2", "user_list": []}]')
         
     ######################
     # Users 
