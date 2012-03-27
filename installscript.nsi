@@ -71,23 +71,20 @@ Section "GitStack" sectionGitStack
 	File /r "php\*.*"
 	SetOutPath "$INSTDIR\gitphp"
 	File /r "gitphp\*.*"
-
+	SetOutPath "$INSTDIR\python"
+	File /r "python\*.*"
 	
 	SetOutPath "$TEMP\gitstack"
 	File /r "installation\*.*"
 	
 	WriteUninstaller "uninstall.exe"
 
-	# Install python
-	ExecWait '"$TEMP\gitstack\installpython.bat" $INSTDIR'
-	# Remove python start menu
-	SetShellVarContext all
-	RMDir /r "$SMPROGRAMS\Python 2.7"
 	
 	# Register python path
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\python" ; Append  
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\python\Scripts" ; Append  
-	ExecWait '"$TEMP\gitstack\djangoinstall.bat" "$INSTDIR" "$TEMP"' $0
+	${EnvVarUpdate} $0 "PYTHONHOME" "A" "HKLM" "$INSTDIR\python" ; Append  
+	${EnvVarUpdate} $0 "PYTHONPATH" "A" "HKLM" "$INSTDIR\python\lib" ; Append  
 	
 	# Install apache 
 	# remove prevous apache config file (to remove in GitStack 1.3)
@@ -95,6 +92,7 @@ Section "GitStack" sectionGitStack
 	ExecWait '"msiexec" /i $TEMP\gitstack\httpd.msi /passive ALLUSERS=1 SERVERADMIN=admin@localhost SERVERNAME=localhost SERVERDOMAIN=localhost SERVERPORT=80 INSTALLDIR="$INSTDIR\apache" SERVICEINTERNALNAME=GitStack SERVICENAME=GitStack INSTALLLEVEL=1'
 	# Apache config
 	# Remove apache start menu
+	SetShellVarContext all
 	RMDir /r "$SMPROGRAMS\Apache HTTP Server 2.2"
 	
 
@@ -115,7 +113,8 @@ Section "GitStack" sectionGitStack
 	
 	# Add a configuration directory to apache
 	CreateDirectory "$INSTDIR\apache\conf\gitstack"
-	
+	CreateDirectory "$INSTDIR\apache\conf\gitstack\repositories"
+
 	# Create a directory for the repositories
 	CreateDirectory "$INSTDIR\repositories"
 	
@@ -187,8 +186,6 @@ Section "Uninstall"
 	# remove the firewall rule
 	ExecWait "netsh advfirewall firewall delete rule name=GitStack"
 	
-	# Uninstall python
-	ExecWait '"wmic" product where name="Python 2.7.2" call uninstall'
 	# Remove GitStack installation path
 	RMDir /r "$INSTDIR\app"
 	RMDir /r "$INSTDIR\git"
