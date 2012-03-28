@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<!DOCTYPE modulesynopsis SYSTEM "../style/modulesynopsis.dtd">
+<?xml-stylesheet type="text/xsl" href="../style/manual.en.xsl"?>
+<!-- $LastChangedRevision: 1021735 $ -->
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<modulesynopsis metafile="event.xml.meta">
+<name>event</name>
+<description>An experimental variant of the standard <module>worker</module>
+MPM</description>
+<status>MPM</status>
+<sourcefile>event.c</sourcefile>
+<identifier>mpm_event_module</identifier>
+
+<summary>
+    <note type="warning"><title>Warning</title>
+      <p>This MPM is experimental, so it may or may not work as
+      expected.</p> 
+    </note>
+
+    <p>The <module>event</module> Multi-Processing Module (MPM) is
+    designed to allow more requests to be served simultaneously by
+    passing off some processing work to supporting threads, freeing up
+    the main threads to work on new requests.  It is based on the
+    <module>worker</module> MPM, which implements a hybrid
+    multi-process multi-threaded server.  Run-time configuration
+    directives are identical to those provided by
+    <module>worker</module>.</p>
+
+    <p>To use the <module>event</module> MPM, add
+      <code>--with-mpm=event</code> to the <program>configure</program>
+      script's arguments when building the <program>httpd</program>.</p>
+
+</summary>
+
+<seealso><a href="worker.html">The worker MPM</a></seealso>
+
+<section id="how-it-works"><title>How it Works</title>
+    <p>This MPM tries to fix the 'keep alive problem' in HTTP. After a client
+    completes the first request, the client can keep the connection
+    open, and send further requests using the same socket. This can
+    save signifigant overhead in creating TCP connections. However,
+    Apache traditionally keeps an entire child process/thread waiting
+    for data from the client, which brings its own disadvantages. To
+    solve this problem, this MPM uses a dedicated thread to handle both
+    the Listening sockets, and all sockets that are in a Keep Alive
+    state.</p>
+
+    <p>The MPM assumes that the underlying <code>apr_pollset</code>
+    implementation is reasonably threadsafe. This enables the MPM to
+    avoid excessive high level locking, or having to wake up the listener
+    thread in order to send it a keep-alive socket. This is currently
+    only compatible with KQueue and EPoll.</p>
+
+</section>
+<section id="requirements"><title>Requirements</title>
+    <p>This MPM depends on <glossary>APR</glossary>'s atomic
+    compare-and-swap operations for thread synchronization. If you are
+    compiling for an x86 target and you don't need to support 386s, or
+    you are compiling for a SPARC and you don't need to run on
+    pre-UltraSPARC chips, add
+    <code>--enable-nonportable-atomics=yes</code> to the
+    <program>configure</program> script's arguments. This will cause
+    APR to implement atomic operations using efficient opcodes not
+    available in older CPUs.</p>
+
+    <p>This MPM does not perform well on older platforms which lack good
+    threading, but the requirement for EPoll or KQueue makes this
+    moot.</p>
+
+    <ul>
+    
+      <li>To use this MPM on FreeBSD, FreeBSD 5.3 or higher is recommended.
+      However, it is possible to run this MPM on FreeBSD 5.2.1, if you
+      use <code>libkse</code> (see <code>man libmap.conf</code>).</li>
+
+      <li>For NetBSD, at least version 2.0 is recommended.</li>
+
+      <li>For Linux, a 2.6 kernel is recommended. It is also necessary to
+      ensure that your version of <code>glibc</code> has been compiled
+      with support for EPoll.</li>
+
+    </ul>
+</section>
+
+<directivesynopsis location="mpm_common"><name>AcceptMutex</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>CoreDumpDirectory</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>EnableExceptionHook</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>Group</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>Listen</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>ListenBacklog</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>SendBufferSize</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>LockFile</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>MaxClients</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>MaxMemFree</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>MaxRequestsPerChild</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>MaxSpareThreads</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>MinSpareThreads</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>PidFile</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>ScoreBoardFile</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>ServerLimit</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>StartServers</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>ThreadLimit</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>ThreadsPerChild</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>ThreadStackSize</name>
+</directivesynopsis>
+<directivesynopsis location="mpm_common"><name>User</name>
+</directivesynopsis>
+
+</modulesynopsis>

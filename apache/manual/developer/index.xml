@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE manualpage SYSTEM "../style/manualpage.dtd">
+<?xml-stylesheet type="text/xsl" href="../style/manual.en.xsl"?>
+<!-- $LastChangedRevision: 1201033 $ -->
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<manualpage metafile="index.xml.meta">
+<parentdocument href="../" />
+
+<title>Developer Documentation for Apache 2.x</title>
+
+<summary>
+    <note type="warning"><title>Warning</title>
+    <p>Many of the documents listed here are in need of update.
+    They are in different stages of progress.
+    Please be patient, and point out any discrepancies or
+    errors on the developer/ pages directly to the
+    <a href="http://httpd.apache.org/lists.html#http-dev"
+    >dev@httpd.apache.org</a> mailing list.</p>
+    </note>
+</summary>
+
+<section id="topics"><title>Topics</title>
+    <ul>
+      <li><a href="API.html">Apache 1.3 API Notes</a></li>
+      <li><a href="hooks.html">Apache 2.0 Hook Functions</a></li>
+      <li><a href="request.html">Request Processing in Apache 2.0</a></li>
+      <li><a href="filters.html">How filters work in Apache 2.0</a></li>
+      <li><a href="modules.html">Converting Modules from Apache 1.3 to Apache 2.0</a></li>
+      <li><a href="documenting.html">Documenting Apache 2.0</a></li>
+      <li><a href="thread_safety.html">Apache 2.x Thread Safety Issues</a></li>
+    </ul>
+</section>
+
+<section id="external"><title>External Resources</title>
+    <ul>
+
+      <li>Developer articles at <a href="http://www.apachetutor.org/">apachetutor</a> include:
+      <ul>
+        <li><a href="http://www.apachetutor.org/dev/request">Request Processing in Apache</a></li>
+        <li><a href="http://www.apachetutor.org/dev/config">Configuration for Modules</a></li>
+        <li><a href="http://www.apachetutor.org/dev/pools">Resource Management in Apache</a></li>
+        <li><a href="http://www.apachetutor.org/dev/reslist">Connection Pooling in Apache</a></li>
+        <li><a href="http://www.apachetutor.org/dev/brigades">Introduction to Buckets and Brigades</a></li>
+      </ul></li>
+    </ul>
+</section>
+</manualpage>
+
