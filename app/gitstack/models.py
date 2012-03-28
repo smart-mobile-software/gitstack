@@ -276,8 +276,15 @@ class Repository:
         template_repo_config.close()
         
         # save in the repo configuration file
+        # if has not gitstack section
+        if not self.has_gitstack_section():
+            # create one
+            self.create_gitstack_section()
+            logger.debug('gitstack section created')
+            
         config = ConfigParser.ConfigParser()
         config.read(settings.REPOSITORIES_PATH + "/" + self.name + ".git" + "/config")
+        
         
         # add a gitstack section
         config.set('gitstack', 'readusers', str_user_read_list)
@@ -428,19 +435,28 @@ class Repository:
         config_path = settings.REPOSITORIES_PATH + "/" + self.name + ".git/config"
         config = ConfigParser.ConfigParser()
         config.read(config_path)
-        config.add_section("http")
-        config.set('http', 'receivepack', 'true')
+        if not config.has_section('http'):
+            config.add_section('http')
+            config.set('http', 'receivepack', 'true')
         
         # add a gitstack section
-        config.add_section('gitstack')
-        config.set('gitstack', 'readusers', '')
-        config.set('gitstack', 'writeusers', '')
-        config.set('gitstack', 'addedusers', '')
+        if not config.has_section('gitstack'):
+            logger.debug('creates the section')
+            config.add_section('gitstack')
+            config.set('gitstack', 'readusers', '')
+            config.set('gitstack', 'writeusers', '')
+            config.set('gitstack', 'addedusers', '')
 
-        
         f = open(config_path, "w")
         config.write(f)
         f.close()
+        
+    # check if the repo has a gitstack section in the configuration file
+    def has_gitstack_section(self):
+        config_path = settings.REPOSITORIES_PATH + "/" + self.name + ".git/config"
+        config = ConfigParser.ConfigParser()
+        config.read(config_path)
+        return config.has_section('gitstack')
         
     # convert a repository to a bare repository
     def convert_to_bare(self):

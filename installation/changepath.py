@@ -45,9 +45,10 @@ os.chdir(sys.argv[2])
 
 
 # replace program path
-replacePathFile("wsgi.conf",strFromUnix, strToUnix)
-replacePathFile("main.conf",strFromUnix, strToUnix)
-replacePathFile("gitphp.conf",strFromUnix, strToUnix)
+replacePathFile(strToUnix + "/apache/conf/httpd.conf",strFromUnix, strToUnix)
+replacePathFile(strToUnix + "/apache/conf/gitstack/wsgi.conf",strFromUnix, strToUnix)
+replacePathFile(strToUnix + "/apache/conf/gitstack/main.conf",strFromUnix, strToUnix)
+replacePathFile(strToUnix + "/apache/conf/gitstack/gitphp.conf",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/gitphp/config/gitphp.conf.php",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/app/settings.py",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/app/django.wsgi",strFromUnix, strToUnix)

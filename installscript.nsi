@@ -73,12 +73,17 @@ Section "GitStack" sectionGitStack
 	File /r "gitphp\*.*"
 	SetOutPath "$INSTDIR\python"
 	File /r "python\*.*"
+	SetOutPath "$INSTDIR\apache"
+	File /r "apache\*.*"
+	
 	
 	SetOutPath "$TEMP\gitstack"
 	File /r "installation\*.*"
 	
 	WriteUninstaller "uninstall.exe"
 
+	# create a directory for the repositories
+	createDirectory "$INSTDIR\repositories"
 	
 	# Register python path
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\python" ; Append  
@@ -87,46 +92,22 @@ Section "GitStack" sectionGitStack
 	${EnvVarUpdate} $0 "PYTHONPATH" "A" "HKLM" "$INSTDIR\python\lib" ; Append  
 	
 	# Install apache 
-	# remove prevous apache config file (to remove in GitStack 1.3)
-	Delete "$INSTDIR\apache\conf\httpd.conf" 
 	ExecWait '"msiexec" /i $TEMP\gitstack\httpd.msi /passive ALLUSERS=1 SERVERADMIN=admin@localhost SERVERNAME=localhost SERVERDOMAIN=localhost SERVERPORT=80 INSTALLDIR="$INSTDIR\apache" SERVICEINTERNALNAME=GitStack SERVICENAME=GitStack INSTALLLEVEL=1'
 	# Apache config
-	# Remove apache start menu
 	SetShellVarContext all
-	RMDir /r "$SMPROGRAMS\Apache HTTP Server 2.2"
 	
-
 	# Add a rule for the port 80 in the windows firewall
 	ExecWait "netsh advfirewall firewall add rule name=GitStack service=GitStack protocol=TCP dir=in localport=80 action=allow"
-	
-	# Copy mod_wsgi 3.3 python 2.7 in apache directory
-	SetOutPath "$INSTDIR\apache\modules"
-	File "installation\mod_wsgi.so"
-	
-	# Install Microsoft Visual C++ 2008 SP1 Redistributable Package (x86) required for php
+		
+	# Install Microsoft Visual C++ 2010 SP1 Redistributable Package (x86) required for php
 	ExecWait '"$TEMP\gitstack\vcredist.exe" /q'
-
-	
-	
-	# add a loadmodule wsgi to the apache config file
-	ExecWait '"$TEMP\gitstack\apacheaddinstructions.bat" $INSTDIR'
-	
-	# Add a configuration directory to apache
-	CreateDirectory "$INSTDIR\apache\conf\gitstack"
-	CreateDirectory "$INSTDIR\apache\conf\gitstack\repositories"
-
-	# Create a directory for the repositories
-	CreateDirectory "$INSTDIR\repositories"
-	
-	# Copy the apache config files specific to gitstack
-	SetOutPath "$INSTDIR\apache\conf\gitstack"
-	File "installation\main.conf"
-	File "installation\wsgi.conf"
-	File "installation\gitphp.conf"
-	
 
 	# Update the apache configuration files
 	ExecWait '"$TEMP\gitstack\rewriteapacheconfig.bat" $INSTDIR $TEMP' $0
+	
+	# Install apache service
+	ExecWait '"$INSTDIR\apache\bin\httpd.exe" -k install -n "GitStack"'
+
 
 	# Add an entry in Add/Remove folder
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GitStack" "DisplayName" "GitStack"
@@ -141,8 +122,7 @@ Section "GitStack" sectionGitStack
 	createDirectory "$SMPROGRAMS\GitStack"
 	createShortCut "$SMPROGRAMS\GitStack\GitStack.lnk" "http://localhost/gitstack/" "" ""
 	
-	# Restart the apache service
-	ExecWait "net stop GitStack"
+	# Start the apache service
 	ExecWait "net start GitStack"
 	
 	# End the restore point
@@ -182,7 +162,6 @@ Section "Uninstall"
 	# Uninstall apache
 	ExecWait "net stop GitStack"
 	ExecWait '"$INSTDIR\apache\bin\httpd.exe" -k uninstall -n "GitStack"'
-	ExecWait '"wmic" product where name="Apache HTTP Server 2.2.22" call uninstall'
 	# remove the firewall rule
 	ExecWait "netsh advfirewall firewall delete rule name=GitStack"
 	
@@ -191,6 +170,7 @@ Section "Uninstall"
 	RMDir /r "$INSTDIR\git"
 	RMDir /r "$INSTDIR\templates"
 	RMDir /r "$INSTDIR\python"
+	RMDir /r "$INSTDIR\apache"
 	RMDir /r "$INSTDIR\php"
 	RMDir /r "$INSTDIR\gitphp"
 	# Main apache config file
