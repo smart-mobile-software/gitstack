@@ -280,7 +280,6 @@ class Repository:
         if not self.has_gitstack_section():
             # create one
             self.create_gitstack_section()
-            logger.debug('gitstack section created')
             
         config = ConfigParser.ConfigParser()
         config.read(settings.REPOSITORIES_PATH + "/" + self.name + ".git" + "/config")
@@ -441,7 +440,6 @@ class Repository:
         
         # add a gitstack section
         if not config.has_section('gitstack'):
-            logger.debug('creates the section')
             config.add_section('gitstack')
             config.set('gitstack', 'readusers', '')
             config.set('gitstack', 'writeusers', '')

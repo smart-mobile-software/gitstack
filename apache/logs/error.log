@@ -366,3 +366,9 @@ Parent: Received restart signal -- Restarting the server.
 [Wed Mar 28 07:03:48 2012] [notice] Child 2584: Child process is exiting
 [Wed Mar 28 07:03:48 2012] [notice] Child 1820: Starting thread to listen on port 80.
 [Wed Mar 28 07:03:48 2012] [notice] Child 1820: Starting thread to listen on port 80.
+[Wed Mar 28 07:08:47 2012] [notice] Parent: Received shutdown signal -- Shutting down the server.
+[Wed Mar 28 07:08:47 2012] [notice] Child 1820: Exit event signaled. Child process is ending.
+[Wed Mar 28 07:08:48 2012] [notice] Child 1820: Released the start mutex
+[Wed Mar 28 07:08:49 2012] [notice] Child 1820: All worker threads have exited.
+[Wed Mar 28 07:08:49 2012] [notice] Child 1820: Child process is exiting
+[Wed Mar 28 07:08:49 2012] [notice] Parent: Child process exited successfully.
