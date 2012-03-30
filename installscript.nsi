@@ -173,8 +173,7 @@ Section "Uninstall"
 	RMDir /r "$INSTDIR\apache"
 	RMDir /r "$INSTDIR\php"
 	RMDir /r "$INSTDIR\gitphp"
-	# Main apache config file
-	Delete "$INSTDIR\apache\conf\httpd.conf"
+
 	Delete "$INSTDIR\uninstall.exe"
 	
 	# Remove the added environment variables
