@@ -13,9 +13,8 @@ class Command(NoArgsCommand):
 
     def ipython(self):
         try:
-            from IPython.frontend.terminal.embed import TerminalInteractiveShell
-            shell = TerminalInteractiveShell()
-            shell.mainloop()
+            from IPython import embed
+            embed()
         except ImportError:
             # IPython < 0.11
             # Explicitly pass an empty list as arguments, because otherwise
@@ -44,7 +43,7 @@ class Command(NoArgsCommand):
         # XXX: (Temporary) workaround for ticket #1796: force early loading of all
         # models from installed apps.
         from django.db.models.loading import get_models
-        loaded_models = get_models()
+        get_models()
 
         use_plain = options.get('plain', False)
 
@@ -72,12 +71,12 @@ class Command(NoArgsCommand):
 
             # We want to honor both $PYTHONSTARTUP and .pythonrc.py, so follow system
             # conventions and get $PYTHONSTARTUP first then import user.
-            if not use_plain: 
-                pythonrc = os.environ.get("PYTHONSTARTUP") 
-                if pythonrc and os.path.isfile(pythonrc): 
-                    try: 
-                        execfile(pythonrc) 
-                    except NameError: 
+            if not use_plain:
+                pythonrc = os.environ.get("PYTHONSTARTUP")
+                if pythonrc and os.path.isfile(pythonrc):
+                    try:
+                        execfile(pythonrc)
+                    except NameError:
                         pass
                 # This will import .pythonrc.py as a side-effect
                 import user

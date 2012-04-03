@@ -1,11 +1,15 @@
-from django.test import TestCase
+from __future__ import absolute_import
+
+from datetime import date
 
 from django.contrib.gis.geos import GEOSGeometry, Point, MultiPoint
 from django.contrib.gis.db.models import Collect, Count, Extent, F, Union
 from django.contrib.gis.geometry.backend import Geometry
 from django.contrib.gis.tests.utils import mysql, oracle, no_mysql, no_oracle, no_spatialite
+from django.test import TestCase
 
-from models import City, Location, DirectoryEntry, Parcel, Book, Author, Article
+from .models import City, Location, DirectoryEntry, Parcel, Book, Author, Article
+
 
 class RelatedGeoModelTest(TestCase):
 
@@ -130,7 +134,7 @@ class RelatedGeoModelTest(TestCase):
 
         # Now creating a second Parcel where the borders are the same, just
         # in different coordinate systems.  The center points are also the
-        # the same (but in different coordinate systems), and this time they
+        # same (but in different coordinate systems), and this time they
         # actually correspond to the centroid of the border.
         c1 = b1.centroid
         c2 = c1.transform(2276, clone=True)
@@ -244,6 +248,13 @@ class RelatedGeoModelTest(TestCase):
         self.assertEqual(1, len(vqs))
         self.assertEqual(3, vqs[0]['num_books'])
 
+    def test13c_count(self):
+        "Testing `Count` aggregate with `.values()`.  See #15305."
+        qs = Location.objects.filter(id=5).annotate(num_cities=Count('city')).values('id', 'point', 'num_cities')
+        self.assertEqual(1, len(qs))
+        self.assertEqual(2, qs[0]['num_cities'])
+        self.assertTrue(isinstance(qs[0]['point'], GEOSGeometry))
+
     # TODO: The phantom model does appear on Oracle.
     @no_oracle
     def test13_select_related_null_fk(self):
@@ -280,5 +291,12 @@ class RelatedGeoModelTest(TestCase):
         # keyword.  The TypeError is swallowed if QuerySet is actually
         # evaluated as list generation swallows TypeError in CPython.
         sql = str(qs.query)
+
+    def test16_annotated_date_queryset(self):
+        "Ensure annotated date querysets work if spatial backend is used.  See #14648."
+        birth_years = [dt.year for dt in
+                       list(Author.objects.annotate(num_books=Count('books')).dates('dob', 'year'))]
+        birth_years.sort()
+        self.assertEqual([1950, 1974], birth_years)
 
     # TODO: Related tests for KML, GML, and distance lookups.
