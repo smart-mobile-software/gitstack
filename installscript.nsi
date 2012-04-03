@@ -59,7 +59,7 @@ Section "GitStack" sectionGitStack
 	NotInstalled:
 	
 	# Set restore point
-	SysRestore::StartRestorePoint "Installed GitStack"
+	SysRestore::StartRestorePoint "GitStack Installed"
 	# Copy files
 	SetOutPath "$INSTDIR\app"
 	File /r "app\*.*"
@@ -157,7 +157,7 @@ LangString DESC_sectionGit ${LANG_ENGLISH} "Install Git (msysgit). Unchecking th
  
 Section "Uninstall"
 	# Start restore point
-	SysRestore::StartUnRestorePoint "Uninstalled GitStack"
+	SysRestore::StartUnRestorePoint "GitStack Uninstalled"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GitStack"
 	# Uninstall apache
 	ExecWait "net stop GitStack"
