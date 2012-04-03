@@ -240,7 +240,7 @@ class Repository:
         str_user_read_list = ''
         str_user_write_list = ''
         str_user_list = ''
-
+        
         for u in self.user_read_list:
             str_user_read_list = str_user_read_list + u.username + ' '
         for u in self.user_write_list:

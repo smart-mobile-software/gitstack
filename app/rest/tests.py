@@ -161,14 +161,13 @@ class SimpleTest(TestCase):
     #
     # write permission
     #
-    '''    
     def test_repo_add_write_user(self):
         # the user1 has read rights by default
         self.assertEqual(self.c.post('/rest/repository/repo1/user/user1/').status_code, 200)
         # Check if the user1 has the read rights
         response = self.c.get('/rest/repository/repo1/user/user1/')
         permissions = json.loads(response.content)
-        self.assertEqual(permissions['write'], True)   '''
+        self.assertEqual(permissions['write'], True)
         
     # remove write permission
     def test_repo_remove_write_user(self):

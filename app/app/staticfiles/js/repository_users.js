@@ -73,21 +73,19 @@ $(document).ready(function(){
 						if(this == 'everyone')
 							// read only permissions
 							textToInsert[j++] = '<td>Read</td>\n';
-						else
-							textToInsert[j++] = '<td>Read/Write</td>\n';
-						/*
-						if(permissions['read'] === true)
-							textToInsert[j++] = '<td><input class="readRepoUser permissionsUser" type="checkbox" checked="checked" /></td>\n';
-						else
-							textToInsert[j++] = '<td><input class="readRepoUser permissionsUser" type="checkbox" /></td>\n';
-						*/
+						else {
+							if(permissions['read'] === true)
+								textToInsert[j++] = '<td><input class="readRepoUser permissionsUser" type="checkbox" checked="checked" /></td>\n';
+							else
+								textToInsert[j++] = '<td><input class="readRepoUser permissionsUser" type="checkbox" /></td>\n';
+							
+							
+							if(permissions['write'] === true)
+								textToInsert[j++] = '<td><input class="writeRepoUser permissionsUser" type="checkbox" checked="checked" /></td>\n';
+							else
+								textToInsert[j++] = '<td><input class="writeRepoUser permissionsUser" type="checkbox" /></td>\n';
+						}
 						
-						/*
-						if(permissions['write'] === true)
-							textToInsert[j++] = '<td><input class="writeRepoUser permissionsUser" type="checkbox" checked="checked" /></td>\n';
-						else
-							textToInsert[j++] = '<td><input class="writeRepoUser permissionsUser" type="checkbox" /></td>\n';
-						*/
 						textToInsert[j++] = '<td><!-- Icons -->';
 						textToInsert[j++] = '<a class="deleteRepoUser" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a>';
 						textToInsert[j++] = '</td>';
