@@ -87,18 +87,22 @@
 			<ul id="main-nav">  <!-- Accordion Menu -->
 				
 				<li>
-					<a href="/gitstack/" class="nav-top-item no-submenu"> <!-- Add the class "no-submenu" to menu items with no sub menu -->
+					<a href="/gitstack/" class="nav-top-item no-submenu {% block repositories_current %}{% endblock %}"> <!-- Add the class "no-submenu" to menu items with no sub menu -->
 						Repositories
 					</a>   
 					
 				</li>
 				<li>
-					<a href="/gitstack/users/" class="nav-top-item no-submenu"> <!-- Add the class "no-submenu" to menu items with no sub menu -->
-						Users
-					</a> 
+					<a href="#" class="nav-top-item {% block users_groups_current %}{% endblock %}"> <!-- Add the class "no-submenu" to menu items with no sub menu -->
+						Users & Groups
+					</a>
+					<ul style="display: block; ">
+						<li><a href="/gitstack/users/" class="{% block users_current %}{% endblock %}">Users</a></li>
+						<li><a href="/gitstack/groups/" class="{% block groups_current %}{% endblock %}">Groups</a></li>
+					</ul>					
 				</li>
 				<li>
-					<a href="/gitstack/settings/" class="nav-top-item no-submenu"> <!-- Add the class "no-submenu" to menu items with no sub menu -->
+					<a href="/gitstack/settings/" class="nav-top-item no-submenu {% block settings_current %}{% endblock %}"> <!-- Add the class "no-submenu" to menu items with no sub menu -->
 						Settings
 					</a> 
 				</li>

@@ -1,0 +1,15 @@
+The GitStack service is restarting.
+Starting the GitStack service
+The GitStack service is running.
+ mod_wsgi: Compiled for Python/2.7.
+[Wed Apr 04 05:08:55 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Wed Apr 04 05:08:55 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
+[Wed Apr 04 05:08:55 2012] [notice] Server built: Mar 19 2012 19:56:33
+[Wed Apr 04 05:08:55 2012] [notice] Parent: Created child process 4988
+[Wed Apr 04 05:08:55 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Wed Apr 04 05:08:55 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Wed Apr 04 05:08:55 2012] [notice] Child 4988: Child process is running
+[Wed Apr 04 05:08:55 2012] [notice] Child 4988: Acquired the start mutex.
+[Wed Apr 04 05:08:55 2012] [notice] Child 4988: Starting 64 worker threads.
+[Wed Apr 04 05:08:55 2012] [notice] Child 4988: Starting thread to listen on port 80.
+[Wed Apr 04 05:08:55 2012] [notice] Child 4988: Starting thread to listen on port 80.
