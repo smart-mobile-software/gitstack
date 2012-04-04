@@ -99,8 +99,11 @@ Section "GitStack" sectionGitStack
 	# Add a rule for the port 80 in the windows firewall
 	ExecWait "netsh advfirewall firewall add rule name=GitStack service=GitStack protocol=TCP dir=in localport=80 action=allow"
 		
+	# Install Microsoft Visual C++ 2008 SP1 Redistributable Package (x86) required for mod_wsgi
+	ExecWait '"$TEMP\gitstack\vcredist2008sp1.exe" /q'
 	# Install Microsoft Visual C++ 2010 SP1 Redistributable Package (x86) required for php
-	ExecWait '"$TEMP\gitstack\vcredist.exe" /q'
+	ExecWait '"$TEMP\gitstack\vcredist2010sp1.exe" /q'
+	
 
 	# Update the apache configuration files
 	ExecWait '"$TEMP\gitstack\rewriteapacheconfig.bat" $INSTDIR $TEMP' $0
