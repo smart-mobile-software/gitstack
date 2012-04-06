@@ -170,8 +170,136 @@ class User:
         everyone = User("everyone")
         user_list_obj.append(everyone)
         return user_list_obj
+
+# Group of users        
+class Group:
+    # contructor
+    def __init__(self, name):
+        # repo name
+        self.name = name
+        # member list
+        self.member_list = []
+        
+    def __unicode__(self):
+        return self.name      
+        
+    # representation in a list
+    def __repr__(self):
+        return self.__unicode__()
+    
+    # equality test  
+    def __eq__(self, other) : 
+        return self.name == other.name
+      
+    def __hash__(self) : 
+        return hash(self.name)
+    
+    # load member list
+    def load(self):
+        # check that a groupfile  exist 
+        if not os.path.isfile(settings.GROUP_FILE_PATH):
+            # create an empty group file
+            group_file = open(settings.GROUP_FILE_PATH, 'w')
+            group_file.write('')
+            group_file.close()
+        
+        # open the group file
+        group_file = open(settings.GROUP_FILE_PATH, 'r')
+        # for each line
+        for line in group_file:
+            # get the group name 
+            group_name, user_list_str = line.split(': ')
+            # if the group name is the same as the current group
+            if group_name == self.name:
+                # extract the users
+                # trim the list
+                user_list_str = user_list_str.strip()
+                # split the list of users
+                user_list_str = user_list_str.split(' ')
+                for str_user in user_list_str:
+                    # create the user
+                    user = User(str_user)
+                    # add the user to the group
+                    self.member_list.append(user)
+                    
+    # save the group
+    def save(self):
+        # read open the groupfile
+        group_file = open(settings.GROUP_FILE_PATH, 'r')
+        # write on the groupfilenew
+        group_file_new = open(settings.GROUP_FILE_PATH + 'new', 'w')
+        
+        # for each line of the groupfile
+        for line in group_file:
+            # get the group name
+            group_name = line.split(': ')[0]
+            # if it is the current group
+            if group_name == self.name:
+                # write current group info in the groupfilenew
+                group_file_new.write(self.name + ': ')
+                # for each member
+                for user in self.member_list:
+                    group_file_new.write(user.username + ' ')
+                group_file_new.write('\n')
+            # else
+            else:
+                # copy the line on the groupfilenew
+                group_file_new.write(line)
+        
+        # close both files
+        group_file.close()
+        group_file_new.close()
+        
+        # remove the groupfile
+        if os.path.isfile(settings.GROUP_FILE_PATH):
+            os.remove(settings.GROUP_FILE_PATH)
+        
+        # rename the groupfilenew to groupfile
+        os.rename(settings.GROUP_FILE_PATH + 'new', settings.GROUP_FILE_PATH)
+        pass
+    
+    # create a new group
+    def create(self):
+        # check if the group does not already exist
+        if self in Group.retrieve_all():
+            raise Exception("Group already exist")
+        
+        # add a new line with the group name to the file
+        group_file = open(settings.GROUP_FILE_PATH, 'a')
+        # end by a line break
+        group_file.write(self.name + ": \n")
+        group_file.close()
         
         
+    # add a user to the group
+    def add_user(self, user):
+        self.member_list.append(user)
+        
+    # remove a user from the group
+    def remove_user(self, user):
+        self.member_list.remove(user)
+        
+    @staticmethod    
+    def retrieve_all():
+        group_list_obj = []
+                 
+        # check if the file exist
+        if os.path.isfile(settings.GROUP_FILE_PATH):
+            # the file exist
+            # open group file
+            group_file = open(settings.GROUP_FILE_PATH,"r")
+            # read the groups names
+            # for each line
+            for line in group_file:
+                # get the group name 
+                group_name = line.split(': ')[0]
+                # create a group object
+                group = Group(group_name)
+                group_list_obj.append(group)
+                   
+            group_file.close()
+      
+        return group_list_obj
 
 class Repository:
     def __unicode__(self):
@@ -499,3 +627,5 @@ class Repository:
         elif fn is os.remove:
             os.chmod(path, stat.S_IWRITE)
             os.remove(path)
+            
+

@@ -161,5 +161,7 @@ LOGIN_URL = '/registration/login/'
 REPOSITORIES_PATH = 'C:/dev/gitstack/repositories'
 GIT_PATH = 'C:/dev/gitstack/git/bin/git.exe'
 INSTALL_DIR = 'C:/dev/gitstack'
+# location of the group file
+GROUP_FILE_PATH = INSTALL_DIR + '/data/groupfile'
 
 

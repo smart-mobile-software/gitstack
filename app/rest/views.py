@@ -38,6 +38,20 @@ def rest_user(request):
         
     except Exception as e:
         return HttpResponseServerError(e)
+    
+# group rest api
+@csrf_exempt
+def rest_group(request):
+    try:
+        # create a group
+        if request.method == 'POST':
+            # get the username/password from the request
+            name = request.POST['name']
+            return HttpResponse("Group " + name + " has been successfully created." )
+        # get retrieve_all the users
+        
+    except Exception as e:
+        return HttpResponseServerError(e)
 
 # web interface (gitweb) rest api
 @csrf_exempt

@@ -13,3 +13,180 @@ The GitStack service is running.
 [Wed Apr 04 05:08:55 2012] [notice] Child 4988: Starting 64 worker threads.
 [Wed Apr 04 05:08:55 2012] [notice] Child 4988: Starting thread to listen on port 80.
 [Wed Apr 04 05:08:55 2012] [notice] Child 4988: Starting thread to listen on port 80.
+[Fri Apr 06 05:05:47 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:05:47 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:01 2012] [notice] Parent: Received shutdown signal -- Shutting down the server.
+[Fri Apr 06 05:06:01 2012] [notice] Child 4988: Exit event signaled. Child process is ending.
+[Fri Apr 06 05:06:02 2012] [notice] Child 4988: Released the start mutex
+[Fri Apr 06 05:06:06 2012] [notice] Child 4988: All worker threads have exited.
+[Fri Apr 06 05:06:06 2012] [notice] Child 4988: Child process is exiting
+[Fri Apr 06 05:06:06 2012] [notice] Parent: Child process exited successfully.
+[Fri Apr 06 05:06:07 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:06:07 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:06:07 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
+[Fri Apr 06 05:06:07 2012] [notice] Server built: Mar 19 2012 19:56:33
+[Fri Apr 06 05:06:07 2012] [notice] Parent: Created child process 5928
+[Fri Apr 06 05:06:07 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:06:07 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:06:07 2012] [notice] Child 5928: Child process is running
+[Fri Apr 06 05:06:07 2012] [notice] Child 5928: Acquired the start mutex.
+[Fri Apr 06 05:06:07 2012] [notice] Child 5928: Starting 64 worker threads.
+[Fri Apr 06 05:06:07 2012] [notice] Child 5928: Starting thread to listen on port 80.
+[Fri Apr 06 05:06:07 2012] [notice] Child 5928: Starting thread to listen on port 80.
+[Fri Apr 06 05:06:10 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:10 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:11 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:11 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:12 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:12 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:12 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:12 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:12 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:12 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:17 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:17 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:06:42 2012] [notice] Parent: Received shutdown signal -- Shutting down the server.
+[Fri Apr 06 05:06:42 2012] [notice] Child 5928: Exit event signaled. Child process is ending.
+[Fri Apr 06 05:06:43 2012] [notice] Child 5928: Released the start mutex
+[Fri Apr 06 05:06:44 2012] [notice] Child 5928: All worker threads have exited.
+[Fri Apr 06 05:06:44 2012] [notice] Child 5928: Child process is exiting
+[Fri Apr 06 05:06:44 2012] [notice] Parent: Child process exited successfully.
+[Fri Apr 06 05:06:53 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:06:53 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:06:53 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
+[Fri Apr 06 05:06:53 2012] [notice] Server built: Mar 19 2012 19:56:33
+[Fri Apr 06 05:06:53 2012] [notice] Parent: Created child process 4236
+Apache server interrupted...
+arn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:06:53 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:06:53 2012] [notice] Child 4236: Child process is running
+[Fri Apr 06 05:06:53 2012] [notice] Child 4236: Acquired the start mutex.
+[Fri Apr 06 05:06:53 2012] [notice] Child 4236: Starting 64 worker threads.
+[Fri Apr 06 05:06:53 2012] [notice] Child 4236: Starting thread to listen on port 80.
+[Fri Apr 06 05:06:53 2012] [notice] Child 4236: Starting thread to listen on port 80.
+[Fri Apr 06 05:07:02 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:07:03 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:07:39 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:07:39 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:08:39 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:08:39 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:08:41 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:08:41 2012] [error] [client ::1] Target WSGI script not found or unable to stat: C:/dev/gitstack/app/django.wsgi
+[Fri Apr 06 05:08:43 2012] [notice] Parent: Received shutdown signal -- Shutting down the server.
+[Fri Apr 06 05:08:43 2012] [notice] Child 4236: Exit event signaled. Child process is ending.
+[Fri Apr 06 05:08:44 2012] [notice] Child 4236: Released the start mutex
+[Fri Apr 06 05:08:47 2012] [notice] Child 4236: All worker threads have exited.
+[Fri Apr 06 05:08:47 2012] [notice] Child 4236: Child process is exiting
+[Fri Apr 06 05:08:47 2012] [notice] Parent: Child process exited successfully.
+[Fri Apr 06 05:08:47 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:08:47 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:08:47 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
+[Fri Apr 06 05:08:47 2012] [notice] Server built: Mar 19 2012 19:56:33
+[Fri Apr 06 05:08:47 2012] [notice] Parent: Created child process 2796
+Apache server interrupted...
+arn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:08:47 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:08:47 2012] [notice] Child 2796: Child process is running
+[Fri Apr 06 05:08:47 2012] [notice] Child 2796: Acquired the start mutex.
+[Fri Apr 06 05:08:47 2012] [notice] Child 2796: Starting 64 worker threads.
+[Fri Apr 06 05:08:47 2012] [notice] Child 2796: Starting thread to listen on port 80.
+[Fri Apr 06 05:08:47 2012] [notice] Child 2796: Starting thread to listen on port 80.
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/js/jquery.min.js, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/js/simpla.jquery.configuration.js, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/js/facebox.js, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/js/jquery-ui.min.js, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/js/jquery.wysiwyg.js, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/images/logo.png, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:49 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/images/icons/cross_grey_small.png, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/css, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/js/jquery.min.js, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/js/jquery-ui.min.js, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/js/simpla.jquery.configuration.js, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/js/facebox.js, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/js/jquery.wysiwyg.js, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/images/logo.png, referer: http://localhost/gitstack/
+[Fri Apr 06 05:08:54 2012] [error] [client ::1] File does not exist: C:/dev/gitstack/app/staticfiles/images/icons/cross_grey_small.png, referer: http://localhost/gitstack/
+[Fri Apr 06 05:09:08 2012] [notice] Parent: Received shutdown signal -- Shutting down the server.
+[Fri Apr 06 05:09:08 2012] [notice] Child 2796: Exit event signaled. Child process is ending.
+[Fri Apr 06 05:09:09 2012] [notice] Child 2796: Released the start mutex
+[Fri Apr 06 05:09:10 2012] [notice] Child 2796: All worker threads have exited.
+[Fri Apr 06 05:09:10 2012] [notice] Child 2796: Child process is exiting
+[Fri Apr 06 05:09:10 2012] [notice] Parent: Child process exited successfully.
+[Fri Apr 06 05:09:11 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:09:11 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:09:11 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
+[Fri Apr 06 05:09:11 2012] [notice] Server built: Mar 19 2012 19:56:33
+[Fri Apr 06 05:09:11 2012] [notice] Parent: Created child process 4108
+[Fri Apr 06 05:09:11 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:09:11 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:09:11 2012] [notice] Child 4108: Child process is running
+[Fri Apr 06 05:09:11 2012] [notice] Child 4108: Acquired the start mutex.
+[Fri Apr 06 05:09:11 2012] [notice] Child 4108: Starting 64 worker threads.
+[Fri Apr 06 05:09:11 2012] [notice] Child 4108: Starting thread to listen on port 80.
+[Fri Apr 06 05:09:11 2012] [notice] Child 4108: Starting thread to listen on port 80.
+[Fri Apr 06 05:09:52 2012] [notice] Parent: Received restart signal -- Restarting the server.
+[Fri Apr 06 05:09:52 2012] [notice] Child 4108: Exit event signaled. Child process is ending.
+[Fri Apr 06 05:09:52 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:09:52 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:09:52 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
+[Fri Apr 06 05:09:52 2012] [notice] Server built: Mar 19 2012 19:56:33
+[Fri Apr 06 05:09:52 2012] [notice] Parent: Created child process 5924
+[Fri Apr 06 05:09:52 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:09:52 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:09:52 2012] [notice] Child 5924: Child process is running
+[Fri Apr 06 05:09:53 2012] [notice] Child 5924: Acquired the start mutex.
+[Fri Apr 06 05:09:53 2012] [notice] Child 5924: Starting 64 worker threads.
+[Fri Apr 06 05:09:53 2012] [notice] Child 4108: Released the start mutex
+[Fri Apr 06 05:09:54 2012] [notice] Child 5924: Starting thread to listen on port 80.
+[Fri Apr 06 05:09:54 2012] [notice] Child 5924: Starting thread to listen on port 80.
+[Fri Apr 06 05:10:00 2012] [notice] Child 4108: All worker threads have exited.
+[Fri Apr 06 05:10:00 2012] [notice] Child 4108: Child process is exiting
+[Fri Apr 06 05:10:26 2012] [notice] Parent: Received restart signal -- Restarting the server.
+[Fri Apr 06 05:10:26 2012] [notice] Child 5924: Exit event signaled. Child process is ending.
+[Fri Apr 06 05:10:26 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:10:26 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:10:26 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
+[Fri Apr 06 05:10:26 2012] [notice] Server built: Mar 19 2012 19:56:33
+[Fri Apr 06 05:10:26 2012] [notice] Parent: Created child process 4872
+[Fri Apr 06 05:10:26 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:10:26 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:10:26 2012] [notice] Child 4872: Child process is running
+[Fri Apr 06 05:10:27 2012] [notice] Child 4872: Acquired the start mutex.
+[Fri Apr 06 05:10:27 2012] [notice] Child 4872: Starting 64 worker threads.
+[Fri Apr 06 05:10:27 2012] [notice] Child 5924: Released the start mutex
+[Fri Apr 06 05:10:28 2012] [notice] Child 5924: All worker threads have exited.
+[Fri Apr 06 05:10:28 2012] [notice] Child 5924: Child process is exiting
+[Fri Apr 06 05:10:28 2012] [notice] Child 4872: Starting thread to listen on port 80.
+[Fri Apr 06 05:10:28 2012] [notice] Child 4872: Starting thread to listen on port 80.
+[Fri Apr 06 05:12:37 2012] [error] [client 127.0.0.1] user user1: authentication failure for "/repo1.git/info/refs": Password Mismatch
+[Fri Apr 06 05:13:18 2012] [notice] Parent: Received restart signal -- Restarting the server.
+[Fri Apr 06 05:13:18 2012] [notice] Child 4872: Exit event signaled. Child process is ending.
+[Fri Apr 06 05:13:18 2012] [warn] (OS 10038)An operation was attempted on something that is not a socket.  : setsockopt(SO_UPDATE_ACCEPT_CONTEXT) failed.
+[Fri Apr 06 05:13:18 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:13:18 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:13:18 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
+[Fri Apr 06 05:13:18 2012] [notice] Server built: Mar 19 2012 19:56:33
+[Fri Apr 06 05:13:18 2012] [notice] Parent: Created child process 4528
+[Fri Apr 06 05:13:18 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Fri Apr 06 05:13:18 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Fri Apr 06 05:13:18 2012] [notice] Child 4528: Child process is running
+[Fri Apr 06 05:13:19 2012] [notice] Child 4528: Acquired the start mutex.
+[Fri Apr 06 05:13:19 2012] [notice] Child 4528: Starting 64 worker threads.
+[Fri Apr 06 05:13:19 2012] [notice] Child 4872: Released the start mutex
+[Fri Apr 06 05:13:20 2012] [notice] Child 4872: All worker threads have exited.
+[Fri Apr 06 05:13:20 2012] [notice] Child 4872: Child process is exiting
+[Fri Apr 06 05:13:20 2012] [notice] Child 4528: Starting thread to listen on port 80.
+[Fri Apr 06 05:13:20 2012] [notice] Child 4528: Starting thread to listen on port 80.

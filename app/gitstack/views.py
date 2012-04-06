@@ -35,6 +35,11 @@ def add_repo_user_dialog(request, repo_name):
 @login_required
 def users(request):  
     return render_to_response('gitstack/users.html', context_instance=RequestContext(request))
+
+# group management section
+@login_required
+def groups(request):  
+    return render_to_response('gitstack/groups.html', context_instance=RequestContext(request))
    
 
 # settings section
