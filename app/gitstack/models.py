@@ -21,6 +21,10 @@ class RepoConfigParser:
         self.user_list = []
         self.user_read_list = []
         self.user_write_list = []
+        self.group_list = []
+        self.group_read_list = []
+        self.group_write_list = []
+        
         
     # convert a list of string usernames into a list of user objects
     def str_users_list_to_obj(self, str_u_list):
@@ -38,7 +42,7 @@ class RepoConfigParser:
         return obj_u_list
         
     # retrieve users from config file
-    def load_users(self):
+    def load_users_groups(self):
         try:
             # Load the configuration file
             config = ConfigParser.ConfigParser()
@@ -48,6 +52,13 @@ class RepoConfigParser:
                 self.user_read_list = self.str_users_list_to_obj(config.get('gitstack', 'readusers'))
                 self.user_write_list = self.str_users_list_to_obj(config.get('gitstack', 'writeusers'))
                 self.user_list = self.str_users_list_to_obj(config.get('gitstack', 'addedusers'))
+                # TODO: check when there is not theses groups
+                if config.has_option('gitstack', 'readgroups'):
+                    self.group_read_list = self.str_users_list_to_obj(config.get('gitstack', 'readgroups'))
+                if config.has_option('gitstack', 'writegroups'):
+                    self.group_write_list = self.str_users_list_to_obj(config.get('gitstack', 'writegroups'))
+                if config.has_option('gitstack', 'addedgroups'):
+                    self.group_list = self.str_users_list_to_obj(config.get('gitstack', 'addedgroups'))
 
             # split each string list of username
                 
@@ -315,6 +326,13 @@ class Repository:
         self.user_read_list = []
         # users with write permission
         self.user_write_list = []
+        # group list
+        self.group_list = []
+        # user list
+        self.group_read_list = []
+        # write list
+        self.group_write_list = []
+
         # bared repository (false if not imported in GitStack)
         # check if the repo is bared or not
         if os.path.isdir(settings.REPOSITORIES_PATH + "/" + self.name + ".git"):
@@ -341,11 +359,14 @@ class Repository:
     # load a repository from an apache configuration file
     def load(self):
         parser = RepoConfigParser(self.name)
-        parser.load_users()
+        parser.load_users_groups()
         # retrieve the list of users
         self.user_list = parser.user_list
         self.user_read_list = parser.user_read_list
-        self.user_write_list = parser.user_write_list               
+        self.user_write_list = parser.user_write_list  
+        self.group_list = parser.group_list
+        self.group_read_list = parser.group_read_list
+        self.group_write_list = parser.group_write_list   
     
     # save the repository in an apache configuration file
     def save(self):
@@ -364,17 +385,27 @@ class Repository:
         else:
             template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template.conf',"r")
 
-        # create a list of users
+        # create a list of users & groups
         str_user_read_list = ''
         str_user_write_list = ''
         str_user_list = ''
+        str_group_read_list = ''
+        str_group_write_list = ''
+        str_group_list = ''
         
+        # convert objects to list of strings
         for u in self.user_read_list:
             str_user_read_list = str_user_read_list + u.username + ' '
         for u in self.user_write_list:
             str_user_write_list = str_user_write_list + u.username + ' '
         for u in self.user_list:
             str_user_list = str_user_list + u.username + ' '
+        for g in self.group_read_list:
+            str_group_read_list = str_group_read_list + g.name + ' '
+        for g in self.group_write_list:
+            str_group_write_list = str_group_write_list + g.name + ' '
+        for g in self.group_list:
+            str_group_list = str_group_list + g.name + ' '
             
         # get the user everyone
         everyone = User("everyone")
@@ -414,10 +445,14 @@ class Repository:
         
         
         # add a gitstack section
+        config.set('gitstack', 'addedusers', str_user_list)
         config.set('gitstack', 'readusers', str_user_read_list)
         config.set('gitstack', 'writeusers', str_user_write_list)
-        config.set('gitstack', 'addedusers', str_user_list)
+        config.set('gitstack', 'addedgroups', str_group_list)
+        config.set('gitstack', 'readgroups', str_group_read_list)
+        config.set('gitstack', 'writegroups', str_group_write_list)
         
+      
         f = open(settings.REPOSITORIES_PATH + "/" + self.name + ".git" + "/config", "w")
         config.write(f)
         f.close()
@@ -471,7 +506,6 @@ class Repository:
 
         else:
             raise Exception(user.username + " has to be added in the repository before setting read/write permissions")
-        
     
     # Add write permissions to a user on the repository
     def add_user_write(self, user):
@@ -485,6 +519,36 @@ class Repository:
         else:
             raise Exception(user.username + " has to be added in the repository before setting read/write permissions")
         
+    # Add the group to the repo without any read and write permission
+    def add_group(self, group):
+        self.group_list.append(group)
+
+    # Add read permissions to a group on the repository
+    def add_group_read(self, group):
+        # check if the group is already in the group list
+        if group in self.group_list:
+            # if group is not already added
+            if group not in self.group_read_list:
+                self.group_read_list.append(group)
+            else:
+                raise Exception(group.name + " has already read permissions on " + self.name)
+
+        else:
+            raise Exception(group.name + " has to be added in the repository before setting read/write permissions")
+        
+    
+    # Add write permissions to a group on the repository
+    def add_group_write(self, group):
+        # check if the group is already in the group list
+        if group in self.group_list:
+            # if group is not already added
+            if group not in self.group_write_list:
+                self.group_write_list.append(group)
+            else:
+                raise Exception(group.name + " has already write permissions on " + self.name)
+        else:
+            raise Exception(group.name + " has to be added in the repository before setting read/write permissions")
+         
     # remove the read/write access to an user
     def remove_user(self, user):
         self.remove_user_read(user)
@@ -492,17 +556,30 @@ class Repository:
         self.user_list.remove(user)
 
     # remove the read access to an user
-    def remove_user_read(self, user):
+    def remogroupser_read(self, user):
         if user in self.user_read_list:
             self.user_read_list.remove(user)
         
     # remove the read access to an user
     def remove_user_write(self, user):
         if user in self.user_write_list:
-            self.user_write_list.remove(user)
+            self.user_write_list.remove(user)   
+    
+    # remove the read/write access to an group
+    def remove_group(self, group):
+        self.remove_group_read(group)
+        self.remove_group_write(group)
+        self.group_list.remove(group)
+
+    # remove the read access to an group
+    def remove_group_read(self, group):
+        if group in self.group_read_list:
+            self.group_read_list.remove(group)
         
-    
-    
+    # remove the read access to an group
+    def remove_group_write(self, group):
+        if group in self.group_write_list:
+            self.group_write_list.remove(group)   
     
     # delete the repository
     def delete(self):
@@ -572,6 +649,9 @@ class Repository:
             config.set('gitstack', 'readusers', '')
             config.set('gitstack', 'writeusers', '')
             config.set('gitstack', 'addedusers', '')
+            config.set('gitstack', 'readgroups', '')
+            config.set('gitstack', 'writegroups', '')
+            config.set('gitstack', 'addedgroups', '')
 
         f = open(config_path, "w")
         config.write(f)

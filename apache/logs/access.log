@@ -191,3 +191,6 @@
 ::1 - - [06/Apr/2012:05:38:42 -0700] "GET /gitstack/repository/repo1/user/resources/images/closelabel.gif HTTP/1.1" 404 3249
 ::1 - - [06/Apr/2012:05:38:42 -0700] "GET /gitstack/repository/repo1/user/resources/images/loading.gif HTTP/1.1" 404 3240
 ::1 - - [06/Apr/2012:05:38:42 -0700] "GET /favicon.ico HTTP/1.1" 404 2149
+::1 - - [06/Apr/2012:06:35:01 -0700] "GET /favicon.ico HTTP/1.1" 404 2149
+::1 - - [06/Apr/2012:06:35:02 -0700] "GET /repo1.git/info/refs HTTP/1.1" 401 401
+::1 - - [06/Apr/2012:06:35:02 -0700] "GET /favicon.ico HTTP/1.1" 404 2149

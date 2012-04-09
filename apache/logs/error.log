@@ -190,3 +190,12 @@ arn] mod_wsgi: Compiled for Python/2.7.
 [Fri Apr 06 05:13:20 2012] [notice] Child 4872: Child process is exiting
 [Fri Apr 06 05:13:20 2012] [notice] Child 4528: Starting thread to listen on port 80.
 [Fri Apr 06 05:13:20 2012] [notice] Child 4528: Starting thread to listen on port 80.
+The GitStack service is restarting.
+Starting the GitStack service
+The GitStack service is running.
+The GitStack service is restarting.
+Starting the GitStack service
+The GitStack service is running.
+The GitStack service is restarting.
+Starting the GitStack service
+The GitStack service is running.
