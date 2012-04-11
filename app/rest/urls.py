@@ -6,9 +6,13 @@ urlpatterns = patterns('rest.views',
     # rest stuff
     # Add/Remove users on a repository
     url(r'^repository/(?P<repo_name>.+)/user/(?P<username>.+)/$', 'rest_repo_user'),
+    # Add/Remove groups on a repository
+    url(r'^repository/(?P<repo_name>.+)/group/(?P<group_name>.+)/$', 'rest_repo_group'),
     
     # Get all the users on a specific repository
     url(r'^repository/(?P<repo_name>.+)/user/$', 'rest_repo_user_all'),
+    # Get all the grops on a specific repository
+    url(r'^repository/(?P<repo_name>.+)/group/$', 'rest_repo_group_all'),
     
     # Add/Remove users on a group
     url(r'^group/(?P<group_name>.+)/user/(?P<username>.+)/$', 'rest_group_user'),

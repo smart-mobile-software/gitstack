@@ -483,15 +483,19 @@ class Repository:
             line = line.replace("READ_USER_LIST",str_user_read_list)
             line = line.replace("WRITE_USER_LIST",str_user_write_list)
             
-            line = line.replace("READ_PERMISSIONS","Require user " + str_user_read_list)
-            
-            line = line.replace("WRITE_PERMISSIONS","Require user " + str_user_write_list)
-            
+            line = line.replace("READ_USER_PERMISSIONS","Require user " + str_user_read_list)
+            line = line.replace("READ_GROUP_PERMISSIONS","Require group " + str_group_read_list)
+
+            line = line.replace("WRITE_USER_PERMISSIONS","Require user " + str_user_write_list)
+            line = line.replace("WRITE_GROUP_PERMISSIONS","Require group " + str_group_write_list)
+
 
             # replace repository name
             line = line.replace("REPO_NAME",self.name)
             #password file path
             line = line.replace("PASSFILE_PATH",settings.INSTALL_DIR + '/data/passwdfile')
+            line = line.replace("GROUPFILE_PATH",settings.INSTALL_DIR + '/data/groupfile')
+            
             # write the new config file
             repo_config.write(line)
     

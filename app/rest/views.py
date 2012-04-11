@@ -190,7 +190,6 @@ def rest_repository(request):
             repositories = Repository.retrieve_all()
             # remove the .git at the end
             
-            repositories_name = map(lambda foo: foo.__unicode__(), repositories)
             json_reply = jsonpickle.encode(repositories, unpicklable = False)
             return HttpResponse(json_reply)
         except WindowsError as e:
@@ -284,7 +283,71 @@ def rest_repo_user(request, repo_name, username):
                 
         repo.save()
         return HttpResponse(user.username + "'s permissions updated")
+    
+    
+    
 
+# Add/Remove group on a repository
+@csrf_exempt
+def rest_repo_group(request, repo_name, group_name):
+    repo = Repository(repo_name)
+    group = Group(group_name)
+
+    # Add group
+    if request.method == 'POST':
+        # Get the repository and add the user
+        repo.add_group(group)
+        repo.add_group_read(group)
+        repo.add_group_write(group)
+        repo.save()
+        return HttpResponse("User " + group_name + " added to " + repo_name)
+    
+    # Delete the group
+    if request.method == 'DELETE':
+        # Remove the group from the repository
+        repo.remove_group(group)
+        repo.save()
+        return HttpResponse(group_name + " removed from " + repo_name)
+    
+    # Get the group permissions
+    if request.method == 'GET':
+        permissions = {'read' : False, 'write' : False}
+        # retrieve the list of read and write users
+        group_read_list = repo.group_read_list
+        group_write_list = repo.group_write_list
+        # check if the user has read and write access
+        if group in group_read_list:
+            permissions['read'] = True
+        if group in group_write_list:
+            permissions['write'] = True
+            
+        # reply with the json permission object
+        json_reply = json.dumps(permissions)
+        return HttpResponse(json_reply)
+    
+    if request.method == 'PUT':
+        # retrieve the credentials from the json
+        permissions = json.loads(request.raw_post_data)
+
+        # Get the old password and new password
+        if 'read' in permissions:
+            # add the read permission to the repo
+            if permissions['read']:
+                repo.add_group_read(group)
+            else:
+                repo.remove_group_read(group)
+
+        if 'write' in permissions:
+            # add the write permission to the repo
+            if permissions['write']:
+                repo.add_group_write(group)
+            else:
+                repo.remove_group_write(group)
+                
+        repo.save()
+        return HttpResponse(group_name + "'s permissions updated")
+    
+    
 
     
 # Get all the users on a specific repository
@@ -295,6 +358,16 @@ def rest_repo_user_all(request, repo_name):
     users = repo.user_list
     users_name = map(lambda foo: foo.__unicode__(), users)
     json_reply = json.dumps(users_name)
+    return HttpResponse(json_reply)
+
+# Get all the groups on a specific repository
+@csrf_exempt
+def rest_repo_group_all(request, repo_name):
+    # Get the repository and add the user
+    repo = Repository(repo_name)
+    group_list = repo.group_list
+    group__list_names = map(lambda foo: foo.__unicode__(), group_list)
+    json_reply = json.dumps(group__list_names)
     return HttpResponse(json_reply)
     
 # change admin password
