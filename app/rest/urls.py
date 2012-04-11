@@ -9,6 +9,11 @@ urlpatterns = patterns('rest.views',
     
     # Get all the users on a specific repository
     url(r'^repository/(?P<repo_name>.+)/user/$', 'rest_repo_user_all'),
+    
+    # Add/Remove users on a group
+    url(r'^group/(?P<group_name>.+)/user/(?P<username>.+)/$', 'rest_group_user'),
+    # Get all the users on a specific group
+    url(r'^group/(?P<group_name>.+)/user/$', 'rest_group_user_all'),
         
     # to delete a repository
     url(r'^repository/(?P<repo_name>.+)/$', 'rest_repo_action'),
@@ -18,8 +23,13 @@ urlpatterns = patterns('rest.views',
     # to delete an user
     url(r'^user/(?P<username>.+)/$', 'rest_user_action'),
     
-    # user management
+    # group management
     url(r'^group/$', 'rest_group'),
+    # to delete a group
+    url(r'^group/(?P<name>.+)/$', 'rest_group_action'),
+    
+    
+        
         
     # list all the repos
     url(r'^repository/$', 'rest_repository'),

@@ -180,7 +180,8 @@ arn] mod_wsgi: Compiled for Python/2.7.
 [Fri Apr 06 05:13:18 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
 [Fri Apr 06 05:13:18 2012] [notice] Server built: Mar 19 2012 19:56:33
 [Fri Apr 06 05:13:18 2012] [notice] Parent: Created child process 4528
-[Fri Apr 06 05:13:18 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+Apache server shutdown initiated...
+d_wsgi: Compiled for Python/2.7.
 [Fri Apr 06 05:13:18 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
 [Fri Apr 06 05:13:18 2012] [notice] Child 4528: Child process is running
 [Fri Apr 06 05:13:19 2012] [notice] Child 4528: Acquired the start mutex.
@@ -199,3 +200,46 @@ The GitStack service is running.
 The GitStack service is restarting.
 Starting the GitStack service
 The GitStack service is running.
+The GitStack service is restarting.
+Starting the GitStack service
+The GitStack service is running.
+[Mon Apr 09 05:35:05 2012] [notice] Parent: Received shutdown signal -- Shutting down the server.
+[Mon Apr 09 05:35:05 2012] [notice] Child 4528: Exit event signaled. Child process is ending.
+[Mon Apr 09 05:35:06 2012] [notice] Child 4528: Released the start mutex
+[Mon Apr 09 05:35:07 2012] [notice] Child 4528: All worker threads have exited.
+[Mon Apr 09 05:35:07 2012] [notice] Child 4528: Child process is exiting
+[Mon Apr 09 05:35:07 2012] [notice] Parent: Child process exited successfully.
+The GitStack service is restarting.
+Starting the GitStack service
+The GitStack service is running.
+ mod_wsgi: Compiled for Python/2.7.
+[Mon Apr 09 05:38:59 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Mon Apr 09 05:38:59 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
+[Mon Apr 09 05:38:59 2012] [notice] Server built: Mar 19 2012 19:56:33
+[Mon Apr 09 05:38:59 2012] [notice] Parent: Created child process 4404
+[Mon Apr 09 05:38:59 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Mon Apr 09 05:38:59 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Mon Apr 09 05:38:59 2012] [notice] Child 4404: Child process is running
+[Mon Apr 09 05:38:59 2012] [notice] Child 4404: Acquired the start mutex.
+[Mon Apr 09 05:38:59 2012] [notice] Child 4404: Starting 64 worker threads.
+[Mon Apr 09 05:38:59 2012] [notice] Child 4404: Starting thread to listen on port 80.
+[Mon Apr 09 05:38:59 2012] [notice] Child 4404: Starting thread to listen on port 80.
+The GitStack service is restarting.
+The GitStack service has restarted.
+Parent: Received restart signal -- Restarting the server.
+[Mon Apr 09 05:39:24 2012] [notice] Child 4404: Exit event signaled. Child process is ending.
+[Mon Apr 09 05:39:24 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Mon Apr 09 05:39:24 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Mon Apr 09 05:39:24 2012] [notice] Apache/2.2.22 (Win32) PHP/5.3.10 mod_wsgi/3.3 Python/2.7.2 configured -- resuming normal operations
+[Mon Apr 09 05:39:24 2012] [notice] Server built: Mar 19 2012 19:56:33
+[Mon Apr 09 05:39:24 2012] [notice] Parent: Created child process 5268
+[Mon Apr 09 05:39:24 2012] [warn] mod_wsgi: Compiled for Python/2.7.
+[Mon Apr 09 05:39:24 2012] [warn] mod_wsgi: Runtime using Python/2.7.2.
+[Mon Apr 09 05:39:24 2012] [notice] Child 5268: Child process is running
+[Mon Apr 09 05:39:25 2012] [notice] Child 5268: Acquired the start mutex.
+[Mon Apr 09 05:39:25 2012] [notice] Child 5268: Starting 64 worker threads.
+[Mon Apr 09 05:39:25 2012] [notice] Child 4404: Released the start mutex
+[Mon Apr 09 05:39:26 2012] [notice] Child 4404: All worker threads have exited.
+[Mon Apr 09 05:39:26 2012] [notice] Child 4404: Child process is exiting
+[Mon Apr 09 05:39:26 2012] [notice] Child 5268: Starting thread to listen on port 80.
+[Mon Apr 09 05:39:26 2012] [notice] Child 5268: Starting thread to listen on port 80.

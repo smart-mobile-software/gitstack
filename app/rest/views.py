@@ -1,10 +1,11 @@
 from django.http import HttpResponse, HttpResponseServerError
-from gitstack.models import Repository, User, Apache
+from gitstack.models import Repository, User, Apache, Group
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.conf import settings
 
-import json, re, os, jsonpickle #@UnresolvedImport
+import json, re, os, jsonpickle, logging #@UnresolvedImport 
+logger = logging.getLogger('console')
 
 # user rest api
 @csrf_exempt
@@ -47,8 +48,16 @@ def rest_group(request):
         if request.method == 'POST':
             # get the username/password from the request
             name = request.POST['name']
+            group = Group(name)
+            group.create()
             return HttpResponse("Group " + name + " has been successfully created." )
-        # get retrieve_all the users
+        
+        # get retrieve_all the groups
+        if request.method == 'GET':
+            group_list = Group.retrieve_all()
+            json_reply = jsonpickle.encode(group_list, unpicklable = False)
+
+            return HttpResponse(json_reply)
         
     except Exception as e:
         return HttpResponseServerError(e)
@@ -96,7 +105,7 @@ def webinterface(request):
     except Exception as e:
         return HttpResponseServerError(e)
 
-
+@csrf_exempt
 def rest_user_action(request, username):
     try:
         if request.method == 'DELETE':
@@ -107,6 +116,50 @@ def rest_user_action(request, username):
             return HttpResponse(username + " has been deleted")
     except Exception as e:
         return HttpResponseServerError(e)
+ 
+@csrf_exempt   
+def rest_group_action(request, name):
+    try:
+        if request.method == 'DELETE':
+            # retrieve the group name from the url
+            group = Group(name)
+            # delete the user
+            group.delete()
+            return HttpResponse(name + " has been deleted")
+    except Exception as e:
+        return HttpResponseServerError(e)
+    
+# Add/Remove users on a repository
+@csrf_exempt
+def rest_group_user(request, group_name, username):
+    group = Group(group_name)
+    group.load()
+    user = User(username)
+    
+    # Add member to the group
+    if request.method == 'POST':
+        group.add_user(user)
+        group.save()
+        return HttpResponse("User " + username + " added to " + group_name)
+
+    # Remove a group member
+    if request.method == 'DELETE':
+        group.remove_user(user)
+        group.save()
+        return HttpResponse(username + " removed from " + group_name)
+    
+# Get all the users on a specific group
+@csrf_exempt
+def rest_group_user_all(request, group_name):
+    # Get the repository and add the user
+    group = Group(group_name)
+    group.load()
+    users = group.member_list
+    logger.debug(len(users))
+    users_name = map(lambda foo: foo.__unicode__(), users)
+    
+    json_reply = json.dumps(users_name)
+    return HttpResponse(json_reply)
 
 
 # create a repository
@@ -138,7 +191,6 @@ def rest_repository(request):
             # remove the .git at the end
             
             repositories_name = map(lambda foo: foo.__unicode__(), repositories)
-            json_reply = json.dumps(repositories_name)
             json_reply = jsonpickle.encode(repositories, unpicklable = False)
             return HttpResponse(json_reply)
         except WindowsError as e:
@@ -146,6 +198,7 @@ def rest_repository(request):
         
 
 # delete or update a repository
+@csrf_exempt
 def rest_repo_action(request, repo_name):
     #try:
     if request.method == 'DELETE':

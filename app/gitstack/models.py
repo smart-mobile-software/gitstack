@@ -40,6 +40,21 @@ class RepoConfigParser:
         
         # return the list of users
         return obj_u_list
+    
+    # convert a list of string groupnames into a list of group objects
+    def str_group_list_to_obj(self, str_g_list):
+        obj_g_list = []
+        # check the length of the list
+        if(len(str_g_list) > 0):
+            # split the list
+            all_groups = str_g_list.split(' ')
+            # create users
+            for name in all_groups:
+                group = Group(name)
+                obj_g_list.append(group)
+        
+        # return the list of users
+        return obj_g_list
         
     # retrieve users from config file
     def load_users_groups(self):
@@ -54,11 +69,11 @@ class RepoConfigParser:
                 self.user_list = self.str_users_list_to_obj(config.get('gitstack', 'addedusers'))
                 # TODO: check when there is not theses groups
                 if config.has_option('gitstack', 'readgroups'):
-                    self.group_read_list = self.str_users_list_to_obj(config.get('gitstack', 'readgroups'))
+                    self.group_read_list = self.str_group_list_to_obj(config.get('gitstack', 'readgroups'))
                 if config.has_option('gitstack', 'writegroups'):
-                    self.group_write_list = self.str_users_list_to_obj(config.get('gitstack', 'writegroups'))
+                    self.group_write_list = self.str_group_list_to_obj(config.get('gitstack', 'writegroups'))
                 if config.has_option('gitstack', 'addedgroups'):
-                    self.group_list = self.str_users_list_to_obj(config.get('gitstack', 'addedgroups'))
+                    self.group_list = self.str_group_list_to_obj(config.get('gitstack', 'addedgroups'))
 
             # split each string list of username
                 
@@ -150,6 +165,14 @@ class User:
                     # remove the user
                     repository.remove_user(self)
                     repository.save()
+                    
+            # for each group
+            all_groups = Group.retrieve_all()
+            for group in all_groups:
+                # remove the user
+                logger.debug(group)
+                group.remove_user(self)
+                group.save()
             
         else:
             raise Exception(self.username + " does not exist")
@@ -228,10 +251,11 @@ class Group:
                 # split the list of users
                 user_list_str = user_list_str.split(' ')
                 for str_user in user_list_str:
-                    # create the user
-                    user = User(str_user)
-                    # add the user to the group
-                    self.member_list.append(user)
+                    if not str_user == '':
+                        # create the user
+                        user = User(str_user)
+                        # add the user to the group
+                        self.member_list.append(user)
                     
     # save the group
     def save(self):
@@ -266,9 +290,7 @@ class Group:
             os.remove(settings.GROUP_FILE_PATH)
         
         # rename the groupfilenew to groupfile
-        os.rename(settings.GROUP_FILE_PATH + 'new', settings.GROUP_FILE_PATH)
-        pass
-    
+        os.rename(settings.GROUP_FILE_PATH + 'new', settings.GROUP_FILE_PATH)    
     # create a new group
     def create(self):
         # check if the group does not already exist
@@ -281,6 +303,46 @@ class Group:
         group_file.write(self.name + ": \n")
         group_file.close()
         
+    # delete a group
+    def delete(self):
+        # remove the group from each repository
+        repository_list = Repository.retrieve_all()
+        # for each repo
+        for repository in repository_list:
+            # get all the users
+            group_list = repository.retrieve_all_groups()
+
+            # if the group exist in the repo
+            if self in group_list:
+                # remove the group
+                repository.remove_group(self)
+                repository.save()
+        
+        # read open the groupfile
+        group_file = open(settings.GROUP_FILE_PATH, 'r')
+        # write on the groupfilenew
+        group_file_new = open(settings.GROUP_FILE_PATH + 'new', 'w')
+        
+        # for each line of the groupfile
+        for line in group_file:
+            # get the group name
+            group_name = line.split(': ')[0]
+            # if it is the current group
+            if not group_name == self.name:
+                # copy the line on the groupfilenew
+                group_file_new.write(line)
+        
+        # close both files
+        group_file.close()
+        group_file_new.close()
+        
+        # remove the groupfile
+        if os.path.isfile(settings.GROUP_FILE_PATH):
+            os.remove(settings.GROUP_FILE_PATH)
+        
+        # rename the groupfilenew to groupfile
+        os.rename(settings.GROUP_FILE_PATH + 'new', settings.GROUP_FILE_PATH)    
+        
         
     # add a user to the group
     def add_user(self, user):
@@ -288,7 +350,8 @@ class Group:
         
     # remove a user from the group
     def remove_user(self, user):
-        self.member_list.remove(user)
+        if user in self.member_list:
+            self.member_list.remove(user)
         
     @staticmethod    
     def retrieve_all():
@@ -306,6 +369,8 @@ class Group:
                 group_name = line.split(': ')[0]
                 # create a group object
                 group = Group(group_name)
+                # load the group
+                group.load()
                 group_list_obj.append(group)
                    
             group_file.close()
@@ -580,6 +645,16 @@ class Repository:
     def remove_group_write(self, group):
         if group in self.group_write_list:
             self.group_write_list.remove(group)   
+            
+    # retrieve all the groups of the repository
+    def retrieve_all_groups(self):
+        # add the read and the write users
+        all_groups = self.group_list + self.group_read_list + self.group_write_list
+        
+        # remove the duplicates
+        all_groups = list(set(all_groups))
+
+        return all_groups
     
     # delete the repository
     def delete(self):

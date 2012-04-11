@@ -1,5 +1,5 @@
 from django.shortcuts import render_to_response
-from gitstack.models import Repository, User
+from gitstack.models import Repository, User, Group
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
@@ -8,13 +8,15 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def index(request):
     return render_to_response('gitstack/index.html', context_instance=RequestContext(request))
-    
-
 
 # user management on a repository
 @login_required
 def repository_user(request, repo_name):
-        return render_to_response('gitstack/repository_user.html', {'repo_name': repo_name }, context_instance=RequestContext(request))
+    return render_to_response('gitstack/repository_user.html', {'repo_name': repo_name }, context_instance=RequestContext(request))
+    
+@login_required
+def group_user(request, group_name):
+    return render_to_response('gitstack/group_user.html', {'group_name': group_name }, context_instance=RequestContext(request))
     
 # add repo user dialog
 def add_repo_user_dialog(request, repo_name):
@@ -29,6 +31,25 @@ def add_repo_user_dialog(request, repo_name):
         user_list.remove(repository_user)
     
     return render_to_response('gitstack/add_repo_user.html', {'repo_name': repo_name,
+                                                              'user_list': user_list }, context_instance=RequestContext(request))
+
+
+# add repo user dialog
+def add_group_user_dialog(request, group_name):
+    # retrieve all the users
+    user_list = User.retrieve_all()
+    # get the users already added to the repository
+    group = Group(group_name)
+    group.load()
+    group_user_list = group.member_list
+    
+        
+    # substract the repository users from the user list
+    for group_user in group_user_list:
+        if group_user in user_list:
+            user_list.remove(group_user)
+    
+    return render_to_response('gitstack/add_group_user.html', {'group_name': group_name,
                                                               'user_list': user_list }, context_instance=RequestContext(request))
 
 # user management section

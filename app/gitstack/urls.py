@@ -7,6 +7,9 @@ urlpatterns = patterns('gitstack.views',
     url(r'^repository/(?P<repo_name>.+)/user/$', 'repository_user'),
     # add users dialog
     url(r'^repository/(?P<repo_name>.+)/user/add/$', 'add_repo_user_dialog'),
+    url(r'^group/(?P<group_name>.+)/user/$', 'group_user'),
+    # add users dialog (for the group)
+    url(r'^group/(?P<group_name>.+)/user/add/$', 'add_group_user_dialog'),
     
     # settings tab
     url(r'^settings/', 'settings'),
