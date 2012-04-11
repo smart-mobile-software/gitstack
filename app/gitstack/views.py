@@ -64,7 +64,8 @@ def add_group_user_dialog(request, group_name):
     for group_user in group_user_list:
         if group_user in user_list:
             user_list.remove(group_user)
-    
+    everyone = User('everyone')
+    user_list.remove(everyone)
     return render_to_response('gitstack/add_group_user.html', {'group_name': group_name,
                                                               'user_list': user_list }, context_instance=RequestContext(request))
 
