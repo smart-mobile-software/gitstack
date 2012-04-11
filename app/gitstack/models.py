@@ -170,7 +170,6 @@ class User:
             all_groups = Group.retrieve_all()
             for group in all_groups:
                 # remove the user
-                logger.debug(group)
                 group.remove_user(self)
                 group.save()
             
@@ -625,7 +624,7 @@ class Repository:
         self.user_list.remove(user)
 
     # remove the read access to an user
-    def remogroupser_read(self, user):
+    def remove_user_read(self, user):
         if user in self.user_read_list:
             self.user_read_list.remove(user)
         
