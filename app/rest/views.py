@@ -284,8 +284,6 @@ def rest_repo_user(request, repo_name, username):
         repo.save()
         return HttpResponse(user.username + "'s permissions updated")
     
-    
-    
 
 # Add/Remove group on a repository
 @csrf_exempt
@@ -346,9 +344,6 @@ def rest_repo_group(request, repo_name, group_name):
                 
         repo.save()
         return HttpResponse(group_name + "'s permissions updated")
-    
-    
-
     
 # Get all the users on a specific repository
 @csrf_exempt

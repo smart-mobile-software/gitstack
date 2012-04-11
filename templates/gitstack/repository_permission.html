@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block javascript %}
+<script src="/static/js/repository_permission.js"></script>
+
+{% endblock %}
+{% block repositories_current %}current{% endblock %}
+
+{% block content %}
+
+			
+			<!-- Page Head -->
+			<h2>{{ repo_name }} permissions</h2>
+			<p id="page-intro">Add and remove user access to this repository</p>
+			<!-- Repository name -->
+			<div id="currentRepo">{{ repo_name }}</div>
+
+			<div class="content-box">
+				
+				<div class="content-box-header">
+					
+					<h3>Users</h3>
+					
+					
+					
+					<div class="clear"></div>
+					
+				</div> 
+				
+				<div class="content-box-content">
+					
+					<div class="tab-content default-tab" id="tab1"> 
+						
+						<table>
+							
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Read</th>
+									<th>Write</th>
+									<th>Action</th>
+								</tr>	
+							</thead>
+						 
+							<tbody id="repoUserList">
+								
+							</tbody>
+							
+
+						</table>
+						
+					</div> <!-- End #tab1 -->
+					<br />
+					<button id="addRepoUser">Add user</button>
+				</div> <!-- End .content-box-content -->
+				
+			</div> <!-- End .content-box -->
+			
+			<div class="clear"></div>
+			
+			
+
+			<div id="addRepoUserDialog"></div>
+
+			
+			<div class="clear"></div>
+			
+			<!-- Group box -->
+
+			<div class="content-box">
+				
+				<div class="content-box-header">
+					
+					<h3>Groups</h3>
+					
+					<div class="clear"></div>
+					
+				</div> 
+				
+				<div class="content-box-content">
+					
+					<div class="tab-content default-tab">
+						
+						<table>
+							
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Read</th>
+									<th>Write</th>
+									<th>Action</th>
+								</tr>	
+							</thead>
+						 
+							<tbody id="repoGroupList">
+								
+							</tbody>
+							
+
+						</table>
+						
+					</div> 
+					<br />
+					<button id="addRepoGroup">Add group</button>
+				</div> 
+				
+			</div> 
+
+			
+			<div class="clear"></div>
+			
+			
+
+			<div id="addRepoGroupDialog"></div>
+
+			
+			<div class="clear"></div>
+			
+			
+			
+{% endblock %}

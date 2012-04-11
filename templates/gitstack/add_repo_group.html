@@ -1,0 +1,14 @@
+<div id="dialog-form" title="Add group">
+	Select the groups you would like to add to this repository.<br />
+	You can select multiple groups by holding the Ctrl key.<br /><br />
+	<div id="selectui">
+		<ul id="addRepoGroupList" class="ui-selectable selectable">
+			{% for group in group_list %}
+				<li class="ui-widget-content">{{ group }}</li>
+			{% empty %}
+				<b>No group available</b>
+			{% endfor %}
+
+		</ul>
+	</div>
+</div>

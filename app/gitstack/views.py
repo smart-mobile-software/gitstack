@@ -11,8 +11,8 @@ def index(request):
 
 # user management on a repository
 @login_required
-def repository_user(request, repo_name):
-    return render_to_response('gitstack/repository_user.html', {'repo_name': repo_name }, context_instance=RequestContext(request))
+def repository_permission(request, repo_name):
+    return render_to_response('gitstack/repository_permission.html', {'repo_name': repo_name }, context_instance=RequestContext(request))
     
 @login_required
 def group_user(request, group_name):
@@ -32,6 +32,22 @@ def add_repo_user_dialog(request, repo_name):
     
     return render_to_response('gitstack/add_repo_user.html', {'repo_name': repo_name,
                                                               'user_list': user_list }, context_instance=RequestContext(request))
+
+# add repo user dialog
+def add_repo_group_dialog(request, repo_name):
+    # retrieve all the users
+    group_list = Group.retrieve_all()
+    # get the users already added to the repository
+    repository = Repository(repo_name)
+    repository_group_list = repository.group_list
+    
+    # substract the repository groups from the group list
+    for repository_group in repository_group_list:
+        if repository_group in group_list:
+            group_list.remove(repository_group)
+    
+    return render_to_response('gitstack/add_repo_group.html', {'repo_name': repo_name,
+                                                              'group_list': group_list }, context_instance=RequestContext(request))
 
 
 # add repo user dialog

@@ -4,9 +4,11 @@ urlpatterns = patterns('gitstack.views',
     url(r'^$', 'index'),
     url(r'^users/', 'users'),
     url(r'^groups/', 'groups'),
-    url(r'^repository/(?P<repo_name>.+)/user/$', 'repository_user'),
+    url(r'^repository/(?P<repo_name>.+)/permission/$', 'repository_permission'),
     # add users dialog
-    url(r'^repository/(?P<repo_name>.+)/user/add/$', 'add_repo_user_dialog'),
+    url(r'^repository/(?P<repo_name>.+)/permission/adduser/$', 'add_repo_user_dialog'),
+    url(r'^repository/(?P<repo_name>.+)/permission/addgroup/$', 'add_repo_group_dialog'),
+
     url(r'^group/(?P<group_name>.+)/user/$', 'group_user'),
     # add users dialog (for the group)
     url(r'^group/(?P<group_name>.+)/user/add/$', 'add_group_user_dialog'),
