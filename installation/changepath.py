@@ -50,8 +50,8 @@ replacePathFile(strToUnix + "/apache/conf/gitstack/wsgi.conf",strFromUnix, strTo
 replacePathFile(strToUnix + "/apache/conf/gitstack/main.conf",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/apache/conf/gitstack/gitphp.conf",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/gitphp/config/gitphp.conf.php",strFromUnix, strToUnix)
-replacePathFile(strToUnix + "/app/settings.py",strFromUnix, strToUnix)
-replacePathFile(strToUnix + "/app/django.wsgi",strFromUnix, strToUnix)
+replacePathFile(strToUnix + "/app/app/settings.py",strFromUnix, strToUnix)
+replacePathFile(strToUnix + "/app/app/wsgi.py",strFromUnix, strToUnix)
 
 
 
