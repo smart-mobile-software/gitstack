@@ -14,7 +14,8 @@ urlpatterns = patterns('gitstack.views',
     url(r'^group/(?P<group_name>.+)/user/add/$', 'add_group_user_dialog'),
     
     # settings tab
-    url(r'^settings/', 'settings'),
-  
+    url(r'^settings/general/', 'settings_general'),
+    url(r'^settings/authentication/', 'settings_authentication'),
+    
 
 )

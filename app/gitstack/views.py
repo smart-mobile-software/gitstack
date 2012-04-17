@@ -82,9 +82,17 @@ def groups(request):
 
 # settings section
 @login_required
-def settings(request):    
+def settings_general(request):    
     if request.method == 'GET':  
         # first visit on the settings page
-        return render_to_response('gitstack/settings.html', context_instance=RequestContext(request))
+        return render_to_response('gitstack/settings_general.html', context_instance=RequestContext(request))
+    
+@login_required
+def settings_authentication(request):    
+    if request.method == 'GET':  
+        # first visit on the settings page
+        return render_to_response('gitstack/settings_authentication.html', context_instance=RequestContext(request))
+    
+
         
     

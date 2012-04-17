@@ -102,9 +102,13 @@
 					</ul>					
 				</li>
 				<li>
-					<a href="/gitstack/settings/" class="nav-top-item no-submenu {% block settings_current %}{% endblock %}"> <!-- Add the class "no-submenu" to menu items with no sub menu -->
+					<a href="#" class="nav-top-item {% block settings_current %}{% endblock %}"> <!-- Add the class "no-submenu" to menu items with no sub menu -->
 						Settings
-					</a> 
+					</a>
+					<ul style="display: block; ">
+						<li><a href="/gitstack/settings/general/" class="{% block settings_general_current %}{% endblock %}">General</a></li>
+						<li><a href="/gitstack/settings/authentication/" class="{% block settings_authentication_current %}{% endblock %}">Authentication</a></li>
+					</ul>					
 				</li>
 				
 			</ul> <!-- End #main-nav -->
