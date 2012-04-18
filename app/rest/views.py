@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.conf import settings
 
-import json, re, os, jsonpickle, logging #@UnresolvedImport 
+import json, re, os, jsonpickle, logging, ConfigParser #@UnresolvedImport 
 logger = logging.getLogger('console')
 
 # user rest api
@@ -383,6 +383,51 @@ def rest_admin(request):
             return HttpResponse("User successfully updated")
         else:
             return HttpResponseServerError("Your current administrator password is not correct.")
+        
+# Change authentification settings
+@csrf_exempt
+def rest_settings_authentication(request):
+    # Get the settings
+    if request.method == 'GET':
+        # load the settings file
+        config = ConfigParser.ConfigParser()
+        config.read(settings.SETTINGS_PATH)
+        
+        # retrieve the settings
+        auth_method = config.get('authentication', 'authmethod')
+        ldap_url = config.get('authentication', 'ldapurl')
+        ldap_bind_dn = config.get('authentication', 'ldapbinddn')
+        ldap_bind_password = config.get('authentication', 'ldapbindpassword')
+        
+        # build json reply
+        json_reply = '{"authMethod":"' + auth_method + '","ldap":{"url": "' + ldap_url +'","bindDn": "' + ldap_bind_dn +'","bindPassword": "' + ldap_bind_password + '"}}'
+        # json_reply = '{"authMethod":"ldap","ldap":{"url": "ldap://10.0.1.24:389/CN=Users,DC=contoso,DC=com","bindDn": "CN=john,CN=Users,DC=contoso,DC=com","bindPassword": "thepassword"}}'
+        return HttpResponse(json_reply)
+    # Set the settings
+    if request.method == 'PUT':
+        auth_settings = json.loads(request.raw_post_data)
+        
+        # load the config file
+        config = ConfigParser.ConfigParser()
+        config.read(settings.SETTINGS_PATH)
+        
+        # save the settings
+        config.set('authentication', 'authmethod', auth_settings['authMethod'])
+        config.set('authentication', 'ldapurl', auth_settings['ldap']['url'])
+        config.set('authentication', 'ldapbinddn', auth_settings['ldap']['bindDn'])
+        config.set('authentication', 'ldapbindpassword', auth_settings['ldap']['bindPassword'])
+        
+      
+        f = open(settings.SETTINGS_PATH, "w")
+        config.write(f)
+        f.close()
+        
+        
+        return HttpResponse("Settings successfully saved.")
+    
+
+
+    
 
 
 

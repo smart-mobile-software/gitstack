@@ -163,5 +163,5 @@ GIT_PATH = 'C:/dev/gitstack/git/bin/git.exe'
 INSTALL_DIR = 'C:/dev/gitstack'
 # location of the group file
 GROUP_FILE_PATH = INSTALL_DIR + '/data/groupfile'
-
+SETTINGS_PATH = 'C:/dev/gitstack/data/settings.ini'
 

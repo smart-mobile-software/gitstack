@@ -31,15 +31,15 @@
 
 							<label>Authentication method</label>            
 							<input type = "radio"
-								 name = "gitstackUsers"
+								 name = "authMethod"
 								 id = "gitstackUsers"
 								 value = "gitstackUsers"
 								 checked = "checked" /> GitStack users & groups <br />
 
 							<input type = "radio"
-								 name = "gitstackUsers"
-								 id = "gitstackUsers"
-								 value = "gitstackUsers" /> Active directory users <br />
+								 name = "authMethod"
+								 id = "ldapUsers"
+								 value = "ldapUsers" /> Active directory users <br />
 						 
 						</fieldset> 
 						<div id="ldapSettings">
@@ -59,36 +59,14 @@
 							<input class="text-input medium-input" type="password" id="ldapBindPassword" name="ldapBindPassword" /><br />
 							A bind password to use in conjunction with the bind DN, example : john's password.
 							<br />
-							<br />
 							
-							<input id="saveLdapSettings" class="button" type="submit" value="Save" />
 
 						</div>
 						
-								
-							<!--
-							<fieldset> <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns
-								{% csrf_token %}
+						<br />
+						<input id="saveSettings" class="button" type="submit" value="Save" />
 
-								<p>
-									<label>Old password</label>
-										<input class="text-input small-input" type="password" id="txtOldPassword" name="txtOldPassword" />  
-								</p>
-								<p>
-									<label>New password</label>
-										<input class="text-input small-input" type="password" id="txtNewPassword1" name="txtNewPassword1" />  
-								</p>
-								<p>
-									<label>Retype new password</label>
-										<input class="text-input small-input" type="password" id="txtNewPassword2" name="txtNewPassword2" />  
-								</p>
-								<p>
-									<input id="setNewAdminPassword" class="button" type="submit" value="Save" />
-								</p>
-								
-							</fieldset>
-							 -->
-							<div class="clear"></div><!-- End .clear -->
+						<div class="clear"></div><!-- End .clear -->
 							
 					</form>
 						
