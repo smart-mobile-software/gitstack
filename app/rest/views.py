@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseServerError
-from gitstack.models import Repository, User, Apache, Group
+from gitstack.models import Repository, UserApache, Apache, Group
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.conf import settings
@@ -16,14 +16,14 @@ def rest_user(request):
             # get the username/password from the request
             username = request.POST['username']
             password = request.POST['password']
-            user = User(username, password)
+            user = UserApache(username, password)
             user.create()
             return HttpResponse("User created")
         # get retrieve_all the users
         if request.method == 'GET':
             # convert list of objects to list of strings
             user_list_str = []
-            user_list_obj = User.retrieve_all()
+            user_list_obj = UserApache.retrieve_all()
             for user in user_list_obj:   
                 user_list_str.append(user.username)
             json_reply = json.dumps(user_list_str)
@@ -33,7 +33,7 @@ def rest_user(request):
             # retrieve the credentials from the json
             credentials = json.loads(request.raw_post_data)
             # create an instance of the user and update it
-            user = User(credentials['username'], credentials['password'])
+            user = UserApache(credentials['username'], credentials['password'])
             user.update()
             return HttpResponse("User successfully updated")
         
@@ -110,7 +110,7 @@ def rest_user_action(request, username):
     try:
         if request.method == 'DELETE':
             # retrieve the username from the json
-            user = User(username)
+            user = UserApache(username)
             # delete the user
             user.delete()
             return HttpResponse(username + " has been deleted")
@@ -134,7 +134,7 @@ def rest_group_action(request, name):
 def rest_group_user(request, group_name, username):
     group = Group(group_name)
     group.load()
-    user = User(username)
+    user = UserApache(username)
     
     # Add member to the group
     if request.method == 'POST':
@@ -230,7 +230,7 @@ def rest_repo_action(request, repo_name):
 @csrf_exempt
 def rest_repo_user(request, repo_name, username):
     repo = Repository(repo_name)
-    user = User(username)
+    user = UserApache(username)
 
     # Add user
     if request.method == 'POST':

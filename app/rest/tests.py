@@ -1,4 +1,4 @@
-from gitstack.models import Repository, User, Group
+from gitstack.models import Repository, UserApache, Group
 from django.test import TestCase
 from django.test.client import Client
 import time, json
@@ -26,7 +26,7 @@ class SimpleTest(TestCase):
             repo.delete()
 
         # delete users
-        users = User.retrieve_all()
+        users = UserApache.retrieve_all()
         for user in users:
             # delete the user
             if user.username != 'everyone':

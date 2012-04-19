@@ -1,5 +1,5 @@
 from django.shortcuts import render_to_response
-from gitstack.models import Repository, User, Group
+from gitstack.models import Repository, UserApache, Group
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
@@ -21,7 +21,7 @@ def group_user(request, group_name):
 # add repo user dialog
 def add_repo_user_dialog(request, repo_name):
     # retrieve all the users
-    user_list = User.retrieve_all()
+    user_list = UserApache.retrieve_all()
     # get the users already added to the repository
     repository = Repository(repo_name)
     repository_user_list = repository.user_list
@@ -53,7 +53,7 @@ def add_repo_group_dialog(request, repo_name):
 # add repo user dialog
 def add_group_user_dialog(request, group_name):
     # retrieve all the users
-    user_list = User.retrieve_all()
+    user_list = UserApache.retrieve_all()
     # get the users already added to the repository
     group = Group(group_name)
     group.load()
@@ -64,7 +64,7 @@ def add_group_user_dialog(request, group_name):
     for group_user in group_user_list:
         if group_user in user_list:
             user_list.remove(group_user)
-    everyone = User('everyone')
+    everyone = UserApache('everyone')
     user_list.remove(everyone)
     return render_to_response('gitstack/add_group_user.html', {'group_name': group_name,
                                                               'user_list': user_list }, context_instance=RequestContext(request))

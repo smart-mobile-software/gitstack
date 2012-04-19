@@ -1,4 +1,4 @@
-import subprocess, ConfigParser, logging, shutil, os, ctypes, stat
+import subprocess, ConfigParser, logging, shutil, os, ctypes, stat, ldap, jsonpickle #@UnresolvedImport 
 from django.conf import settings
 
 logger = logging.getLogger('console')
@@ -35,7 +35,7 @@ class RepoConfigParser:
             all_users = str_u_list.split(' ')
             # create users
             for username in all_users:
-                user = User(username)
+                user = UserApache(username)
                 obj_u_list.append(user)
         
         # return the list of users
@@ -101,7 +101,7 @@ class RepoConfigParser:
         os.chdir(settings.INSTALL_DIR)
     
     
-class User:
+class User(object):
     def __unicode__(self):
         return self.username
     
@@ -121,12 +121,15 @@ class User:
     def __repr__(self):
         return self.__unicode__()
     
+    
+    
+class UserApache(User):
     def create(self):
         # check if the user does not already exist
-        if self in User.retrieve_all():
+        if self in UserApache.retrieve_all():
             raise Exception("User already exist")
         # if there are no users, create a file
-        if len(User.retrieve_all()) == 1:
+        if len(UserApache.retrieve_all()) == 1:
             passord_file = open(settings.INSTALL_DIR + '/data/passwdfile', 'w')
             passord_file.write('')
             passord_file.close()
@@ -138,7 +141,7 @@ class User:
         
     # update user's password
     def update(self):
-        if self in User.retrieve_all():
+        if self in UserApache.retrieve_all():
             # change directory to the password file
             os.chdir(settings.INSTALL_DIR + '/data')
             # Apache tool to create an user
@@ -148,7 +151,7 @@ class User:
     
     # delete the user
     def delete(self):
-        if self in User.retrieve_all():
+        if self in UserApache.retrieve_all():
             # change directory to the password file
             os.chdir(settings.INSTALL_DIR + '/data')
             # Apache tool to delete an user
@@ -196,13 +199,77 @@ class User:
             
         # for each user, create a user object
         for username in all_users:
-            user = User(username)
+            user = UserApache(username)
             user_list_obj.append(user)
 
         # add the iser everyone
-        everyone = User("everyone")
+        everyone = UserApache("everyone")
         user_list_obj.append(everyone)
         return user_list_obj
+    
+class UserLdap(User):
+    # import all the ldap users
+    @staticmethod    
+    def sync():
+        # load the settings file
+        config = ConfigParser.ConfigParser()
+        config.read(settings.SETTINGS_PATH)
+        
+        # retrieve the settings
+        host = config.get('authentication', 'ldaphost')
+        base_dn = config.get('authentication', 'ldapbasedn')
+        bind_dn = config.get('authentication', 'ldapbinddn')
+        bind_password = config.get('authentication', 'ldapbindpassword')
+        ldap_filter = '(objectclass=person)'
+        attrs = ['cn']
+        
+        ldap_user_list = []
+        
+        # connect to ldap
+        con = ldap.initialize(host)
+        try:
+            # retrieve all the users
+            con.simple_bind_s(bind_dn,bind_password)
+            ldap_full_user_list = con.search_s( base_dn, ldap.SCOPE_SUBTREE, ldap_filter, attrs )
+            for item in ldap_full_user_list:
+                # create one ldap user for each user retrieved
+                ldap_user = UserLdap(item[1]['cn'][0])
+                ldap_user_list.append(ldap_user)
+                
+                
+        except (ldap.INVALID_CREDENTIALS,ldap.LDAPError) as e :
+            if type(e.message) == dict and e.message.has_key('desc'):
+                raise Exception(e.message['desc'])
+    
+            else:
+                raise Exception(e)
+        except Exception as e:
+            raise Exception(e)
+            
+        finally:
+            con.unbind()
+            
+        # Convert the list to the json format
+        ldap_user_list_json = jsonpickle.encode(ldap_user_list)
+        
+        # Store the list in a file
+        ldap_user_file = open(settings.LDAP_USERS_PATH, 'w')
+        ldap_user_file.write(ldap_user_list_json)
+        ldap_user_file.close()
+
+    @staticmethod    
+    def retrieve_all():
+        # read the file where are stored the ldap users
+        ldap_user_file = open(settings.LDAP_USERS_PATH, 'r')
+        user_list_json = ldap_user_file.read()
+        user_list = jsonpickle.decode(user_list_json)
+        return user_list
+        
+# instanciate a user based on gitstach authentication settings
+class UserFactory():
+    @staticmethod    
+    def instantiate_user(username, password=""):
+        return UserApache(username, password="")
 
 # Group of users        
 class Group:
@@ -252,7 +319,7 @@ class Group:
                 for str_user in user_list_str:
                     if not str_user == '':
                         # create the user
-                        user = User(str_user)
+                        user = UserApache(str_user)
                         # add the user to the group
                         self.member_list.append(user)
                     
@@ -443,7 +510,7 @@ class Repository:
         repo_config = open(config_file_path,"a")
         
         # check if it is a repository has anonymous read or write
-        everyone = User("everyone")
+        everyone = UserApache("everyone")
         if everyone in self.user_read_list:
             template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template_anonymous_read.conf',"r")
         else:
@@ -472,7 +539,7 @@ class Repository:
             str_group_list = str_group_list + g.name + ' '
             
         # get the user everyone
-        everyone = User("everyone")
+        everyone = UserApache("everyone")
             
         # for each line try to replace username or location
         for line in template_repo_config:
