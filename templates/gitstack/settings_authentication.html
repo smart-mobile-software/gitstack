@@ -39,27 +39,37 @@
 							<input type = "radio"
 								 name = "authMethod"
 								 id = "ldapUsers"
-								 value = "ldapUsers" /> Active directory users <br />
+								 value = "ldapUsers" /> Ldap users <br />
 						 
 						</fieldset> 
 						<div id="ldapSettings">
 							<br />
 							<br />
-							<label>Ldap url</label>
-							<input class="text-input medium-input" type="text" id="ldapUrl" name="ldapUrl" /><br />
-							example : "ldap://10.0.1.24:389/CN=Users,DC=contoso,DC=com"<br />
+							<label>Ldap host</label>
+							<input class="text-input medium-input" type="text" id="ldapHost" name="ldapHost" /><br />
+							example : "ldap://192.168.1.54:389/"<br />
 							<br />
+							<label>Ldap base dn</label>
+							<input class="text-input medium-input" type="text" id="ldapBaseDn" name="ldapBaseDn" /><br />
+							The DN of the branch of the directory where all searches should start from. Example : "CN=Users,DC=contoso,DC=com"<br />
+							<br />
+							
 							<br />
 							<label>Ldap bind DN</label><br />
 							<input class="text-input medium-input" type="text" id="ldapBindDn" name="ldapBindDn" /><br />
-							Distinguished name to search for entries, example : "CN=john,CN=Users,DC=contoso,DC=com"<br />
+							Distinguished name to search for entries. Example : "CN=john,CN=Users,DC=contoso,DC=com"<br />
 							<br />
 							<br />
 							<label>Ldap bind password</label><br />
 							<input class="text-input medium-input" type="password" id="ldapBindPassword" name="ldapBindPassword" /><br />
 							A bind password to use in conjunction with the bind DN, example : john's password.
 							<br />
-							
+							<br />
+							<input id="testSettings" class="button" type="submit" value="Test ldap settings" />
+							<div id="loading">
+								<p><img src="/static/images/loading2.gif" /> Please Wait</p>
+							</div>
+
 
 						</div>
 						

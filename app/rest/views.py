@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.conf import settings
 
-import json, re, os, jsonpickle, logging, ConfigParser #@UnresolvedImport 
+import json, re, os, jsonpickle, logging, ConfigParser, ldap #@UnresolvedImport 
 logger = logging.getLogger('console')
 
 # user rest api
@@ -395,13 +395,14 @@ def rest_settings_authentication(request):
         
         # retrieve the settings
         auth_method = config.get('authentication', 'authmethod')
-        ldap_url = config.get('authentication', 'ldapurl')
+        ldap_host = config.get('authentication', 'ldaphost')
+        ldap_base_dn = config.get('authentication', 'ldapbasedn')
         ldap_bind_dn = config.get('authentication', 'ldapbinddn')
         ldap_bind_password = config.get('authentication', 'ldapbindpassword')
         
         # build json reply
-        json_reply = '{"authMethod":"' + auth_method + '","ldap":{"url": "' + ldap_url +'","bindDn": "' + ldap_bind_dn +'","bindPassword": "' + ldap_bind_password + '"}}'
-        # json_reply = '{"authMethod":"ldap","ldap":{"url": "ldap://10.0.1.24:389/CN=Users,DC=contoso,DC=com","bindDn": "CN=john,CN=Users,DC=contoso,DC=com","bindPassword": "thepassword"}}'
+        json_reply = '{"authMethod":"' + auth_method + '","ldap":{"host": "' + ldap_host +'","baseDn": "' + ldap_base_dn +'","bindDn": "' + ldap_bind_dn +'","bindPassword": "' + ldap_bind_password + '"}}'
+        # json_reply = '{"authMethod":"ldap","ldap":{"url": "ldap://10.0.1.24:389/","baseDn": "CN=Users,DC=contoso,DC=com","bindDn": "CN=john,CN=Users,DC=contoso,DC=com","bindPassword": "thepassword"}}'
         return HttpResponse(json_reply)
     # Set the settings
     if request.method == 'PUT':
@@ -413,7 +414,8 @@ def rest_settings_authentication(request):
         
         # save the settings
         config.set('authentication', 'authmethod', auth_settings['authMethod'])
-        config.set('authentication', 'ldapurl', auth_settings['ldap']['url'])
+        config.set('authentication', 'ldaphost', auth_settings['ldap']['host'])
+        config.set('authentication', 'ldapbasedn', auth_settings['ldap']['baseDn'])
         config.set('authentication', 'ldapbinddn', auth_settings['ldap']['bindDn'])
         config.set('authentication', 'ldapbindpassword', auth_settings['ldap']['bindPassword'])
         
@@ -425,6 +427,32 @@ def rest_settings_authentication(request):
         
         return HttpResponse("Settings successfully saved.")
     
+# authentication ldap
+def rest_settings_authentication_ldap_test(request):   
+    # retrieve the settings from the request
+
+    ldap_host = request.GET['host']
+    ldap_bind_dn = request.GET['bindDn']
+    ldap_bind_password = request.GET['bindPassword']
+    
+    con = ldap.initialize(ldap_host)
+    try:
+        con.simple_bind_s(ldap_bind_dn,ldap_bind_password)
+    except (ldap.INVALID_CREDENTIALS,ldap.LDAPError) as e :
+        if type(e.message) == dict and e.message.has_key('desc'):
+            return HttpResponseServerError(e.message['desc'])
+
+        else:
+            return HttpResponseServerError(e)
+    except Exception as e:
+        return HttpResponseServerError(e)
+        
+    finally:
+        con.unbind()
+        
+    return HttpResponse("Ldap server successfully contacted.")
+
+
 
 
     

@@ -29,7 +29,8 @@ $(document).ready(function(){
 				}
 				
 				// fill ldap settings
-				$('#ldapUrl').val(settings.ldap.url);
+				$('#ldapHost').val(settings.ldap.host);
+				$('#ldapBaseDn').val(settings.ldap.baseDn);
 				$('#ldapBindDn').val(settings.ldap.bindDn);
 				$('#ldapBindPassword').val(settings.ldap.bindPassword);
 			},
@@ -54,6 +55,31 @@ $(document).ready(function(){
 
 	});
 	
+	// test settings
+	$('#testSettings').click(function(){		
+		// Assign handlers immediately after making the request,
+		// and remember the jqxhr object for this request
+		// construct the json object 
+		$('#loading').show();
+
+		$.get('/rest/settings/authentication/ldaptest/', { host: $('#ldapHost').val(), bindDn: $('#ldapBindDn').val(), bindPassword: $('#ldapBindPassword').val()}, function(message) {
+
+			showMessage("success", message);
+
+		})
+		.error(function(error) { 
+			showMessage("error", error.responseText);
+		})
+		.complete(function(){
+			$('#loading').hide();
+
+		});
+		
+		
+
+	});
+
+	
 	// save settings
 	$('#saveSettings').click(function(){
 		// check which auth method is choosen
@@ -66,7 +92,7 @@ $(document).ready(function(){
 		}
 		
 		// construct the json object 
-		json_string = '{"authMethod":"' + authMethod + '","ldap":{"url": "' + $('#ldapUrl').val() +'","bindDn": "' + $('#ldapBindDn').val() + '","bindPassword": "' + $('#ldapBindPassword').val() + '"}}';
+		json_string = '{"authMethod":"' + authMethod + '","ldap":{"host": "' + $('#ldapHost').val() +'","baseDn": "' + $('#ldapBaseDn').val() + '","bindDn": "' + $('#ldapBindDn').val() + '","bindPassword": "' + $('#ldapBindPassword').val() + '"}}';
 
 		// update the settings
 		$.ajax({
