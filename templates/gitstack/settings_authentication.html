@@ -45,31 +45,57 @@
 						<div id="ldapSettings">
 							<br />
 							<br />
-							<label>Ldap host</label>
-							<input class="text-input medium-input" type="text" id="ldapHost" name="ldapHost" /><br />
-							example : "ldap://192.168.1.54:389/"<br />
+							<label>Protocol</label>
+							<input class="text-input small-input" type="text" id="ldapProtocol" name="ldapProtocol" /><br />
+							For regular ldap, use the string ldap. For secure LDAP, use ldaps instead. Example : "ldap"<br />
 							<br />
-							<label>Ldap base dn</label>
+							<label>Host</label>
+							<input class="text-input small-input" type="text" id="ldapHost" name="ldapHost" /><br />
+							The dns name or ip of the ldap server. Example : "192.168.1.54"<br />
+							<br />
+							<br />
+							<label>Port</label>
+							<input class="text-input small-input" type="text" id="ldapPort" name="ldapPort" /><br />
+							Port of the ldap server. Example : "389"<br />
+							<br />
+							<br />
+							<label>Base dn</label>
 							<input class="text-input medium-input" type="text" id="ldapBaseDn" name="ldapBaseDn" /><br />
 							The DN of the branch of the directory where all searches should start from. Example : "CN=Users,DC=contoso,DC=com"<br />
 							<br />
-							
 							<br />
-							<label>Ldap bind DN</label><br />
+							<label>Attribute</label>
+							<input class="text-input small-input" type="text" id="ldapAttribute" name="ldapAttribute" /><br />
+							The attribute on which the username is stored. Example : "dn"<br />
+							<br />
+							<br />
+							<label>Scope</label>
+							<input class="text-input small-input" type="text" id="ldapScope" name="ldapScope" /><br />
+							The scope of the search. Can be either one or sub. Example : "sub"<br />
+							<br />
+							<br />
+							<label>Filter</label>
+							<input class="text-input small-input" type="text" id="ldapFilter" name="ldapFilter" /><br />
+							A valid LDAP search filter. Example : "(objectClass=person)"<br />
+							<br />
+							<br />
+							<label>Bind DN</label><br />
 							<input class="text-input medium-input" type="text" id="ldapBindDn" name="ldapBindDn" /><br />
 							Distinguished name to search for entries. Example : "CN=john,CN=Users,DC=contoso,DC=com"<br />
 							<br />
 							<br />
-							<label>Ldap bind password</label><br />
-							<input class="text-input medium-input" type="password" id="ldapBindPassword" name="ldapBindPassword" /><br />
+							<label>Bind password</label><br />
+							<input class="text-input small-input" type="password" id="ldapBindPassword" name="ldapBindPassword" /><br />
 							A bind password to use in conjunction with the bind DN, example : john's password.
 							<br />
 							<br />
 							<input id="testSettings" class="button" type="submit" value="Test ldap settings" />
-							<div id="loading">
+							<input id="sync" class="button" type="submit" value="Sync with ldap" />
+
+							<div class="loading">
 								<p><img src="/static/images/loading2.gif" /> Please Wait</p>
 							</div>
-
+							
 
 						</div>
 						

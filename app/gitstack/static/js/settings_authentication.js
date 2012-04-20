@@ -29,10 +29,15 @@ $(document).ready(function(){
 				}
 				
 				// fill ldap settings
+				$('#ldapProtocol').val(settings.ldap.protocol);
 				$('#ldapHost').val(settings.ldap.host);
+				$('#ldapPort').val(settings.ldap.port);
 				$('#ldapBaseDn').val(settings.ldap.baseDn);
+				$('#ldapAttribute').val(settings.ldap.attribute);
+				$('#ldapScope').val(settings.ldap.scope);
+				$('#ldapFilter').val(settings.ldap.filter);
 				$('#ldapBindDn').val(settings.ldap.bindDn);
-				$('#ldapBindPassword').val(settings.ldap.bindPassword);
+				$('#ldapBindPassword').val(settings.ldap.bindPassword);			
 			},
 			
 		});
@@ -60,18 +65,48 @@ $(document).ready(function(){
 		// Assign handlers immediately after making the request,
 		// and remember the jqxhr object for this request
 		// construct the json object 
-		$('#loading').show();
+		$('.loading').show();
+			
 
-		$.get('/rest/settings/authentication/ldaptest/', { host: $('#ldapHost').val(), bindDn: $('#ldapBindDn').val(), bindPassword: $('#ldapBindPassword').val()}, function(message) {
+		params = { protocol: $('#ldapProtocol').val(),
+				host: $('#ldapHost').val(),
+				port: $('#ldapPort').val(),
+				baseDn: $('#ldapBaseDn').val(),
+				attribute: $('#ldapAttribute').val(),
+				scope: $('#ldapScope').val(),
+				filter: $('#ldapFilter').val(),
+				bindDn: $('#ldapBindDn').val(),
+				bindPassword: $('#ldapBindPassword').val() }	
 
+		$.get('/rest/settings/authentication/ldap/test/', params, function(message) {
 			showMessage("success", message);
-
 		})
 		.error(function(error) { 
 			showMessage("error", error.responseText);
 		})
 		.complete(function(){
-			$('#loading').hide();
+			$('.loading').hide();
+
+		});
+		
+		
+
+	});
+	
+	// Import ldap users
+	$('#sync').click(function(){		
+		// Assign handlers immediately after making the request,
+		// and remember the jqxhr object for this request
+		// construct the json object 
+		$('.loading').show();
+		$.get('/rest/settings/authentication/ldap/sync/', function(message) {
+			showMessage("success", message);
+		})
+		.error(function(error) { 
+			showMessage("error", error.responseText);
+		})
+		.complete(function(){
+			$('.loading').hide();
 
 		});
 		
@@ -87,12 +122,18 @@ $(document).ready(function(){
 		authMethod = '';
 		if(isGitstackUserChecked == true){
 			authMethod = 'file';
+			$('#usersAndGroups').show();
+
 		} else {
 			authMethod = 'ldap';
+			$('#usersAndGroups').hide();
+
 		}
 		
-		// construct the json object 
-		json_string = '{"authMethod":"' + authMethod + '","ldap":{"host": "' + $('#ldapHost').val() +'","baseDn": "' + $('#ldapBaseDn').val() + '","bindDn": "' + $('#ldapBindDn').val() + '","bindPassword": "' + $('#ldapBindPassword').val() + '"}}';
+		// construct the json object 															
+		json_string = '{"authMethod":"' + authMethod + '","ldap":{"protocol": "' + $('#ldapProtocol').val() +'","host": "' + $('#ldapHost').val() +'","port": "' + $('#ldapPort').val() +'","baseDn": "' + $('#ldapBaseDn').val() +'","attribute": "' + $('#ldapAttribute').val() +'","scope": "' + $('#ldapScope').val() +'","filter": "' + $('#ldapFilter').val() +'","bindDn": "' + $('#ldapBindDn').val() +'","bindPassword": "' + $('#ldapBindPassword').val() + '"}}';
+		
+		//json_string = '{"authMethod":"' + authMethod + '","ldap":{"host": "' + $('#ldapHost').val() +'","baseDn": "' + $('#ldapBaseDn').val() + '","bindDn": "' + $('#ldapBindDn').val() + '","bindPassword": "' + $('#ldapBindPassword').val() + '"}}';
 
 		// update the settings
 		$.ajax({

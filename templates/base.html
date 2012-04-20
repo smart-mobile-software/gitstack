@@ -65,6 +65,10 @@
 			</script>
 		<![endif]-->
 		
+		<!-- Display users and groups or not -->
+		<script type="text/javascript" src="/static/js/common.js"></script>
+
+		
 		<script type="text/javascript">
 		  var uvOptions = {};
 		  (function() {
@@ -92,7 +96,7 @@
 					</a>   
 					
 				</li>
-				<li>
+				<li id="usersAndGroups">
 					<a href="#" class="nav-top-item {% block users_groups_current %}{% endblock %}"> <!-- Add the class "no-submenu" to menu items with no sub menu -->
 						Users & Groups
 					</a>

@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseServerError
-from gitstack.models import Repository, UserApache, Apache, Group
+from gitstack.models import Repository, UserFactory, Apache, Group, UserLdap
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.conf import settings
@@ -16,14 +16,14 @@ def rest_user(request):
             # get the username/password from the request
             username = request.POST['username']
             password = request.POST['password']
-            user = UserApache(username, password)
+            user = UserFactory.instantiate_user(username, password)
             user.create()
             return HttpResponse("User created")
         # get retrieve_all the users
         if request.method == 'GET':
             # convert list of objects to list of strings
             user_list_str = []
-            user_list_obj = UserApache.retrieve_all()
+            user_list_obj = UserFactory.instantiate_user('').retrieve_all()
             for user in user_list_obj:   
                 user_list_str.append(user.username)
             json_reply = json.dumps(user_list_str)
@@ -33,7 +33,7 @@ def rest_user(request):
             # retrieve the credentials from the json
             credentials = json.loads(request.raw_post_data)
             # create an instance of the user and update it
-            user = UserApache(credentials['username'], credentials['password'])
+            user = UserFactory.instantiate_user(credentials['username'], credentials['password'])
             user.update()
             return HttpResponse("User successfully updated")
         
@@ -110,7 +110,7 @@ def rest_user_action(request, username):
     try:
         if request.method == 'DELETE':
             # retrieve the username from the json
-            user = UserApache(username)
+            user = UserFactory.instantiate_user(username)
             # delete the user
             user.delete()
             return HttpResponse(username + " has been deleted")
@@ -134,7 +134,7 @@ def rest_group_action(request, name):
 def rest_group_user(request, group_name, username):
     group = Group(group_name)
     group.load()
-    user = UserApache(username)
+    user = UserFactory.instantiate_user(username)
     
     # Add member to the group
     if request.method == 'POST':
@@ -230,7 +230,7 @@ def rest_repo_action(request, repo_name):
 @csrf_exempt
 def rest_repo_user(request, repo_name, username):
     repo = Repository(repo_name)
-    user = UserApache(username)
+    user = UserFactory.instantiate_user(username)
 
     # Add user
     if request.method == 'POST':
@@ -394,14 +394,21 @@ def rest_settings_authentication(request):
         config.read(settings.SETTINGS_PATH)
         
         # retrieve the settings
+        
         auth_method = config.get('authentication', 'authmethod')
+        ldap_protocol = config.get('authentication', 'ldapprotocol')
         ldap_host = config.get('authentication', 'ldaphost')
-        ldap_base_dn = config.get('authentication', 'ldapbasedn')
-        ldap_bind_dn = config.get('authentication', 'ldapbinddn')
-        ldap_bind_password = config.get('authentication', 'ldapbindpassword')
+        ldap_port = config.get('authentication', 'ldapport')
+        ldap_base_dn = config.get('authentication', 'ldapbaseDn')
+        ldap_attribute = config.get('authentication', 'ldapattribute')
+        ldap_scope = config.get('authentication', 'ldapscope')
+        ldap_filter = config.get('authentication', 'ldapfilter')
+        ldap_bind_dn = config.get('authentication', 'ldapbindDn')
+        ldap_bind_password = config.get('authentication', 'ldapbindPassword')
         
         # build json reply
-        json_reply = '{"authMethod":"' + auth_method + '","ldap":{"host": "' + ldap_host +'","baseDn": "' + ldap_base_dn +'","bindDn": "' + ldap_bind_dn +'","bindPassword": "' + ldap_bind_password + '"}}'
+        json_reply = '{"authMethod":"' + auth_method + '","ldap":{"protocol": "' + ldap_protocol +'","host": "' + ldap_host +'","port": "' + ldap_port +'","baseDn": "' + ldap_base_dn +'","attribute": "' + ldap_attribute +'","scope": "' + ldap_scope +'","filter": "' + ldap_filter +'","bindDn": "' + ldap_bind_dn +'","bindPassword": "' + ldap_bind_password + '"}}'
+        # json_reply = '{"authMethod":"' + auth_method + '","ldap":{"host": "' + ldap_host +'","baseDn": "' + ldap_base_dn +'","bindDn": "' + ldap_bind_dn +'","bindPassword": "' + ldap_bind_password + '"}}'
         # json_reply = '{"authMethod":"ldap","ldap":{"url": "ldap://10.0.1.24:389/","baseDn": "CN=Users,DC=contoso,DC=com","bindDn": "CN=john,CN=Users,DC=contoso,DC=com","bindPassword": "thepassword"}}'
         return HttpResponse(json_reply)
     # Set the settings
@@ -413,13 +420,19 @@ def rest_settings_authentication(request):
         config.read(settings.SETTINGS_PATH)
         
         # save the settings
+  
+                
         config.set('authentication', 'authmethod', auth_settings['authMethod'])
+        config.set('authentication', 'ldapprotocol', auth_settings['ldap']['protocol'])
         config.set('authentication', 'ldaphost', auth_settings['ldap']['host'])
-        config.set('authentication', 'ldapbasedn', auth_settings['ldap']['baseDn'])
-        config.set('authentication', 'ldapbinddn', auth_settings['ldap']['bindDn'])
-        config.set('authentication', 'ldapbindpassword', auth_settings['ldap']['bindPassword'])
-        
-      
+        config.set('authentication', 'ldapport', auth_settings['ldap']['port'])
+        config.set('authentication', 'ldapbaseDn', auth_settings['ldap']['baseDn'])
+        config.set('authentication', 'ldapattribute', auth_settings['ldap']['attribute'])
+        config.set('authentication', 'ldapscope', auth_settings['ldap']['scope'])
+        config.set('authentication', 'ldapfilter', auth_settings['ldap']['filter'])
+        config.set('authentication', 'ldapbindDn', auth_settings['ldap']['bindDn'])
+        config.set('authentication', 'ldapbindPassword', auth_settings['ldap']['bindPassword'])
+              
         f = open(settings.SETTINGS_PATH, "w")
         config.write(f)
         f.close()
@@ -431,13 +444,40 @@ def rest_settings_authentication(request):
 def rest_settings_authentication_ldap_test(request):   
     # retrieve the settings from the request
 
+    ldap_protocol = request.GET['protocol']
     ldap_host = request.GET['host']
+    ldap_port = request.GET['port']
+    ldap_base_dn = request.GET['baseDn']
+    ldap_attribute2 = request.GET['attribute'].__str__()
+    ldap_attribute = [ldap_attribute2]
+    ldap_scope2 = request.GET['scope']
+    if(ldap_scope2 == 'one'):
+        ldap_scope = ldap.SCOPE_ONELEVEL
+    else :
+        ldap_scope = ldap.SCOPE_SUBTREE
+
+        
+    ldap_filter = request.GET['filter']
     ldap_bind_dn = request.GET['bindDn']
     ldap_bind_password = request.GET['bindPassword']
     
-    con = ldap.initialize(ldap_host)
+
+
+    con = ldap.initialize(ldap_protocol + '://' + ldap_host + ':' + ldap_port + '/')
     try:
+        # connects
         con.simple_bind_s(ldap_bind_dn,ldap_bind_password)
+        
+        # retrieve some users
+        
+        full_list = con.search_s( ldap_base_dn, ldap_scope, ldap_filter, ldap_attribute )
+        nb_users = len(full_list)
+        if nb_users == 0:
+            # no users
+            return HttpResponseServerError("No users were returned.")
+        
+
+
     except (ldap.INVALID_CREDENTIALS,ldap.LDAPError) as e :
         if type(e.message) == dict and e.message.has_key('desc'):
             return HttpResponseServerError(e.message['desc'])
@@ -448,9 +488,23 @@ def rest_settings_authentication_ldap_test(request):
         return HttpResponseServerError(e)
         
     finally:
-        con.unbind()
-        
+        con.unbind()  
+      
     return HttpResponse("Ldap server successfully contacted.")
+
+
+   
+# sync with ldap
+def rest_settings_authentication_ldap_sync(request):   
+    # Perform the sync
+    UserLdap.sync()
+    '''
+    try:
+        UserLdap.sync()
+    except Exception as e:
+        return HttpResponseServerError(e)
+    '''
+    return HttpResponse("Synchronization suceeded")
 
 
 

@@ -44,8 +44,13 @@ urlpatterns = patterns('rest.views',
     url(r'^admin/$', 'rest_admin'),
     # enable/disable web interface
     url(r'^webinterface/$', 'webinterface'),
+    
     # ldap auth settings
-    url(r'^settings/authentication/ldaptest/$', 'rest_settings_authentication_ldap_test'),
+    # test settings
+    url(r'^settings/authentication/ldap/test/$', 'rest_settings_authentication_ldap_test'),
+    # sync
+    url(r'^settings/authentication/ldap/sync/$', 'rest_settings_authentication_ldap_sync'),
+
     url(r'^settings/authentication/$', 'rest_settings_authentication'),
     
     

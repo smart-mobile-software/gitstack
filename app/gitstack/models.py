@@ -35,7 +35,7 @@ class RepoConfigParser:
             all_users = str_u_list.split(' ')
             # create users
             for username in all_users:
-                user = UserApache(username)
+                user = UserFactory.instantiate_user(username)
                 obj_u_list.append(user)
         
         # return the list of users
@@ -202,7 +202,7 @@ class UserApache(User):
             user = UserApache(username)
             user_list_obj.append(user)
 
-        # add the iser everyone
+        # add the user everyone
         everyone = UserApache("everyone")
         user_list_obj.append(everyone)
         return user_list_obj
@@ -212,30 +212,43 @@ class UserLdap(User):
     @staticmethod    
     def sync():
         # load the settings file
+        
         config = ConfigParser.ConfigParser()
         config.read(settings.SETTINGS_PATH)
         
         # retrieve the settings
-        host = config.get('authentication', 'ldaphost')
-        base_dn = config.get('authentication', 'ldapbasedn')
-        bind_dn = config.get('authentication', 'ldapbinddn')
-        bind_password = config.get('authentication', 'ldapbindpassword')
-        ldap_filter = '(objectclass=person)'
-        attrs = ['cn']
+        ldap_protocol = config.get('authentication', 'ldapprotocol')
+        ldap_host = config.get('authentication', 'ldaphost')
+        ldap_port = config.get('authentication', 'ldapport')
+        ldap_base_dn = config.get('authentication', 'ldapbasedn')
+        ldap_attribute2 = config.get('authentication', 'ldapattribute')
+        ldap_attribute = [ldap_attribute2]
+        
+        ldap_scope2 = config.get('authentication', 'ldapscope')
+        if(ldap_scope2 == 'one'):
+            ldap_scope = ldap.SCOPE_ONELEVEL
+        else :
+            ldap_scope = ldap.SCOPE_SUBTREE
+          
+        ldap_filter = config.get('authentication', 'ldapfilter')
+        ldap_bind_dn = config.get('authentication', 'ldapbinddn')
+        ldap_bind_password = config.get('authentication', 'ldapbindpassword')
+        
+       
         
         ldap_user_list = []
         
         # connect to ldap
-        con = ldap.initialize(host)
+        con = ldap.initialize(ldap_protocol + '://' + ldap_host + ':' + ldap_port + '/')
         try:
             # retrieve all the users
-            con.simple_bind_s(bind_dn,bind_password)
-            ldap_full_user_list = con.search_s( base_dn, ldap.SCOPE_SUBTREE, ldap_filter, attrs )
+            con.simple_bind_s(ldap_bind_dn,ldap_bind_password)
+            ldap_full_user_list = con.search_s( ldap_base_dn, ldap_scope, ldap_filter, ldap_attribute )
             for item in ldap_full_user_list:
                 # create one ldap user for each user retrieved
-                ldap_user = UserLdap(item[1]['cn'][0])
+                ldap_user = UserLdap(item[1][ldap_attribute2][0])
                 ldap_user_list.append(ldap_user)
-                
+                pass
                 
         except (ldap.INVALID_CREDENTIALS,ldap.LDAPError) as e :
             if type(e.message) == dict and e.message.has_key('desc'):
@@ -263,13 +276,27 @@ class UserLdap(User):
         ldap_user_file = open(settings.LDAP_USERS_PATH, 'r')
         user_list_json = ldap_user_file.read()
         user_list = jsonpickle.decode(user_list_json)
+        
+        # add the user everyone
+        everyone = UserLdap("everyone")
+        user_list.append(everyone)
         return user_list
         
 # instanciate a user based on gitstach authentication settings
 class UserFactory():
     @staticmethod    
     def instantiate_user(username, password=""):
-        return UserApache(username, password="")
+        # check the current authentication method 
+        # load the settings file
+        config = ConfigParser.ConfigParser()
+        config.read(settings.SETTINGS_PATH)
+        
+        # retrieve the settings
+        auth_method = config.get('authentication', 'authmethod')
+        if auth_method == 'ldap':
+            return UserLdap(username)
+        else:
+            return UserApache(username, password)
 
 # Group of users        
 class Group:
@@ -510,7 +537,7 @@ class Repository:
         repo_config = open(config_file_path,"a")
         
         # check if it is a repository has anonymous read or write
-        everyone = UserApache("everyone")
+        everyone = UserFactory.instantiate_user("everyone")
         if everyone in self.user_read_list:
             template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template_anonymous_read.conf',"r")
         else:
@@ -539,7 +566,7 @@ class Repository:
             str_group_list = str_group_list + g.name + ' '
             
         # get the user everyone
-        everyone = UserApache("everyone")
+        everyone = UserFactory.instantiate_user("everyone")
             
         # for each line try to replace username or location
         for line in template_repo_config:

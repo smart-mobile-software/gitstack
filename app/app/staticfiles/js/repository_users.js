@@ -10,6 +10,13 @@ $(document).ready(function(){
 	
 	$('#addRepoUser').button();
 	
+	function hideApacheGroupOnLdap(){
+		alert('ok');
+	}
+	
+	hideApacheGroupOnLdap();
+
+	
 	$('#addRepoUser').click(function() { 
 		// show the dialog
 		$('#addRepoUserDialog').load('add/', function() {
