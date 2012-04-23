@@ -544,6 +544,11 @@ class Repository:
         # check the current authentication method 
         # load the settings file
         config = ConfigParser.ConfigParser()
+        # make sure that the config file exist
+        if not os.path.exists(settings.SETTINGS_PATH):
+            # create the file 
+            ldap_helper = LdapHelper()
+ 
         config.read(settings.SETTINGS_PATH)
         everyone = UserFactory.instantiate_user("everyone")
 

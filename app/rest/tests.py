@@ -1,8 +1,22 @@
 from gitstack.models import Repository, UserApache, Group
 from django.test import TestCase
 from django.test.client import Client
-import time, json
+import time, json, os
+from django.conf import settings
 
+'''
+For ldap test, use the following parameters : 
+ldaphost = 192.168.1.54
+ldapbasedn = CN=Users,DC=contoso,DC=com
+ldapbinddn = CN=john,CN=Users,DC=contoso,DC=com
+ldapbindpassword = Abcd!123
+ldapprotocol = ldap
+ldapport = 389
+ldapattribute = cn
+ldapscope = sub
+ldapfilter = (objectClass=person)
+
+'''
 
 class SimpleTest(TestCase):
     
@@ -38,7 +52,10 @@ class SimpleTest(TestCase):
         for group in groups:
             # delete the group
             group.delete()
-
+            
+        # remove the settings.ini file from the filesystem
+        os.remove(settings.SETTINGS_PATH)
+        
     # create repositories
     def create_repos(self):
         self.assertEqual(self.c.post('/rest/repository/', { 'name' : 'repo1' }).status_code, 200) 
@@ -324,8 +341,37 @@ class SimpleTest(TestCase):
         response = self.c.get('/rest/repository/repo1/group/group1/')
         permissions = json.loads(response.content)
         self.assertEqual(permissions['write'], False)
-    
-    
+        
+        
+    ################################
+    # Ldap 
+    #################################
+    def test_ldap(self):
+        # get ldap settings
+        response = self.c.get('/rest/settings/authentication/')
+        # check that "file" auth is selected
+        self.assertEqual(response.content, '{"authMethod":"file","ldap":{"protocol": "","host": "","port": "","baseDn": "","attribute": "","scope": "","filter": "","bindDn": "","bindPassword": ""}}')
+        # set some ldap settings
+        self.assertEqual(self.c.put('/rest/settings/authentication/',data='{"authMethod":"ldap","ldap":{"protocol": "ldap","host": "192.168.1.54","port": "389","baseDn": "CN=Users,DC=contoso,DC=com","attribute": "cn","scope": "sub","filter": "(objectClass=person)","bindDn": "CN=john,CN=Users,DC=contoso,DC=com","bindPassword": "Abcd!123"}}', content_type='application/json').status_code, 200)
+        # retrieve the ldap settings
+        response = self.c.get('/rest/settings/authentication/')
+        self.assertEqual(response.content, '{"authMethod":"ldap","ldap":{"protocol": "ldap","host": "192.168.1.54","port": "389","baseDn": "CN=Users,DC=contoso,DC=com","attribute": "cn","scope": "sub","filter": "(objectClass=person)","bindDn": "CN=john,CN=Users,DC=contoso,DC=com","bindPassword": "Abcd!123"}}')
+        # test the ldap settings
+        self.assertEqual(self.c.get('/rest/settings/authentication/ldap/test/?protocol=ldap&host=192.168.1.54&port=389&baseDn=CN%3DUsers%2CDC%3Dcontoso%2CDC%3Dcom&attribute=cn&scope=sub&filter=(objectClass%3Dperson)&bindDn=CN%3Djohn%2CCN%3DUsers%2CDC%3Dcontoso%2CDC%3Dcom&bindPassword=Abcd!123').status_code, 200)
+        # add users to the repo1 
+        # the user1 has read rights by default
+        self.assertEqual(self.c.post('/rest/repository/repo1/user/user1/').status_code, 200)
+        # Check if the user1 has the read rights
+        response = self.c.get('/rest/repository/repo1/user/user1/')
+        permissions = json.loads(response.content)
+        self.assertEqual(permissions['read'], True)
+        # remove user1 read permissions
+        self.assertEqual(self.c.put('/rest/repository/repo1/user/user1/',data='{"read":false}', content_type='application/json').status_code, 200)
+        # Check if the user1 has the read rights
+        response = self.c.get('/rest/repository/repo1/user/user1/')
+        permissions = json.loads(response.content)
+        self.assertEqual(permissions['read'], False)
+        
     ################################
     # Gitphp web access
     ################################
