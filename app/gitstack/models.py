@@ -1,6 +1,6 @@
 import subprocess, ConfigParser, logging, shutil, os, ctypes, stat, ldap, jsonpickle #@UnresolvedImport 
 from django.conf import settings
-
+from helpers import LdapHelper
 logger = logging.getLogger('console')
 
 # performs operations on apache
@@ -536,12 +536,28 @@ class Repository:
         
         repo_config = open(config_file_path,"a")
         
-        # check if it is a repository has anonymous read or write
+        # check the current authentication method 
+        # load the settings file
+        config = ConfigParser.ConfigParser()
+        config.read(settings.SETTINGS_PATH)
         everyone = UserFactory.instantiate_user("everyone")
-        if everyone in self.user_read_list:
-            template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template_anonymous_read.conf',"r")
-        else:
-            template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template.conf',"r")
+
+        # retrieve the settings
+        auth_method = config.get('authentication', 'authmethod')
+        # file based authentification method
+        if auth_method == 'file':
+            # choose the correct template
+            # check if it is a repository has anonymous read or write
+            if everyone in self.user_read_list:
+                template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template_anonymous_read_file.conf',"r")
+            else:
+                template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template_file.conf',"r")
+        # ldap authentification method
+        elif auth_method == 'ldap':
+            if everyone in self.user_read_list:
+                template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template_anonymous_read_ldap.conf',"r")
+            else:
+                template_repo_config = open(settings.INSTALL_DIR + '/app/gitstack/config_template/repository_template_ldap.conf',"r")
 
         # create a list of users & groups
         str_user_read_list = ''
@@ -581,7 +597,17 @@ class Repository:
 
             line = line.replace("WRITE_USER_PERMISSIONS","Require user " + str_user_write_list)
             line = line.replace("WRITE_GROUP_PERMISSIONS","Require group " + str_group_write_list)
+            
+            # authentication ldap
+            if auth_method == 'ldap':
+                line = line.replace("READ_USER_LDAP_PERMISSIONS","Require ldap-user " + str_user_read_list)
+                line = line.replace("WRITE_USER_LDAP_PERMISSIONS","Require ldap-user " + str_user_write_list)
 
+                # get ldap parameters 
+                ldap_helper = LdapHelper()
+                line = line.replace("LDAP_URL",ldap_helper.get_url())
+                line = line.replace("LDAP_BIND_DN",ldap_helper.bind_dn)
+                line = line.replace("LDAP_BIND_PASSWORD",ldap_helper.bind_password)
 
             # replace repository name
             line = line.replace("REPO_NAME",self.name)
