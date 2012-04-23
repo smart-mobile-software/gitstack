@@ -3,6 +3,7 @@ from gitstack.models import Repository, UserFactory, Apache, Group, UserLdap
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.conf import settings
+from gitstack.helpers import LdapHelper
 
 import json, re, os, jsonpickle, logging, ConfigParser, ldap #@UnresolvedImport 
 logger = logging.getLogger('console')
@@ -394,20 +395,10 @@ def rest_settings_authentication(request):
         config.read(settings.SETTINGS_PATH)
         
         # retrieve the settings
-        
-        auth_method = config.get('authentication', 'authmethod')
-        ldap_protocol = config.get('authentication', 'ldapprotocol')
-        ldap_host = config.get('authentication', 'ldaphost')
-        ldap_port = config.get('authentication', 'ldapport')
-        ldap_base_dn = config.get('authentication', 'ldapbaseDn')
-        ldap_attribute = config.get('authentication', 'ldapattribute')
-        ldap_scope = config.get('authentication', 'ldapscope')
-        ldap_filter = config.get('authentication', 'ldapfilter')
-        ldap_bind_dn = config.get('authentication', 'ldapbindDn')
-        ldap_bind_password = config.get('authentication', 'ldapbindPassword')
+        ldap_helper = LdapHelper()     
         
         # build json reply
-        json_reply = '{"authMethod":"' + auth_method + '","ldap":{"protocol": "' + ldap_protocol +'","host": "' + ldap_host +'","port": "' + ldap_port +'","baseDn": "' + ldap_base_dn +'","attribute": "' + ldap_attribute +'","scope": "' + ldap_scope +'","filter": "' + ldap_filter +'","bindDn": "' + ldap_bind_dn +'","bindPassword": "' + ldap_bind_password + '"}}'
+        json_reply = '{"authMethod":"' + ldap_helper.auth_method + '","ldap":{"protocol": "' + ldap_helper.protocol +'","host": "' + ldap_helper.host +'","port": "' + ldap_helper.port +'","baseDn": "' + ldap_helper.base_dn +'","attribute": "' + ldap_helper.attribute +'","scope": "' + ldap_helper.scope +'","filter": "' + ldap_helper.filter +'","bindDn": "' + ldap_helper.bind_dn +'","bindPassword": "' + ldap_helper.bind_password + '"}}'
         # json_reply = '{"authMethod":"' + auth_method + '","ldap":{"host": "' + ldap_host +'","baseDn": "' + ldap_base_dn +'","bindDn": "' + ldap_bind_dn +'","bindPassword": "' + ldap_bind_password + '"}}'
         # json_reply = '{"authMethod":"ldap","ldap":{"url": "ldap://10.0.1.24:389/","baseDn": "CN=Users,DC=contoso,DC=com","bindDn": "CN=john,CN=Users,DC=contoso,DC=com","bindPassword": "thepassword"}}'
         return HttpResponse(json_reply)
@@ -420,22 +411,20 @@ def rest_settings_authentication(request):
         config.read(settings.SETTINGS_PATH)
         
         # save the settings
-  
-                
-        config.set('authentication', 'authmethod', auth_settings['authMethod'])
-        config.set('authentication', 'ldapprotocol', auth_settings['ldap']['protocol'])
-        config.set('authentication', 'ldaphost', auth_settings['ldap']['host'])
-        config.set('authentication', 'ldapport', auth_settings['ldap']['port'])
-        config.set('authentication', 'ldapbaseDn', auth_settings['ldap']['baseDn'])
-        config.set('authentication', 'ldapattribute', auth_settings['ldap']['attribute'])
-        config.set('authentication', 'ldapscope', auth_settings['ldap']['scope'])
-        config.set('authentication', 'ldapfilter', auth_settings['ldap']['filter'])
-        config.set('authentication', 'ldapbindDn', auth_settings['ldap']['bindDn'])
-        config.set('authentication', 'ldapbindPassword', auth_settings['ldap']['bindPassword'])
-              
-        f = open(settings.SETTINGS_PATH, "w")
-        config.write(f)
-        f.close()
+        # retrieve the settings
+        ldap_helper = LdapHelper()  
+        ldap_helper.auth_method = auth_settings['authMethod']
+        ldap_helper.protocol = auth_settings['ldap']['protocol']
+        ldap_helper.host = auth_settings['ldap']['host']
+        ldap_helper.port = auth_settings['ldap']['port']
+        ldap_helper.base_dn = auth_settings['ldap']['baseDn']
+        ldap_helper.attribute = auth_settings['ldap']['attribute']
+        ldap_helper.scope = auth_settings['ldap']['scope']
+        ldap_helper.filter = auth_settings['ldap']['filter']
+        ldap_helper.bind_dn = auth_settings['ldap']['bindDn']
+        ldap_helper.bind_password = auth_settings['ldap']['bindPassword']
+        
+        ldap_helper.save()
         
         
         return HttpResponse("Settings successfully saved.")

@@ -286,7 +286,12 @@ class UserLdap(User):
 class UserFactory():
     @staticmethod    
     def instantiate_user(username, password=""):
-        # check the current authentication method 
+        # check the current authentication method
+        # make sure that the config file exist
+        if not os.path.exists(settings.SETTINGS_PATH):
+            # create the file 
+            ldap_helper = LdapHelper()
+ 
         # load the settings file
         config = ConfigParser.ConfigParser()
         config.read(settings.SETTINGS_PATH)
