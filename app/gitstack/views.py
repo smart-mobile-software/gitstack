@@ -4,11 +4,20 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
-
+from django.conf import settings
+import os
 
 # repositories section
 @login_required
 def index(request):
+    # might be the first run of the app
+    # create a group file if it does not exist
+    if not os.path.isfile(settings.GROUP_FILE_PATH):
+        # create an empty group file
+        group_file = open(settings.GROUP_FILE_PATH, 'w')
+        group_file.write('')
+        group_file.close()        
+        
     return render_to_response('gitstack/index.html', context_instance=RequestContext(request))
 
 # user management on a repository
