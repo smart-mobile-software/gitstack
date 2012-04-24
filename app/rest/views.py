@@ -14,9 +14,17 @@ def rest_user(request):
     try:
         # create user
         if request.method == 'POST':
-            # get the username/password from the request
             username = request.POST['username']
             password = request.POST['password']
+            
+            # get the username/password from the request
+            # check the username
+            matcher = re.compile("^[A-Za-z]\w{2,}$")
+            if matcher.match(username) is None:
+                raise Exception("Please enter an alphanumeric name without spaces")
+            if(username == ""):
+                raise Exception("Please enter a non empty name")
+            
             user = UserFactory.instantiate_user(username, password)
             user.create()
             return HttpResponse("User created")
