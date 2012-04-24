@@ -9,7 +9,7 @@
  * @subpackage Template
  *}
 
- <table cellspacing="0">
+ <table class="shortlog" cellspacing="0">
    {foreach from=$revlist item=rev}
      <tr class="{cycle values="light,dark"}">
        <td class="monospace">{$rev->GetHash(true)}</td>

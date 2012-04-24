@@ -17,7 +17,7 @@
  {include file='title.tpl'}
 
  {* Project brief *}
- <table cellspacing="0">
+ <table class="projectsList" cellspacing="0">
    <tr><td>{t}description{/t}</td><td>{$project->GetDescription()}</td></tr>
    <tr><td>{t}owner{/t}</td><td>{$project->GetOwner()|escape:'html'}</td></tr>
    {if $head}

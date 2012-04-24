@@ -11,7 +11,6 @@
 
  <div class="page_nav">
    {include file='nav.tpl' logcommit=$commit treecommit=$commit current='commit'}
-   <br /><br />
  </div>
 
 {if $commit->GetParent()}
@@ -20,7 +19,7 @@
 	{include file='title.tpl' titlecommit=$commit titletree=$tree target='tree'}
 {/if}
  
- <div class="title_text">
+ <div class="title">
    {* Commit data *}
    <table cellspacing="0">
      <tr>
@@ -80,7 +79,7 @@
      {t count=$treediff->Count() 1=$treediff->Count() plural="%1 files changed:"}%1 file changed:{/t}
    {/if}
  </div>
- <table cellspacing="0">
+ <table class="diffTree" cellspacing="0">
    {* Loop and show files changed *}
    {foreach from=$treediff item=diffline}
      <tr class="{cycle values="light,dark"}">

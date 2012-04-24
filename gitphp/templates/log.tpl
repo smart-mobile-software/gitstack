@@ -40,7 +40,7 @@
    {/if}
  </div>
  {foreach from=$revlist item=rev}
-   <div class="title">
+   <div class="title titlelog">
      <a href="{$SCRIPT_NAME}?p={$project->GetProject()|urlencode}&amp;a=commit&amp;h={$rev->GetHash()}" class="title"><span class="age">{$rev->GetAge()|agestring}</span>{$rev->GetTitle()}</a>
      {include file='refbadges.tpl' commit=$rev}
    </div>

@@ -9,7 +9,7 @@
  * @subpackage Template
  *}
 
- <table cellspacing="0">
+ <table class="headList" cellspacing="0">
    {* Loop and display each head *}
    {foreach from=$headlist item=head name=heads}
        {assign var=headcommit value=$head->GetCommit()}

@@ -17,17 +17,19 @@ body {
 	font-size: 12px;
 	border: solid #d9d8d1;
 	border-width: 1px;
-	margin: 10px;
+	margin: 0;
 	background-color: #ffffff;
 	color: #000000;
 }
 
-a { 
-	color: #0000cc; 
+a {
+	color: #4183C4;
+	text-decoration: none;
 }
 
 a:hover, a:visited, a:active { 
-	color: #880000; 
+	color: #4183C4;
+	text-decoration: underline;
 }
 
 .empty {
@@ -41,31 +43,36 @@ a:hover, a:visited, a:active {
  * (topmost bar with project link, language bar, etc)
  */
 div.page_header { 
-	height: 25px; 
-	padding: 8px; 
+	height: 50px; 
+	line-height: 50px;
+	padding: 0 30px 0 30px;
 	font-size: 18px; 
 	font-weight: bold; 
-	background-color: #d9d8d1; 
+	background: white;
+	background: -moz-linear-gradient(top, white 0%, whiteSmoke 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,white), color-stop(100%,whiteSmoke));
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', endColorstr='#F5F5F5',GradientType=0 );
+	background: -o-linear-gradient(top, white 0%, whiteSmoke 100%);
+	border-bottom: 1px solid #DFDFDF;
 }
 
-div.page_header a:visited, a.header { 
-	color: #0000cc; 
+div.page_header a:link, div.page_header a:visited {
+    color: #4183C4;
+    text-decoration: none;
+    padding: 3px;
+    font-weight: bold;
 }
-
-div.page_header a:hover { 
-	color: #880000; 
-}
-
 
 /*
  * Navigation header links
  */
-div.page_nav { 
-	padding: 8px; 
-}
-
-div.page_nav a:visited { 
-	color: #0000cc; 
+.page_nav {
+	width: 94%;
+	background: #EAEAEA;
+	color: #545454;
+	border: 1px solid #D8D8D8;
+	padding: 12px 5px 10px 5px;
+	margin: 60px auto 15px auto;
 }
 
 
@@ -85,9 +92,14 @@ div.page_path {
  * (footer bar with project description and atom/rss links)
  */
 div.page_footer { 
-	height: 17px; 
-	padding: 4px 8px; 
-	background-color: #d9d8d1;
+	height: 80px;
+	line-height: 80px;
+	padding: 0 30px;
+	margin-top: 15px;
+	margin-bottom: 30px;
+	background: #F1F1F1;
+	border-top: 2px solid #DDD;
+	border-bottom: 1px solid #DDD;
 }
 
 
@@ -134,15 +146,37 @@ div.page_footer_text a:hover {
  * Page body
  */
 div.page_body { 
-	padding: 8px; 
+    line-height: 1.4em;
+    width: 94%;
+    background: #F8F8F8;
+    border: 1px solid #D8D8D8;
+    padding: 5px;
+    margin: 15px auto 15px auto; 
 }
 
+.projectsList, .shortlog, .tree, .commitSearch, .history {
+	width: 95%;
+	margin: 10px auto 15px auto;
+	border: 1px solid #D8D8D8;
+	-moz-box-shadow: 0 0 3px rgba(0,0,0,0.2);
+	-webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2);
+	box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
+
+.projectsList, .tagTable, .headList, .diffTree, .treeTable {
+    width: 95%;
+    background: #F0F0F0;
+    color: #545454;
+    border: 1px solid #D8D8D8;
+    padding: 5px;
+    margin: 0 auto 15px auto;
+}
 
 /*
  * Table displays
  */
 table { 
-	padding: 8px 4px; 
+	/*padding: 8px 4px; */
 }
 
 th { 
@@ -151,24 +185,18 @@ th {
 	text-align: left; 
 }
 
-tr.light:hover {
-	/* odd rows */
-	background-color: #edece6; 
+tr.light, tr.dark {
+	background: #F9F9F9;
+	background: -moz-linear-gradient(top, #F9F9F9 0%, #EFEFEF 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#F9F9F9), color-stop(100%,#EFEFEF));
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F9F9F9', endColorstr='#EFEFEF',GradientType=0 );
+	background: -o-linear-gradient(top, #F9F9F9 0%, #EFEFEF 100%);
+	height: 2.5em;
+	border-bottom: 1px solid #E1E1E1; 
 }
 
-tr.dark {
-	/* even rows */
-	background-color: #f6f6f0; 
-}
-
-tr.dark:hover { 
-	background-color: #edece6; 
-}
-
-td { 
-	padding: 2px 5px; 
-	font-size: 12px; 
-	vertical-align: top;
+td, th {
+	padding: 5px;
 }
 
 td.link { 
@@ -198,6 +226,8 @@ div.error {
  */
 a.rss_logo {
 	/* the rss/atom/opml/txt buttons */
+	margin-top: 30px;
+	margin-left: 5px;
 	padding: 3px 0px; 
 	width: 35px; 
 	line-height: 10px;
@@ -250,6 +280,7 @@ span.head {
 img.logo {
 	/* the git logo */
 	border-width: 0px;
+    margin-top: 10px;
 }
 
 
@@ -257,25 +288,36 @@ img.logo {
  * Title bar
  * (main header with commit message)
  */
-div.title {
-	padding: 6px 8px;
-	background-color: #edece6;
+div.title, div.page_path {
+    width: 94%;
+    margin: 0 auto 10px auto;
+    background: #EAF2F5;
+    border: 1px solid #BEDCE7;
+    padding: 5px;
+    font-size: 17px;
 }
 
-div.title a.title {
-	font-weight: bold; 
-	text-decoration: none; 
-	color: #000000;
-}
-
-div.title:hover { 
-	background-color: #d9d8d1; 
+div.titlelog {
+    margin: 0 auto;
 }
 
 div.title_text { 
-	padding: 6px 0px; 
-	border: solid #d9d8d1; 
-	border-width: 0px 0px 1px; 
+    width: 94%;
+    margin: 0 auto 10px auto;
+    background: #FAFAFA;
+    padding: 20px 0px;
+    border: 1px solid #D9D8D1;
+    border-width: 0px 1px 1px;
+    margin-bottom: 10px;
+}
+
+div.log_body {
+    background: #EAEAEA;
+    border: 1px solid #D9D8D1;
+    border-width: 1px 1px 1px;
+    margin: 0 auto 20px auto;
+    width: 90%;
+    padding: 11px 10px;
 }
 
 
@@ -322,17 +364,6 @@ div.list_head {
 	border: solid #d9d8d1; 
 	border-width: 1px 0px 0px; 
 	font-style: italic; 
-}
-
-a.list {
-	/* Filename in list of changed files */
-	text-decoration: none; 
-	color: #000000; 
-}
-
-a.list:hover { 
-	text-decoration: underline; 
-	color: #880000; 
 }
 
 span.commit_title {
@@ -533,7 +564,8 @@ div.index_header {
 	/* the customizable info header above the list of projects */
 	border: solid #d9d8d1; 
 	border-width: 0px 0px 1px; 
-	padding: 12px 8px; 
+	padding: 1px 30px;
+	font-size: 20px;
 }
 
 span.agehighlight {
@@ -542,10 +574,11 @@ span.agehighlight {
 }
 
 div.projectSearch {
-	/* the project search box */
-	padding: 8px; 
-	border: solid #d9d8d1; 
-	border-width: 0px 0px 1px; 
+    /* the project search box */
+    padding: 8px 30px; 
+    border: solid #d9d8d1; 
+    border-width: 0px 0px 1px; 
+    margin-bottom: 15px;
 }
 
 .projectName .indent {

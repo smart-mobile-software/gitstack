@@ -28,11 +28,9 @@ GitPHPJSModules = ['tree'];
 
  {include file='path.tpl' pathobject=$tree target='tree'}
  
- <div class="page_body">
    {* List files *}
 <table cellspacing="0" class="treeTable">
      {include file='treelist.tpl'}
 </table>
- </div>
 
 {/block}

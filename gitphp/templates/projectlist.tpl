@@ -35,7 +35,7 @@ git source code archive
 </form>
 </div>
 
-<table cellspacing="0" class="projectList">
+<table cellspacing="0" class="projectsList">
   {foreach name=projects from=$projectlist item=proj}
     {if $smarty.foreach.projects.first}
       {* Header *}
