@@ -144,6 +144,8 @@ Section "Git (recommended)" sectionGit
 	File "git\bin\libiconv-2.dll"
 	# Set the path to portable git
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\git\cmd" ; Append  
+	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\git\bin" ; Append  
+
 SectionEnd
 LangString DESC_sectionGit ${LANG_ENGLISH} "Install Git (msysgit). Unchecking this option is discouraged. GitStack will work only with git installed on your system. Please read our documentation if you would like to install your own version of Git."
 
@@ -183,6 +185,8 @@ Section "Uninstall"
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\python"   
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\python\Scripts"  
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\git\cmd"  
+	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\git\bin"  
+	
 	
 	# Remove Start Menu launcher
 	delete "$SMPROGRAMS\GitStack\GitStack.lnk"

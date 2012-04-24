@@ -291,6 +291,8 @@ class UserFactory():
         if not os.path.exists(settings.SETTINGS_PATH):
             # create the file 
             ldap_helper = LdapHelper()
+            # do something useless to remove the eclipse warning
+            ldap_helper.get_url()
  
         # load the settings file
         config = ConfigParser.ConfigParser()
