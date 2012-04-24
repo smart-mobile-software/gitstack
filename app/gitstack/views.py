@@ -2,6 +2,8 @@ from django.shortcuts import render_to_response
 from gitstack.models import Repository, UserApache, UserFactory, Group
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from django.http import HttpResponseRedirect
 
 
 # repositories section
@@ -92,6 +94,11 @@ def settings_authentication(request):
     if request.method == 'GET':  
         # first visit on the settings page
         return render_to_response('gitstack/settings_authentication.html', context_instance=RequestContext(request))
+    
+def log_me_out(request):
+    # logout the user
+    logout(request)
+    return HttpResponseRedirect('/gitstack/')
     
 
         

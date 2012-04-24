@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 urlpatterns = patterns('gitstack.views',
-    # standart user interface
+    # standard user interface
     url(r'^$', 'index'),
     url(r'^users/', 'users'),
     url(r'^groups/', 'groups'),
@@ -16,6 +16,9 @@ urlpatterns = patterns('gitstack.views',
     # settings tab
     url(r'^settings/general/', 'settings_general'),
     url(r'^settings/authentication/', 'settings_authentication'),
+    
+    url(r'^logout/', 'log_me_out'),
+
     
 
 )
