@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block javascript %}
-<script src="/static/js/settings_authentication.js"></script>
+<script src="/static/js/settings_authentication.js?v1.4"></script>
 {% endblock %}
 {% block settings_current %}current{% endblock %}
 {% block settings_authentication_current %}current{% endblock %}
@@ -90,7 +90,7 @@
 							<br />
 							<br />
 							<input id="testSettings" class="button" type="submit" value="Test ldap settings" />
-							<input id="sync" class="button" type="submit" value="Sync with ldap" />
+							<input id="sync" class="button" type="submit" value="Sync saved settings with ldap" />
 
 							<div class="loading">
 								<p><img src="/static/images/loading2.gif" /> Please Wait</p>
