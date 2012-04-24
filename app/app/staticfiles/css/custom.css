@@ -12,3 +12,8 @@ div#currentRepo
 {
   display: none;
 }
+
+div#currentGroup
+{
+  display: none;
+}

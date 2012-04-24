@@ -2,3 +2,7 @@
 .notification {
 	display:none;
 }
+
+.loading { 
+	display:none; 
+}
