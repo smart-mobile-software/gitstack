@@ -20,7 +20,7 @@ $(document).ready(function(){
 			// Call the rest interface to change the admin password
 			// proceed to the update
 			$.ajax({
-				url: '/rest/admin/',
+				url: '/rest/settings/general/admin/',
 				type: 'PUT',
 				contentType: 'application/json',
 				data: '{"oldPassword": "' + old_password + '","newPassword": "' + new_password1 + '"}',
@@ -43,8 +43,7 @@ $(document).ready(function(){
 	/////////////////////////////////
 	// update the checkbox for the web interface
 	var refreshWebinterface = function(){
-		//alert('hello');
-		var url = '/rest/webinterface/';
+		var url = '/rest/settings/general/webinterface/';
 		$.get(url, function(webinterface){
 			// if the web interface is enabled
 			if(webinterface['enabled'] == true)
@@ -64,7 +63,7 @@ $(document).ready(function(){
 		// Setup the data to be send to the server
 		data = '{"enabled": ' + isChecked +'}';
 		
-		var url = '/rest/webinterface/';
+		var url = '/rest/settings/general/webinterface/';
 		// Proceed to the request
 		$.ajax({
 			url: url,

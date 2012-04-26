@@ -41,9 +41,10 @@ urlpatterns = patterns('rest.views',
     
     
     # change admin password
-    url(r'^admin/$', 'rest_admin'),
+    url(r'^settings/general/admin/$', 'rest_admin'),
+    
     # enable/disable web interface
-    url(r'^webinterface/$', 'webinterface'),
+    url(r'^settings/general/webinterface/$', 'webinterface'),
     
     # ldap auth settings
     # test settings
