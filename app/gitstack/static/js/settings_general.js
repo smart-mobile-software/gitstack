@@ -82,6 +82,73 @@ $(document).ready(function(){
 	
 	refreshWebinterface();
 	
+	////////////////////////////////
+	// Server port
+	//////////////////////////////
+	var refreshPort = function(){
+		var url = '/rest/settings/general/port/';
+		$.get(url, function(port){
+			$('#txtPort').text('test');
+			$('#txtPort').val(port);
+		});
+	};
+	
+	$("#btnSavePort").click(function(event){
+		port = 	$('#txtPort').val();
+		
+		// check is numeric
+		if(!isNaN(port)){
+			$.ajax({
+				url: '/rest/settings/general/port/',
+				type: 'PUT',
+				contentType: 'application/json',
+				data: '{"port": "' + port + '"}',
+				success: function(data) {
+					showMessage("success", data);
+				},
+				error: function(error) {
+					showMessage("error", error.responseText);
+				}
+			})			
+		} else {
+			showMessage("error", "Please enter a port number");
+		}
+		/*
+		
+		});*/
+	/*
+		// the form info
+		var old_password = $("#txtOldPassword").val();
+		var new_password1 = $("#txtNewPassword1").val();
+		var new_password2 = $("#txtNewPassword2").val();
+		
+		// Check if both new passwords are the same
+		if(new_password1 === new_password2){
+			// passwords are the same
+			// Call the rest interface to change the admin password
+			// proceed to the update
+			$.ajax({
+				url: '/rest/settings/general/admin/',
+				type: 'PUT',
+				contentType: 'application/json',
+				data: '{"oldPassword": "' + old_password + '","newPassword": "' + new_password1 + '"}',
+				success: function(data) {
+					showMessage("success", data);
+				},
+				error: function(error) {
+					showMessage("error", error.responseText);
+				}
+			});
+		} else {
+			showMessage("error", 'New passwords fields are not the same');
+		}*/
+
+	
+	});
+	
+	
+	refreshPort();
+	
 	/////////////////////////////////
 	// Handle notifications 
 	///////////////////////////////

@@ -42,6 +42,9 @@ urlpatterns = patterns('rest.views',
     
     # change admin password
     url(r'^settings/general/admin/$', 'rest_admin'),
+    # apache port
+    url(r'^settings/general/port/$', 'rest_port'),
+
     
     # enable/disable web interface
     url(r'^settings/general/webinterface/$', 'webinterface'),

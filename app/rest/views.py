@@ -393,6 +393,31 @@ def rest_admin(request):
             return HttpResponse("User successfully updated")
         else:
             return HttpResponseServerError("Your current administrator password is not correct.")
+
+# manage the apache port
+@csrf_exempt
+def rest_port(request):
+    # get the current port
+    if request.method == 'GET':
+        # send back the port 
+        apache = Apache()
+        return HttpResponse(apache.port)
+    
+    # modify the apache port
+    if request.method == 'PUT':
+        data = json.loads(request.raw_post_data)
+        port = data['port']
+        apache = Apache()
+        apache.port = port
+        apache.save_port()
+        apache.restart()
+        return HttpResponse("Port changed. Please reload your browser to http://localhost:" + port + "/gitstack/")
+
+
+
+
+
+
         
 # Change authentification settings
 @csrf_exempt
