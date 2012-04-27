@@ -29,6 +29,9 @@ ShowInstDetails nevershow
 ########################################
 # Pages
 ########################################
+
+!define MUI_WELCOMEPAGE_TITLE "Welcome to the GitStack Setup Wizard"
+!define MUI_WELCOMEPAGE_TEXT "Please stop any other servers listening to the port 80.$\r$\n$\r$\nYou will be able to change the GitStack server port later in the administration panel."
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "license.txt"
 !insertmacro MUI_PAGE_DIRECTORY

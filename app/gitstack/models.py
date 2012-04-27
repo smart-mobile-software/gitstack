@@ -5,6 +5,16 @@ logger = logging.getLogger('console')
 
 # performs operations on apache
 class Apache:
+    # constructor
+    def __init__(self):
+        # load the port
+        self.port = "80"
+        pass
+    
+    # save the listen port to the apache configuration file 
+    def save_port(self):
+        pass
+    
     @staticmethod
     def restart():
         # http://code.google.com/p/modwsgi/wiki/ReloadingSourceCode#Restarting_Windows_Apache
@@ -14,6 +24,8 @@ class Apache:
         except:
             # when running on django development server
             subprocess.Popen(settings.INSTALL_DIR + '/apache/bin/httpd.exe -n "GitStack" -k restart')
+            
+    
 
 class RepoConfigParser:
     def __init__(self, repo_name):
@@ -917,5 +929,6 @@ class Repository:
         elif fn is os.remove:
             os.chmod(path, stat.S_IWRITE)
             os.remove(path)
+            
             
 
