@@ -53,6 +53,7 @@ FunctionEnd
 # Install section
 #############################################
 Section "GitStack" sectionGitStack
+	SetShellVarContext all
 	# Previous GitStack installation
 	ClearErrors
 	ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\GitStack" "UninstallString"
@@ -164,6 +165,7 @@ LangString DESC_sectionGit ${LANG_ENGLISH} "Install Git (msysgit). Unchecking th
 ##############################################
  
 Section "Uninstall"
+	SetShellVarContext all
 	# Start restore point
 	SysRestore::StartUnRestorePoint "GitStack Uninstalled"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GitStack"
@@ -189,7 +191,8 @@ Section "Uninstall"
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\python\Scripts"  
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\git\cmd"  
 	${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR\git\bin"  
-	
+	${un.EnvVarUpdate} $0 "PYTHONHOME" "R" "HKLM" "$INSTDIR\python"  
+	${un.EnvVarUpdate} $0 "PYTHONPATH" "R" "HKLM" "$INSTDIR\python\lib"  
 	
 	# Remove Start Menu launcher
 	delete "$SMPROGRAMS\GitStack\GitStack.lnk"
