@@ -375,6 +375,7 @@ def rest_repo_group_all(request, repo_name):
     return HttpResponse(json_reply)
     
 # change admin password
+@csrf_exempt
 def rest_admin(request):
     # update the user
     if request.method == 'PUT':
