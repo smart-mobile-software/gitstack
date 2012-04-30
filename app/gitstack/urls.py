@@ -16,7 +16,8 @@ urlpatterns = patterns('gitstack.views',
     # settings tab
     url(r'^settings/general/', 'settings_general'),
     url(r'^settings/authentication/', 'settings_authentication'),
-    
+    url(r'^settings/security/', 'settings_security'),
+
     url(r'^logout/', 'log_me_out'),
 
     

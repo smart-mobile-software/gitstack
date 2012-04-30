@@ -416,9 +416,25 @@ def rest_port(request):
 
 
 
+# manage the https / http security
+@csrf_exempt
+def rest_security(request):
+    # get http/https config
+    if request.method == 'GET':
+        # send back the port 
+        http_config = {'http': False, 'https': True}
+        json_reply = jsonpickle.encode(http_config, unpicklable = False)
 
-
+        return HttpResponse(json_reply)
+    
+    # modify the apache port
+    if request.method == 'PUT':
+        data = json.loads(request.raw_post_data)
+        http = data['http']
+        https = data['https']
         
+        return HttpResponse("Security settings have been successfully saved.")
+
 # Change authentification settings
 @csrf_exempt
 def rest_settings_authentication(request):

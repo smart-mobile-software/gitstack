@@ -45,6 +45,9 @@ urlpatterns = patterns('rest.views',
     # apache port
     url(r'^settings/general/port/$', 'rest_port'),
 
+    # security
+    url(r'^settings/security/$', 'rest_security'),
+
     
     # enable/disable web interface
     url(r'^settings/general/webinterface/$', 'webinterface'),

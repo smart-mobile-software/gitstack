@@ -100,6 +100,12 @@ def settings_authentication(request):
         # first visit on the settings page
         return render_to_response('gitstack/settings_authentication.html', context_instance=RequestContext(request))
     
+@login_required
+def settings_security(request):    
+    if request.method == 'GET':  
+        # first visit on the settings page
+        return render_to_response('gitstack/settings_security.html', context_instance=RequestContext(request))
+    
 def log_me_out(request):
     # logout the user
     logout(request)
