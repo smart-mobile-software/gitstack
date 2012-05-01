@@ -57,6 +57,12 @@ def rest_group(request):
         if request.method == 'POST':
             # get the username/password from the request
             name = request.POST['name']
+            # check the username
+            matcher = re.compile("^[A-Za-z]\w{0,}$")
+            if matcher.match(name) is None:
+                return HttpResponseServerError("Please enter an alphanumeric name without spaces")
+            if(name == ""):
+                return HttpResponseServerError("Please enter a non empty name")
             group = Group(name)
             group.create()
             return HttpResponse("Group " + name + " has been successfully created." )
