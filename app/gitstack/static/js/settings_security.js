@@ -58,7 +58,7 @@ $(document).ready(function(){
 		
 		
 		// construct the json object 															
-		json_string = '{"http":"' + http + '","https":"' + https + '"}';
+		json_string = '{"http":' + http + ',"https":' + https + '}';
 
 		
 

@@ -399,6 +399,33 @@ class SimpleTest(TestCase):
         self.assertEqual(permissions['enabled'], False)
         # make sure the web interface is enabled                
         self.assertEqual(self.c.put('/rest/settings/general/webinterface/',data='{"enabled":true}', content_type='application/json').status_code, 200)
+        
+    ##########################
+    # Port
+    #########################
     
-      
+    # retrieve the ports numbers
+    def test_ports_retrieve(self):
+        # retrieve the ports
+        response = self.c.get('/rest/settings/general/port/')
+        self.assertEqual(response.content, '{"httpPort": 80, "httpsPort": 443}')
+        
+    ###############################
+    # Settings/security : https
+    #################################
+    
+    # retrieve http/https settings
+    def test_protocol_retrieve(self):
+        response = self.c.get('/rest/settings/security/')  
+        self.assertEqual(response.content, '{"http": true, "https": false}')
+        
+    # set the http/https settings to https only
+    def test_protocol_change(self):
+        # change to https only
+        self.assertEqual(self.c.put('/rest/settings/security/',data='{"http": false, "https": true}', content_type='application/json').status_code, 200)
+        # check that the settings are set to https only
+        response = self.c.get('/rest/settings/security/')  
+        self.assertEqual(response.content, '{"http": false, "https": true}')
+
+
 

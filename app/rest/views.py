@@ -420,9 +420,6 @@ def rest_port(request):
         apache.restart()
         return HttpResponse("Port changed. Please reload your browser to http://localhost:" + http_port + "/gitstack/")
 
-
-
-
 # manage the https / http security
 @csrf_exempt
 def rest_security(request):
