@@ -1,7 +1,7 @@
-from gitstack.models import Repository, UserApache, Group
+from gitstack.models import Repository, Group
 from django.test import TestCase
 from django.test.client import Client
-import time, json, os
+import time, json, os, shutil
 from django.conf import settings
 
 '''
@@ -12,10 +12,13 @@ ldapbinddn = CN=john,CN=Users,DC=contoso,DC=com
 ldapbindpassword = Abcd!123
 ldapprotocol = ldap
 ldapport = 389
-ldapattribute = cn
+ldapattribute = sAMAccountName
 ldapscope = sub
 ldapfilter = (objectClass=person)
 
+Remove settings.ini file
+Remove groupfile
+Delete all the users
 '''
 
 class SimpleTest(TestCase):
@@ -25,10 +28,15 @@ class SimpleTest(TestCase):
     ###################
     def setUp(self):
         self.c = Client()
+        # put the settings.ini file
+        shutil.copy(settings.INSTALL_DIR + '/app/gitstack/config_template/settings.ini', settings.SETTINGS_PATH)
+
         # create repositories
         self.create_repos()
         # create users
-        self.create_users()
+        # self.create_users()
+        shutil.copy(settings.INSTALL_DIR + '/app/rest/tests/passwdfile', settings.INSTALL_DIR + '/data/passwdfile')
+
         # create groups
         self.create_groups()
 
@@ -40,13 +48,8 @@ class SimpleTest(TestCase):
             repo.delete()
 
         # delete users
-        users = UserApache.retrieve_all()
-        for user in users:
-            # delete the user
-            if user.username != 'everyone':
-                user.delete()
-                time.sleep(0.1)
-            
+        os.remove(settings.INSTALL_DIR + '/data/passwdfile')
+          
         # delete groups
         groups = Group.retrieve_all()
         for group in groups:
@@ -64,6 +67,10 @@ class SimpleTest(TestCase):
     
     # create users    
     def create_users(self):
+        # create empty user file
+        user_file = open(settings.INSTALL_DIR + '/data/passwdfile', 'w')
+        user_file.write('')
+        user_file.close()
         self.assertEqual(self.c.post('/rest/user/', { 'username' : 'user1', 'password' : 'user1' }).status_code, 200)
         time.sleep(0.1)
         self.assertEqual(self.c.post('/rest/user/', { 'username' : 'user2', 'password' : 'user2' }).status_code, 200)
@@ -379,19 +386,19 @@ class SimpleTest(TestCase):
     
     def test_web_access(self):
         # The web interface should be enabled by default
-        response = self.c.get('/rest/webinterface/')
+        response = self.c.get('/rest/settings/general/webinterface/')
         permissions = json.loads(response.content)
         self.assertEqual(permissions['enabled'], True)
         
     def test_web_access_disable(self):
         # Disable the web interface        
-        self.assertEqual(self.c.put('/rest/webinterface/',data='{"enabled":false}', content_type='application/json').status_code, 200)
+        self.assertEqual(self.c.put('/rest/settings/general/webinterface/',data='{"enabled":false}', content_type='application/json').status_code, 200)
         # Check that the web interface is disabled
-        response = self.c.get('/rest/webinterface/')
+        response = self.c.get('/rest/settings/general/webinterface/')
         permissions = json.loads(response.content)
         self.assertEqual(permissions['enabled'], False)
         # make sure the web interface is enabled                
-        self.assertEqual(self.c.put('/rest/webinterface/',data='{"enabled":true}', content_type='application/json').status_code, 200)
+        self.assertEqual(self.c.put('/rest/settings/general/webinterface/',data='{"enabled":true}', content_type='application/json').status_code, 200)
     
-        
+      
 

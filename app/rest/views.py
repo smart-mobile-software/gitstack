@@ -399,19 +399,26 @@ def rest_admin(request):
 def rest_port(request):
     # get the current port
     if request.method == 'GET':
-        # send back the port 
+        # send back the ports for http and https
         apache = Apache()
-        return HttpResponse(apache.port)
+        http_config = {'httpPort': apache.http_port, 'httpsPort': apache.https_port }
+        json_reply = jsonpickle.encode(http_config, unpicklable = False)
+
+        return HttpResponse(json_reply)
     
     # modify the apache port
     if request.method == 'PUT':
         data = json.loads(request.raw_post_data)
-        port = data['port']
+        http_port = data['httpPort']
+        https_port = data['httpsPort']
+        
         apache = Apache()
-        apache.port = port
-        apache.save_port()
+        apache.http_port = http_port
+        apache.https_port = https_port
+        
+        apache.save()
         apache.restart()
-        return HttpResponse("Port changed. Please reload your browser to http://localhost:" + port + "/gitstack/")
+        return HttpResponse("Port changed. Please reload your browser to http://localhost:" + http_port + "/gitstack/")
 
 
 
@@ -422,7 +429,8 @@ def rest_security(request):
     # get http/https config
     if request.method == 'GET':
         # send back the port 
-        http_config = {'http': False, 'https': True}
+        apache = Apache()
+        http_config = {'http': apache.http, 'https': apache.https }
         json_reply = jsonpickle.encode(http_config, unpicklable = False)
 
         return HttpResponse(json_reply)
@@ -433,6 +441,22 @@ def rest_security(request):
         http = data['http']
         https = data['https']
         
+        apache = Apache()
+        if http == 'true':
+            apache.http = True
+        else:
+            apache.http = False
+        if https == 'true':
+            apache.https = True
+        else:
+            apache.https = False
+        
+        apache.save()
+        apache.restart()
+
+        if apache.http == False and apache.https == True:
+            return HttpResponse("Please reload the admin interface using https://localhost/gitstack/ .")
+
         return HttpResponse("Security settings have been successfully saved.")
 
 # Change authentification settings

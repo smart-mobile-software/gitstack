@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block javascript %}
+<script src="/static/js/settings_security.js?v1.4"></script>
+{% endblock %}
+{% block settings_current %}current{% endblock %}
+{% block settings_security_current %}current{% endblock %}
+
+
+{% block content %}
+
+			
+			<!-- Page Head -->
+			<h2>Security</h2>
+			<p id="page-intro">Configure communication encryption</p>
+			<!-- Repository name -->
+			<div class="content-box"><!-- Start Content Add repo -->
+				
+				<div class="content-box-header">
+					
+					<h3>Transport Layer Security</h3>
+
+					<div class="clear"></div>
+					
+				</div> <!-- End .content-box-header -->
+				
+				<div class="content-box-content">
+					
+					<form action="" onsubmit="return false;">
+						<fieldset>
+							{% csrf_token %}
+							<br />
+							<label>Communication protocols <a href="http://gitstack.com/git-and-https-ssl/"><img src="/static/images/icons/help.png" alt="help"></img></a></label>            
+							<input type = "radio"
+								 name = "protocol"
+								 id = "optHttpsOnly"
+								 value = "optHttpsOnly"
+								  />Accept https only (most secure)<br />
+
+							<input type = "radio"
+								 name = "protocol"
+								 id = "optHttpAndHttps"
+								 value = "optHttpAndHttps" />Accept http and https  <br />
+						 
+							<input type = "radio"
+								 name = "protocol"
+								 id = "optHttpOnly"
+								 value = "optHttpOnly" 
+								 />Accept http only  <br />
+						 
+						</fieldset> 
+						
+
+						
+						
+						<br />
+						<input id="saveSettings" class="button" type="submit" value="Save" />
+
+						<div class="clear"></div><!-- End .clear -->
+							
+					</form>
+						
+					
+					
+					
+				</div> <!-- End .content-box-content -->
+				
+			</div> <!-- End .content-box -->
+			
+			
+	
+			
+			<div class="clear"></div>
+			
+
+
+			
+			
+			
+			
+{% endblock %}

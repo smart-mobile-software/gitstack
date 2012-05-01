@@ -1,4 +1,4 @@
-import subprocess, ConfigParser, logging, shutil, os, ctypes, stat, ldap, jsonpickle, re #@UnresolvedImport 
+import subprocess, ConfigParser, logging, shutil, os, ctypes, stat, ldap, jsonpickle #@UnresolvedImport 
 from django.conf import settings
 from helpers import LdapHelper
 logger = logging.getLogger('console')
@@ -7,45 +7,68 @@ logger = logging.getLogger('console')
 class Apache:
     # constructor
     def __init__(self):
-        # load the port
-        #self.port = "80"
-        apache_config = open(settings.INSTALL_DIR + '/apache/conf/httpd.conf',"r")
-        regular_expression = re.compile('Listen \d+')
-        for line in apache_config:
-            # try to match the line with the listen line
-            m = regular_expression.match(line)
-            # if match
-            if m:
-                # retrieve only the port number
-                self.port = line[7:m.end()]
-                
-        apache_config.close()
-    
+        # load the settings file
+        config = ConfigParser.ConfigParser()
+        config.read(settings.SETTINGS_PATH)
+        
+        # retrieve the settings
+        self.http = config.getboolean('protocols', 'http')
+        self.https = config.getboolean('protocols', 'https')
+        self.http_port = config.getint('protocols', 'httpport')
+        self.https_port = config.getint('protocols', 'httpsport')
+        
     # save the listen port to the apache configuration file 
-    def save_port(self):
-        apache_config_old = open(settings.INSTALL_DIR + '/apache/conf/httpd.conf',"r")
-        apache_config_new = open(settings.INSTALL_DIR + '/apache/conf/httpd.conf.temp',"a")
+    def save(self):
+        # save the settings in the config file
+        # load the config file
+        config = ConfigParser.ConfigParser()
+        config.read(settings.SETTINGS_PATH)
         
-        regular_expression = re.compile('Listen \d+')
-        for line in apache_config_old:
-            # try to match the line with the listen line
-            m = regular_expression.match(line)
-            # if match
-            if m:
-                # Write the correct Listen instruction
-                apache_config_new.write("Listen " + self.port + "\n")
-            else:
-                # copy te line to the new file
-                apache_config_new.write(line)
+        # save the settings
+        if not config.has_section('protocols'):
+            config.add_section('protocols')   
+        config.set('protocols', 'http', self.http)
+        config.set('protocols', 'https', self.https)
+        config.set('protocols', 'httpport', self.http_port)
+        config.set('protocols', 'httpsport', self.https_port)
+        
+        f = open(settings.SETTINGS_PATH, "w")
+        config.write(f)
+        f.close()
+        
+        # generate the apache config file
+        listen_template = open(settings.INSTALL_DIR + '/app/gitstack/config_template/listen_template.conf',"r")
+        # remove the old configuration file
+        config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/listen.conf'
+        if os.path.isfile(config_file_path):
+            os.remove(config_file_path)
+        listen_config = open(config_file_path,"a")
 
-        apache_config_old.close()
-        apache_config_new.close()
+        if self.http == True:
+            listen_http_instruction = "Listen " + str(self.http_port)
+        else :
+            listen_http_instruction = ""
+            
+        if self.https == True:
+            listen_https_instruction = "Listen " + str(self.https_port)
+        else :
+            listen_https_instruction = ""
+            
         
-        # replace the old file      
-        os.remove(settings.INSTALL_DIR + '/apache/conf/httpd.conf')
-        os.rename(settings.INSTALL_DIR + '/apache/conf/httpd.conf.temp', settings.INSTALL_DIR + '/apache/conf/httpd.conf')
-        
-        
+        # for each line try to replace username or location
+        for line in listen_template:
+            # add the list of users
+            # replace username   
+            line = line.replace("LISTEN_HTTP_PORT",listen_http_instruction) 
+            line = line.replace("LISTEN_HTTPS_PORT",listen_https_instruction) 
+            line = line.replace("HTTP_PORT",str(self.http_port))
+            line = line.replace("HTTPS_PORT",str(self.https_port))
+             
+            listen_config.write(line)  
+            
+        listen_config.close()
+        pass
+   
     
     @staticmethod
     def restart():

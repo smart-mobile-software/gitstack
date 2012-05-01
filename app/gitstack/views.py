@@ -12,8 +12,12 @@ def index(request):
     # might be the first run of the app
     # check if the app need to be upgraded
     upgrade_manager = UpgradeManager()
+    if upgrade_manager.is_first_install():
+        upgrade_manager.proceed_first_setup()
+        
     if upgrade_manager.need_upgrade():
         upgrade_manager.upgrade()
+        
     return render_to_response('gitstack/index.html', context_instance=RequestContext(request))
 
 # user management on a repository
