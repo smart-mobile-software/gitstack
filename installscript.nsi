@@ -142,10 +142,7 @@ LangString DESC_sectionGitStack ${LANG_ENGLISH} "Install GitStack user interface
 Section "Git (recommended)" sectionGit
 	SetOutPath "$INSTDIR\git"
 	File /r "git\*.*"
-	# Fix portable git
-	SetOutPath "$INSTDIR\git\libexec\git-core"
-	File "git\bin\libiconv2.dll"
-	File "git\bin\libiconv-2.dll"
+	
 	# Set the path to portable git
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\git\cmd" ; Append  
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR\git\bin" ; Append  
