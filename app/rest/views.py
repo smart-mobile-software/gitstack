@@ -3,7 +3,9 @@ from gitstack.models import Repository, UserFactory, Apache, Group, UserLdap
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.conf import settings
-from gitstack.helpers import LdapHelper
+from gitstack.helpers import LdapHelper, UpgradeManager
+
+
 
 import json, re, os, jsonpickle, logging, ConfigParser, ldap #@UnresolvedImport 
 logger = logging.getLogger('console')
@@ -445,11 +447,11 @@ def rest_security(request):
         https = data['https']
         
         apache = Apache()
-        if http == 'true':
+        if http == True:
             apache.http = True
         else:
             apache.http = False
-        if https == 'true':
+        if https == True:
             apache.https = True
         else:
             apache.https = False
@@ -571,6 +573,7 @@ def rest_settings_authentication_ldap_sync(request):
         return HttpResponseServerError(e)
     '''
     return HttpResponse("Synchronization suceeded")
+
 
 
 

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block javascript %}
-<script src="/static/js/settings_general.js?v1.4"></script>
+<script src="/static/js/settings_general.js?v1.5"></script>
 {% endblock %}
 {% block settings_current %}current{% endblock %}
 {% block settings_general_current %}current{% endblock %}
@@ -11,7 +11,13 @@
 			
 			<!-- Page Head -->
 			<h2>Settings</h2>
-			<p id="page-intro">Set a new admin password</p>
+			<p id="page-intro">Set general settings</p>
+			<div id="upgradeNotification" class="notification attention png_bg">
+				<a href="#" class="close"><img src="/static/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+				<div>
+					GitStack 1.5 has been released.
+				</div>
+			</div>
 			<!-- Repository name -->
 			<div class="content-box"><!-- Start Content Add repo -->
 				

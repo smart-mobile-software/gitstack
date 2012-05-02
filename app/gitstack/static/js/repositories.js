@@ -11,47 +11,77 @@ $(document).ready(function(){
 	// get the list of all repositories
 	var refreshRepoList = function(){
 		var url = '/rest/settings/general/port/';
-		$.get(url, function(port){
-			$('#port').val(port);
-			$.get('/rest/repository/', function(repoList){
-				$("#repoList").html('');
-				var i = 0;
-				var j = 0
-				var textToInsert = [];
-				var port = $('#port').val();
-
-				for(i; i < repoList.length; i++){
-					textToInsert[j++] = '<tr class=' + repoList[i].name + '>';
-					textToInsert[j++] = '<td>' + repoList[i].name + '</td>\n';
-					if (port == '80')
-						textToInsert[j++] = '<td>git clone http://localhost/' + repoList[i].name + '.git</td>\n';
-					else
-						textToInsert[j++] = '<td>git clone http://localhost:' + port + '/' + repoList[i].name + '.git</td>\n';
-
-					textToInsert[j++] = '<td><!-- Icons -->';
-					// for normal (bared) repo
-					if(repoList[i].bare == true){
-						textToInsert[j++] = '<a href="/web/index.php?p=' + repoList[i].name + '.git&a=summary" title="Browse"><img src="/static/images/icons/magnifier.png" alt="Browse" /></a>';
-						textToInsert[j++] = '<a href="/gitstack/repository/' + repoList[i].name + '/permission/" class="editUsers" title="Permissions"><img src="/static/images/icons/users.png" alt="Permissions" /></a>';
-						textToInsert[j++] = '<a class="deleteRepo" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a>';
+		$.get(url, function(ports){
+			$('#portHttp').val(ports['httpPort']);
+			$('#portHttps').val(ports['httpsPort']);
+			
+			var url = '/rest/settings/security/';
+			$.get(url, function(protocols){
+				$('#httpEnabled').val(protocols['http']);
+				$('#httpsEnabled').val(protocols['https']);
+				
+				
+				$.get('/rest/repository/', function(repoList){
+				
+					$("#repoList").html('');
+					var i = 0;
+					var j = 0
+					var textToInsert = [];
+					var httpPort = $('#portHttp').val();
+					var httpsPort = $('#portHttps').val();
+					var httpEnbabled = $('#httpEnabled').val();
+					var httpsEnbabled = $('#httpsEnabled').val();
+					
+					// check which protocol can be used
+					protocol = "http";
+					displayPort = "";
+					
+					if (httpsEnbabled == true){
+						protocol = "https";
+						if (httpsPort == '443')
+							displayPort = "";
+						else
+							displayPort = ":" + httpsPort;
 					} else {
-						textToInsert[j++] = '<a href="#" class="importRepo" title="Import to GitStack"><img src="/static/images/icons/arrow_in.png" alt="Import to GitStack" /></a>';
+						protocol = "http";
+						if (httpPort == '80')
+							displayPort = "";
+						else
+							displayPort = ":" + httpPort;
 					}
-					textToInsert[j++] = '</td>';
-					textToInsert[j++] = '</tr>\n';			
-				}
-				
-				// if no repository
-				if ( repoList.length === 0){
-					// print a nice message
-					$('#repoList').append("<td>You have not added any repository yet. You can create a new repository by using the create repository form below.</td><td></td><td></td>");
-				}
-				
-				$('#repoList').append(textToInsert.join(''));
-				// register the new elements
-				bindRepoBehaviors();
+					
+			
+					for(i; i < repoList.length; i++){
+						textToInsert[j++] = '<tr class=' + repoList[i].name + '>';
+						textToInsert[j++] = '<td>' + repoList[i].name + '</td>\n';
+						textToInsert[j++] = '<td>git clone ' + protocol + '://localhost' + displayPort + '/' + repoList[i].name + '.git</td>\n';
+
+						textToInsert[j++] = '<td><!-- Icons -->';
+						// for normal (bared) repo
+						if(repoList[i].bare == true){
+							textToInsert[j++] = '<a href="/web/index.php?p=' + repoList[i].name + '.git&a=summary" title="Browse"><img src="/static/images/icons/magnifier.png" alt="Browse" /></a>';
+							textToInsert[j++] = '<a href="/gitstack/repository/' + repoList[i].name + '/permission/" class="editUsers" title="Permissions"><img src="/static/images/icons/users.png" alt="Permissions" /></a>';
+							textToInsert[j++] = '<a class="deleteRepo" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a>';
+						} else {
+							textToInsert[j++] = '<a href="#" class="importRepo" title="Import to GitStack"><img src="/static/images/icons/arrow_in.png" alt="Import to GitStack" /></a>';
+						}
+						textToInsert[j++] = '</td>';
+						textToInsert[j++] = '</tr>\n';			
+					}
+					
+					// if no repository
+					if ( repoList.length === 0){
+						// print a nice message
+						$('#repoList').append("<td>You have not added any repository yet. You can create a new repository by using the create repository form below.</td><td></td><td></td>");
+					}
+					
+					$('#repoList').append(textToInsert.join(''));
+					// register the new elements
+					bindRepoBehaviors();
+				}, "json");
 			}, "json");
-		});
+			
+		}, "json");
 		
 	};
 	

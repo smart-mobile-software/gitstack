@@ -32,13 +32,9 @@ urlpatterns = patterns('rest.views',
     # to delete a group
     url(r'^group/(?P<name>.+)/$', 'rest_group_action'),
     
-    
-        
-        
+  
     # list all the repos
     url(r'^repository/$', 'rest_repository'),
-    
-    
     
     # change admin password
     url(r'^settings/general/admin/$', 'rest_admin'),
@@ -59,6 +55,8 @@ urlpatterns = patterns('rest.views',
     url(r'^settings/authentication/ldap/sync/$', 'rest_settings_authentication_ldap_sync'),
 
     url(r'^settings/authentication/$', 'rest_settings_authentication'),
+    
+    
     
     
     
