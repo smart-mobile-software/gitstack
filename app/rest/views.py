@@ -3,7 +3,7 @@ from gitstack.models import Repository, UserFactory, Apache, Group, UserLdap
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.conf import settings
-from gitstack.helpers import LdapHelper, UpgradeManager
+from gitstack.helpers import LdapHelper
 
 
 
@@ -251,12 +251,15 @@ def rest_repo_user(request, repo_name, username):
 
     # Add user
     if request.method == 'POST':
-        # Get the repository and add the user
-        repo.add_user(user)
-        repo.add_user_read(user)
-        repo.add_user_write(user)
-        repo.save()
-        return HttpResponse("User " + username + " added to " + repo_name)
+        try:
+            # Get the repository and add the user
+            repo.add_user(user)
+            repo.add_user_read(user)
+            repo.add_user_write(user)
+            repo.save()
+            return HttpResponse("User " + username + " added to " + repo_name)
+        except Exception as e:
+            return HttpResponseServerError(e)
     # Delete the user
     if request.method == 'DELETE':
         # Remove the user from the repository
