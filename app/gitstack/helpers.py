@@ -72,7 +72,7 @@ class UpgradeManager(object):
     # contructor
     def __init__(self):
 
-        self.current_version = 1.5
+        self.current_version = 2.0
         
         pass
     
@@ -93,7 +93,7 @@ class UpgradeManager(object):
         config.read(settings.SETTINGS_PATH)
         previous_version = config.get('versionning', 'version')
         
-        if previous_version == "1.4":
+        if previous_version == "1.4" or previous_version == "1.5":
             return True
         else:
             return False
@@ -125,6 +125,18 @@ class UpgradeManager(object):
         config = ConfigParser.ConfigParser()
         config.read(settings.SETTINGS_PATH)
         previous_version = config.get('versionning', 'version')
+        
+        if previous_version == "1.5":
+            # load the config file
+            config = ConfigParser.ConfigParser()
+            config.read(settings.SETTINGS_PATH)
+            
+            # save the settings
+            config.set('versionning', 'version', '2.0')
+            
+            f = open(settings.SETTINGS_PATH, "w")
+            config.write(f)
+            f.close()
         
         if previous_version == "1.4":
             # write a config file with the version number 
@@ -162,6 +174,9 @@ class UpgradeManager(object):
             for repo in repo_list:
                 repo.load()
                 repo.save()
+                
+            # upgrade now to 2.0
+            self.upgrade()
         
 
     

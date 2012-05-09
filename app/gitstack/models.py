@@ -217,8 +217,6 @@ class User(object):
         # remove all the duplicates
         user_list = list(set(user_list))
         nb_users = len(user_list)
-        logger.debug('going to do the license check')
-        logger.debug('number of users : ' + str(nb_users))
         
         return nb_users
 
