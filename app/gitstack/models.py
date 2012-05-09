@@ -1,7 +1,7 @@
 import subprocess, ConfigParser, logging, shutil, os, ctypes, stat, ldap, jsonpickle, rsa, json #@UnresolvedImport 
 from django.conf import settings
 from helpers import LdapHelper
-from datetime import date
+from license import LicenceChecker
 logger = logging.getLogger('console')
 
 # performs operations on apache
@@ -999,89 +999,4 @@ class Repository:
             os.remove(path)
             
             
-# license file
-class License(object):
-    def __init__(self):
-        self.email = ""
-        self.name = ""
-        self.company = ""
-        self.max_users = ""
-        self.max_timestamp = ""
-        self.signature = ""
-        
-# licence checker
-class LicenceChecker:
-    def __init__(self):
-        # load the public key
-        with open(settings.INSTALL_DIR + '/app/app/publickey.pem') as public_file:
-            public_key_data = public_file.read()
-        self.public_key = rsa.PublicKey.load_pkcs1(public_key_data)
-
-        # load license information
-        try:
-            license_file = open(settings.INSTALL_DIR + '/data/license.json', 'r')
-            license_json = license_file.read()
-            license_file.close()
-            # load by hand the json
-            license_dic = json.loads(license_json)
-            self.license = License()
-            self.license.company = license_dic['company']
-            self.license.name = license_dic['name']
-            self.license.email = license_dic['email']
-            self.license.max_users = license_dic['max_users']
-
-            self.license.max_timestamp = license_dic['max_timestamp']
-            self.license.signature = license_dic['signature']
-
-        # no license file
-        except IOError:
-            self.license = License()
-            self.license.max_users = "5"
-
-    # check if the number of users is valid
-    def is_valid(self, nb_users):
-        # 5 users means no license
-        max_users = int(self.license.max_users)
-        if max_users == 5:
-            if nb_users > 5:
-                raise Exception('License error : number of maximum users reach')
-            else :
-                return True
-            
-        # check the timestamp
-        self.check_timestamp()
-        
-        # check if the license if original
-        if self.is_original():
-            # check the number of users
-            if max_users < (nb_users + 1):
-                raise Exception('License error : number of maximum users reach')
-            else:
-                return True
-        else:
-            raise Exception('License error : 001')
-        
-    # check if the date is correct
-    def check_timestamp(self):
-        # get the date of today
-        today = date.today()
-        expiration_date = date.fromtimestamp(float(self.license.max_timestamp))
-        delta = expiration_date - today
-        if delta.total_seconds() < 0:
-            raise Exception('License error : expired')
-        else:
-            return True
-        
-    def is_original(self):
-
-        signature = (self.license.signature).decode('base64')             
-
-        # check that the license has not been modified
-        concat_info = self.license.name + self.license.company + self.license.email + self.license.max_users + self.license.max_timestamp
-        try:
-            rsa.verify(concat_info, signature, self.public_key)
-            return True
-        except rsa.pkcs1.VerificationError:
-            return False
-    
 
