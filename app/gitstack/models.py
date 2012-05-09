@@ -81,6 +81,7 @@ class Apache:
             # when running on django development server
             subprocess.Popen(settings.INSTALL_DIR + '/apache/bin/httpd.exe -n "GitStack" -k restart')
             
+            
     
 
 class RepoConfigParser:
@@ -189,6 +190,38 @@ class User(object):
     def __repr__(self):
         return self.__unicode__()
     
+    
+    @staticmethod
+    def nb_used_users():
+        # Check for each repo the number of users
+        repo_list = Repository.retrieve_all()
+        user_list = []
+        
+        # for each repo
+        for repo in repo_list:
+            repo.load()
+            # count the number of users
+            # nb_users = nb_users + len(repo.user_list)
+            # add each user to the user list
+            for user2 in repo.user_list:
+                user_list.append(user2)
+        
+        # get all the groups
+        group_list = Group.retrieve_all()
+        for group in group_list:
+            group.load()
+            # add each member to the user list
+            for user2 in group.member_list:
+                user_list.append(user2)
+                
+        # remove all the duplicates
+        user_list = list(set(user_list))
+        nb_users = len(user_list)
+        logger.debug('going to do the license check')
+        logger.debug('number of users : ' + str(nb_users))
+        
+        return nb_users
+
     
     
 class UserApache(User):
@@ -514,7 +547,13 @@ class Group:
         
     # add a user to the group
     def add_user(self, user):
-        self.member_list.append(user)
+        nb_users = User.nb_used_users()
+        
+        # validate with the license
+        l = LicenceChecker()
+        if l.is_valid(nb_users):
+            self.member_list.append(user)
+
         
     # remove a user from the group
     def remove_user(self, user):
@@ -761,18 +800,13 @@ class Repository:
     # Add the user to the repo without any read and write permission
     def add_user(self, user):
         # Check for each repo the number of users
-        repo_list = Repository.retrieve_all()
-        nb_users = 0
-        # for each repo
-        for repo in repo_list:
-            repo.load()
-            # count the number of users
-            nb_users = nb_users + len(repo.user_list)
-
+        nb_users = User.nb_used_users()
+        
         # validate with the license
         l = LicenceChecker()
         if l.is_valid(nb_users):
             self.user_list.append(user)
+
 
     # Add read permissions to a user on the repository
     def add_user_read(self, user):

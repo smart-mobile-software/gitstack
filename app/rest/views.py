@@ -155,9 +155,12 @@ def rest_group_user(request, group_name, username):
     
     # Add member to the group
     if request.method == 'POST':
-        group.add_user(user)
-        group.save()
-        return HttpResponse("User " + username + " added to " + group_name)
+        try:
+            group.add_user(user)
+            group.save()
+            return HttpResponse("User " + username + " added to " + group_name)
+        except Exception as e:
+            return HttpResponseServerError(e)
 
     # Remove a group member
     if request.method == 'DELETE':
