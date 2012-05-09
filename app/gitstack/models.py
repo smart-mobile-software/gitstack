@@ -768,7 +768,7 @@ class Repository:
             repo.load()
             # count the number of users
             nb_users = nb_users + len(repo.user_list)
-        
+
         # validate with the license
         l = LicenceChecker()
         if l.is_valid(nb_users):
