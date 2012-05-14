@@ -59,7 +59,7 @@ $(document).ready(function(){
 						textToInsert[j++] = '<td><!-- Icons -->';
 						// for normal (bared) repo
 						if(repoList[i].bare == true){
-							textToInsert[j++] = '<a href="' + protocol + '://localhost' + displayPort + '/web/index.php?p=' + repoList[i].name + '.git&a=summary" title="Browse"><img src="/static/images/icons/magnifier.png" alt="Browse" /></a>';
+							textToInsert[j++] = '<a href="/web/index.php?p=' + repoList[i].name + '.git&a=summary" title="Browse"><img src="/static/images/icons/magnifier.png" alt="Browse" /></a>';
 							textToInsert[j++] = '<a href="/gitstack/repository/' + repoList[i].name + '/permission/" class="editUsers" title="Permissions"><img src="/static/images/icons/users.png" alt="Permissions" /></a>';
 							textToInsert[j++] = '<a class="deleteRepo" href="#" title="Delete"><img src="/static/images/icons/cross.png" alt="Delete" /></a>';
 						} else {
