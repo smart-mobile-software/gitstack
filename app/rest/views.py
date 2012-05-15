@@ -434,6 +434,36 @@ def rest_port(request):
         apache.restart()
         return HttpResponse("Port changed. Please reload your browser to http://localhost:" + http_port + "/gitstack/")
 
+# manage the repostory location
+@csrf_exempt
+def rest_repositorylocation(request):
+    # get the repositories location
+    if request.method == 'GET':
+        repositories_location = Repository.get_location()
+        location = {'repositories': repositories_location }
+        json_reply = jsonpickle.encode(location, unpicklable = False)
+
+        # send back the location
+        return HttpResponse(json_reply)
+    
+    # modify the repos location
+    if request.method == 'PUT':  
+        data = json.loads(request.raw_post_data)
+        repos_location = data['repositories']
+        if os.path.isdir(repos_location):
+            # check if the last character is a trailing slash
+            if repos_location[-1] != '/':
+                Repository.set_location(repos_location)
+            else:
+                return HttpResponseServerError("Please make sure to not add any trailing slashes at the end of the directory name.")   
+
+            return HttpResponse("The repository location has been updated successfully.")   
+
+        else:
+            return HttpResponseServerError('The directory does not exist')
+
+
+
 # manage the https / http security
 @csrf_exempt
 def rest_security(request):

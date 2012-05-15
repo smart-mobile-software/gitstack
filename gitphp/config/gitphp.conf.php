@@ -1,4 +1,6 @@
 <?php
+include ('gitphp.repositorieslocation.conf.php');
+
 /**
  * GitPHP Config file
  *
@@ -17,11 +19,7 @@
 $gitphp_conf['apacherepo'] = 'C:/dev/gitstack/apache/conf/gitstack';
 
 
-/*
- * projectroot
- * Full directory on server where projects are located
- */
-$gitphp_conf['projectroot'] = 'C:/dev/gitstack/repositories';
+
 
 /*
  * gitbin

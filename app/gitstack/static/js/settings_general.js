@@ -128,6 +128,45 @@ $(document).ready(function(){
 	
 	refreshPort();
 	
+	////////////////////////////////
+	// Repositories location
+	//////////////////////////////
+	var refreshLocation = function(){
+
+		var url = '/rest/settings/general/repositorylocation/';
+		
+
+		$.get(url, function(location){
+			$('#repoLocation').val(location['repositories']);
+			
+		}, "json");
+	};
+	
+	// save the ports numbers
+	$("#btnSaveLocation").click(function(event){
+		repoLocation = $('#repoLocation').val();
+		
+		// check is numeric
+		$.ajax({
+			url: '/rest/settings/general/repositorylocation/',
+			type: 'PUT',
+			contentType: 'application/json',
+			data: '{"repositories": "' + repoLocation + '"}',
+			success: function(data) {
+				showMessage("success", data);
+			},
+			error: function(error) {
+				showMessage("error", error.responseText);
+			}
+		})			
+		
+	
+
+	
+	});
+	
+	refreshLocation();
+	
 	/////////////////////////////////
 	// Handle notifications 
 	///////////////////////////////

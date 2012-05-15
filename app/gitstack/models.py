@@ -1,4 +1,4 @@
-import subprocess, ConfigParser, logging, shutil, os, ctypes, stat, ldap, jsonpickle, rsa, json #@UnresolvedImport 
+import subprocess, ConfigParser, logging, shutil, os, ctypes, stat, ldap, jsonpickle #@UnresolvedImport 
 from django.conf import settings
 from helpers import LdapHelper
 from license import LicenceChecker
@@ -18,8 +18,54 @@ class Apache:
         self.http_port = config.getint('protocols', 'httpport')
         self.https_port = config.getint('protocols', 'httpsport')
         
-    # save the listen port to the apache configuration file 
+    # save the listen port and repositories location to the apache configuration file 
     def save(self):
+        self.update_listen()
+        self.update_main()
+        self.update_gitphp()
+      
+    # update gitphp repo location  
+    def update_gitphp(self):
+        gitphp_template = open(settings.INSTALL_DIR + '/app/gitstack/config_template/gitphp.repositorieslocation.conf.template.php',"r")
+        # remove the old configuration file
+        config_file_path = settings.INSTALL_DIR + '/gitphp/config/gitphp.repositorieslocation.conf.php'
+        if os.path.isfile(config_file_path):
+            os.remove(config_file_path)
+            
+        gitphp_config = open(config_file_path,"a")
+
+        
+        # for each line try to replace username or location
+        for line in gitphp_template:
+            # add the list of users
+            # replace username   
+            line = line.replace("REPOSITORIES_LOCATION",Repository.get_location()) 
+             
+            gitphp_config.write(line)
+        pass
+            
+    # update main.conf
+    def update_main(self): 
+        # main.conf stuff (repositories location)
+        main_template = open(settings.INSTALL_DIR + '/app/gitstack/config_template/main_template.conf',"r")
+        # remove the old configuration file
+        config_file_path = settings.INSTALL_DIR + '/apache/conf/gitstack/main.conf'
+        if os.path.isfile(config_file_path):
+            os.remove(config_file_path)
+        main_config = open(config_file_path,"a")
+
+        
+        # for each line try to replace username or location
+        for line in main_template:
+            # add the list of users
+            # replace username   
+            line = line.replace("REPOSITORIES_LOCATION",Repository.get_location()) 
+            line = line.replace("INSTALL_DIR",settings.INSTALL_DIR) 
+             
+            main_config.write(line)
+            
+    # update listen.conf
+    def update_listen(self):
         # save the settings in the config file
         # load the config file
         config = ConfigParser.ConfigParser()
@@ -36,6 +82,9 @@ class Apache:
         f = open(settings.SETTINGS_PATH, "w")
         config.write(f)
         f.close()
+        
+         
+        # Listen.conf stuff
         
         # generate the apache config file
         listen_template = open(settings.INSTALL_DIR + '/app/gitstack/config_template/listen_template.conf',"r")
@@ -68,7 +117,6 @@ class Apache:
             listen_config.write(line)  
             
         listen_config.close()
-        pass
    
     
     @staticmethod
@@ -130,7 +178,7 @@ class RepoConfigParser:
         try:
             # Load the configuration file
             config = ConfigParser.ConfigParser()
-            config.read(settings.REPOSITORIES_PATH + "/" + self.repo_name + ".git" + "/config")
+            config.read(Repository.get_location() + "/" + self.repo_name + ".git" + "/config")
             # load the users
             if config.has_section('gitstack'):
                 self.user_read_list = self.str_users_list_to_obj(config.get('gitstack', 'readusers'))
@@ -153,7 +201,7 @@ class RepoConfigParser:
     # remove config file tabulation (make it compatible to python)
     def remove_tabs(self):
         # open source and destination
-        repo_dir = settings.REPOSITORIES_PATH + "/" + self.repo_name + ".git/"
+        repo_dir = Repository.get_location() + "/" + self.repo_name + ".git/"
         new_config_file = open(repo_dir + "output","a") 
         old_config_file = open(repo_dir + "config","r")
         # for each line remove the tabular
@@ -605,7 +653,7 @@ class Repository:
 
         # bared repository (false if not imported in GitStack)
         # check if the repo is bared or not
-        if os.path.isdir(settings.REPOSITORIES_PATH + "/" + self.name + ".git"):
+        if os.path.isdir(Repository.get_location() + "/" + self.name + ".git"):
             self.bare = True
         else:
             self.bare = False
@@ -746,7 +794,7 @@ class Repository:
             self.create_gitstack_section()
             
         config = ConfigParser.ConfigParser()
-        config.read(settings.REPOSITORIES_PATH + "/" + self.name + ".git" + "/config")
+        config.read(Repository.get_location() + "/" + self.name + ".git" + "/config")
         
         
         # add a gitstack section
@@ -758,7 +806,7 @@ class Repository:
         config.set('gitstack', 'writegroups', str_group_write_list)
         
       
-        f = open(settings.REPOSITORIES_PATH + "/" + self.name + ".git" + "/config", "w")
+        f = open(Repository.get_location() + "/" + self.name + ".git" + "/config", "w")
         config.write(f)
         f.close()
         
@@ -768,7 +816,7 @@ class Repository:
     @staticmethod     
     def retrieve_all():
         # change to the repository directory
-        str_repository_list = os.listdir(settings.REPOSITORIES_PATH)
+        str_repository_list = os.listdir(Repository.get_location())
         repository_list = []
         for str_repository in str_repository_list:
             # if the repository does not contains a .git at the end, mark it as converted=false
@@ -917,7 +965,7 @@ class Repository:
             fullname = self.name + '.git'
             # change directory to anywhere
             os.chdir(settings.INSTALL_DIR)
-            shutil.rmtree(settings.REPOSITORIES_PATH + '/' + fullname, onerror=self.remove_readonly)
+            shutil.rmtree(Repository.get_location() + '/' + fullname, onerror=self.remove_readonly)
             
             # remove the configuration file if exist
             try:
@@ -932,7 +980,7 @@ class Repository:
     def create(self):
         # create the repo
         # change to the repository directory
-        os.chdir(settings.REPOSITORIES_PATH)
+        os.chdir(Repository.get_location())
         # Check if a repo already exsit
         if os.path.isdir(self.name + ".git") :
             raise Exception("Repository already exist")
@@ -940,7 +988,7 @@ class Repository:
         subprocess.Popen(settings.GIT_PATH + " --bare init --shared " + self.name + ".git", shell=True).wait()
         
         # change directory to the git project
-        os.chdir(settings.REPOSITORIES_PATH + "/" + self.name + ".git")
+        os.chdir(Repository.get_location() + "/" + self.name + ".git")
         
         # remove whitespaces and tab in config file
         config_parser = RepoConfigParser(self.name)
@@ -958,7 +1006,7 @@ class Repository:
     # create the gitstack section in the repo config file
     def create_gitstack_section(self):
         # add retrieve_all the rights to anonymous users
-        config_path = settings.REPOSITORIES_PATH + "/" + self.name + ".git/config"
+        config_path = Repository.get_location() + "/" + self.name + ".git/config"
         config = ConfigParser.ConfigParser()
         config.read(config_path)
         if not config.has_section('http'):
@@ -981,7 +1029,7 @@ class Repository:
         
     # check if the repo has a gitstack section in the configuration file
     def has_gitstack_section(self):
-        config_path = settings.REPOSITORIES_PATH + "/" + self.name + ".git/config"
+        config_path = Repository.get_location() + "/" + self.name + ".git/config"
         config = ConfigParser.ConfigParser()
         config.read(config_path)
         return config.has_section('gitstack')
@@ -989,7 +1037,7 @@ class Repository:
     # convert a repository to a bare repository
     def convert_to_bare(self):
         # Create a new directory for the repo with a correct name (.git at the end)
-        repo_dir = settings.REPOSITORIES_PATH + "/" + self.name
+        repo_dir = Repository.get_location() + "/" + self.name
         # os.makedirs(repo_dir + '.git')
         # Copy the .git direcotry of the old repo to the new repo
         shutil.copytree(repo_dir + '/.git', repo_dir + '.git')
@@ -1030,5 +1078,31 @@ class Repository:
             os.chmod(path, stat.S_IWRITE)
             os.remove(path)
             
+    # get the repositories location
+    @staticmethod    
+    def get_location():
+        # load the settings file
+        config = ConfigParser.ConfigParser()
+        config.read(settings.SETTINGS_PATH)
+        # read the repositories location
+        location_path = config.get("location", "repositories")
+        return location_path
+    
+    # set the repositories location
+    @staticmethod    
+    def set_location(repos_path):
+        # load the settings file
+        config = ConfigParser.ConfigParser()
+        config.read(settings.SETTINGS_PATH)
+        # read the repositories location
+        config.set('location', 'repositories', repos_path)
+        f = open(settings.SETTINGS_PATH, "w")
+        config.write(f)
+        f.close()
+        #restart apache to take into account the new location
+        apache = Apache()
+        apache.save()
+        apache.restart()
+        
             
 

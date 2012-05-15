@@ -16,6 +16,7 @@ import re, os, sys
 # special :
 # in settings.py GIT_PATH
 # main.conf GIT
+# settings.ini template
 
 # replace the content of a file
 def replacePathFile(filename, pattern, replace):
@@ -50,6 +51,7 @@ replacePathFile(strToUnix + "/apache/conf/gitstack/wsgi.conf",strFromUnix, strTo
 replacePathFile(strToUnix + "/apache/conf/gitstack/main.conf",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/apache/conf/gitstack/gitphp.conf",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/app/gitstack/config_template/listen_template.conf",strFromUnix, strToUnix)
+replacePathFile(strToUnix + "/app/gitstack/config_template/settings.ini",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/php/php.ini",strFromWin, strToWin)
 replacePathFile(strToUnix + "/gitphp/config/gitphp.conf.php",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/app/app/settings.py",strFromUnix, strToUnix)

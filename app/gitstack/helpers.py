@@ -72,7 +72,7 @@ class UpgradeManager(object):
     # contructor
     def __init__(self):
 
-        self.current_version = 2.0
+        self.current_version = 2.1
         
         pass
     
@@ -93,13 +93,15 @@ class UpgradeManager(object):
         config.read(settings.SETTINGS_PATH)
         previous_version = config.get('versionning', 'version')
         
-        if previous_version == "1.4" or previous_version == "1.5":
+        if previous_version == "1.4" or previous_version == "1.5" or previous_version == "2.0":
             return True
         else:
             return False
         
     # this is the first lauch of the app
     def proceed_first_setup(self):
+        from gitstack.models import Apache
+
         # create a settings.ini file
         shutil.copy(settings.INSTALL_DIR + '/app/gitstack/config_template/settings.ini', settings.SETTINGS_PATH)
         
@@ -112,6 +114,10 @@ class UpgradeManager(object):
             
         # copy the self signed certificates
         self.copy_certificates()
+        
+        # save new apache configuration (update gitphp repo location)
+        apache = Apache()
+        apache.save()
             
     def copy_certificates(self):
         os.mkdir(settings.INSTALL_DIR + '/data/certificates')
@@ -126,7 +132,26 @@ class UpgradeManager(object):
         config.read(settings.SETTINGS_PATH)
         previous_version = config.get('versionning', 'version')
         
+        
+        if previous_version == "2.0":
+            # upgrade to 2.1
+
+            # load the config file
+            config = ConfigParser.ConfigParser()
+            config.read(settings.SETTINGS_PATH)
+            
+            # create the section location and add a default location
+            config.add_section('location')
+            config.set('location', 'repositories', settings.INSTALL_DIR + '/repositories')
+            
+            f = open(settings.SETTINGS_PATH, "w")
+            config.write(f)
+            f.close()
+            
+        
         if previous_version == "1.5":
+            # upgrade to 2.0
+
             # load the config file
             config = ConfigParser.ConfigParser()
             config.read(settings.SETTINGS_PATH)
@@ -137,8 +162,12 @@ class UpgradeManager(object):
             f = open(settings.SETTINGS_PATH, "w")
             config.write(f)
             f.close()
+            # upgrade to 2.1
+            self.upgrade()
         
         if previous_version == "1.4":
+            # upgrade to 1.5
+            
             # write a config file with the version number 
             # load the config file
             config = ConfigParser.ConfigParser()

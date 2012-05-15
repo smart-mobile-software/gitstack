@@ -40,6 +40,9 @@ urlpatterns = patterns('rest.views',
     url(r'^settings/general/admin/$', 'rest_admin'),
     # apache port
     url(r'^settings/general/port/$', 'rest_port'),
+    # repo location
+    url(r'^settings/general/repositorylocation/$', 'rest_repositorylocation'),
+    
 
     # security
     url(r'^settings/security/$', 'rest_security'),

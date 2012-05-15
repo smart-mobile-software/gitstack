@@ -107,26 +107,27 @@
 				
 				<div class="content-box-content">
 					
-					<div class="tab-content default-tab" id="tab2"> <!-- This is the target div. id must match the href of this div's tab -->
-					<form action="" onsubmit="return false;">
-							
-						<fieldset>
-							<p>
-								<label>Http port</label>
-								<input class="text-input small-input" type="text" id="httpPort" name="httpPort" />  
+					<div class="tab-content default-tab"> <!-- This is the target div. id must match the href of this div's tab -->
+						<form action="" onsubmit="return false;">
 								
-							</p>
-							<p>
-								<label>Https port</label>
-								<input class="text-input small-input" type="text" id="httpsPort" name="httpsPort" />  
-							</p>
+							<fieldset>
+								<p>
+									<label>Http port</label>
+									<input class="text-input small-input" type="text" id="httpPort" name="httpPort" />  
+									
+								</p>
+								<p>
+									<label>Https port</label>
+									<input class="text-input small-input" type="text" id="httpsPort" name="httpsPort" />  
+								</p>
+								
+								<p>
+									<input id="btnSavePort" class="button" type="submit" value="Save" />
+								</p>
+								<br />
+							</fieldset>
 							
-							<p>
-								<input id="btnSavePort" class="button" type="submit" value="Save" />
-							</p>
-							<br />
-						</fieldset>
-						
+						</form>
 					</div> <!-- End #tab1 -->
 					<br />
 				</div> <!-- End .content-box-content -->
@@ -134,6 +135,52 @@
 			</div> <!-- End .content-box -->
 			
 			<div class="clear"></div>
+			
+			<div class="clear"></div>
+			
+			<div class="content-box"><!-- Start Content Box -->
+				
+				<div class="content-box-header">
+					
+					<h3>Repositories Location</h3>
+					
+					
+					<div class="clear"></div>
+					
+				</div> <!-- End .content-box-header -->
+				
+				<div class="content-box-content">
+					
+					<div class="tab-content default-tab"> <!-- This is the target div. id must match the href of this div's tab -->
+						<form action="" onsubmit="return false;">
+								
+							<fieldset>
+								<p>
+									<label>Repositories location</label>
+									
+									<input class="text-input large-input" type="text" id="repoLocation" name="repoLocation" />  
+									<small>Enter the directory where you would like to store your repositories. Use forward slashes. Example : "C:/gitstack/repositories"</small>
+								</p>
+								
+								
+								<p>
+									<input id="btnSaveLocation" class="button" type="submit" value="Save" />
+								</p>
+								<br />
+							</fieldset>
+							
+						</form>
+					</div> <!-- End #tab1 -->
+					<br />
+				</div> <!-- End .content-box-content -->
+				
+			</div> <!-- End .content-box -->
+			
+			<div class="clear"></div>
+			
+			
+			
+			
 			
 
 
