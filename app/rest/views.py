@@ -189,7 +189,7 @@ def rest_repository(request):
         name=request.POST['name']
         try:
             # check the repo name
-            matcher = re.compile("^[A-Za-z]\w{2,}$")
+            matcher = re.compile("^\w{1,}$")
             if matcher.match(name) is None:
                 raise Exception("Please enter an alphanumeric name without spaces")
             if(name == ""):
