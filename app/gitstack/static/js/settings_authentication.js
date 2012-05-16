@@ -6,6 +6,19 @@ $(document).ready(function(){
 	
 	// hide by default ldap settings
 	$('#ldapSettings').hide();
+	
+	// Simple validation
+	var validate = function(){
+		// check if the password if empty
+		bindPassword = $('#ldapBindPassword').val();	
+
+		// the passord should not be empty
+		if (bindPassword == "")
+			return false;
+		else
+			return true;
+
+	};
 
 	// retrieve and refresh the settings
 	function refreshSettings(){
@@ -65,29 +78,37 @@ $(document).ready(function(){
 		// Assign handlers immediately after making the request,
 		// and remember the jqxhr object for this request
 		// construct the json object 
-		$('.loading').show();
+		
+		// validate settings 
+		if(validate()){
+			$('.loading').show();
 			
+			params = { protocol: $('#ldapProtocol').val(),
+					host: $('#ldapHost').val(),
+					port: $('#ldapPort').val(),
+					baseDn: $('#ldapBaseDn').val(),
+					attribute: $('#ldapAttribute').val(),
+					scope: $('#ldapScope').val(),
+					filter: $('#ldapFilter').val(),
+					bindDn: $('#ldapBindDn').val(),
+					bindPassword: $('#ldapBindPassword').val() }	
 
-		params = { protocol: $('#ldapProtocol').val(),
-				host: $('#ldapHost').val(),
-				port: $('#ldapPort').val(),
-				baseDn: $('#ldapBaseDn').val(),
-				attribute: $('#ldapAttribute').val(),
-				scope: $('#ldapScope').val(),
-				filter: $('#ldapFilter').val(),
-				bindDn: $('#ldapBindDn').val(),
-				bindPassword: $('#ldapBindPassword').val() }	
+			$.get('/rest/settings/authentication/ldap/test/', params, function(message) {
+				showMessage("success", message);
+			})
+			.error(function(error) { 
+				showMessage("error", error.responseText);
+			})
+			.complete(function(){
+				$('.loading').hide();
 
-		$.get('/rest/settings/authentication/ldap/test/', params, function(message) {
-			showMessage("success", message);
-		})
-		.error(function(error) { 
-			showMessage("error", error.responseText);
-		})
-		.complete(function(){
-			$('.loading').hide();
-
-		});
+			});
+			
+		} else {
+			showMessage("error", "Please enter a password for the ldap bind user");
+		}
+		
+		
 		
 		
 
@@ -98,19 +119,22 @@ $(document).ready(function(){
 		// Assign handlers immediately after making the request,
 		// and remember the jqxhr object for this request
 		// construct the json object 
-		$('.loading').show();
-		$.get('/rest/settings/authentication/ldap/sync/', function(message) {
-			showMessage("success", message);
-		})
-		.error(function(error) { 
-			showMessage("error", error.responseText);
-		})
-		.complete(function(){
-			$('.loading').hide();
+		if(validate()){
+			$('.loading').show();
+			$.get('/rest/settings/authentication/ldap/sync/', function(message) {
+				showMessage("success", message);
+			})
+			.error(function(error) { 
+				showMessage("error", error.responseText);
+			})
+			.complete(function(){
+				$('.loading').hide();
 
-		});
+			});
 		
-		
+		} else {
+			showMessage("error", "Please enter a password for the ldap bind user");
+		}
 
 	});
 
