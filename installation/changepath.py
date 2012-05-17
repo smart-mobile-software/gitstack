@@ -54,6 +54,7 @@ replacePathFile(strToUnix + "/app/gitstack/config_template/listen_template.conf"
 replacePathFile(strToUnix + "/app/gitstack/config_template/settings.ini",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/php/php.ini",strFromWin, strToWin)
 replacePathFile(strToUnix + "/gitphp/config/gitphp.conf.php",strFromUnix, strToUnix)
+replacePathFile(strToUnix + "/gitphp/config/gitphp.repositorieslocation.conf.php",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/app/app/settings.py",strFromUnix, strToUnix)
 replacePathFile(strToUnix + "/app/app/wsgi.py",strFromUnix, strToUnix)
 

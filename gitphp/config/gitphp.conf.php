@@ -13,10 +13,11 @@ include ('gitphp.repositorieslocation.conf.php');
  */
  
  /*
-  * Apache repository configuration files
+  * Gitstack settings file
   *
   */
-$gitphp_conf['apacherepo'] = 'C:/dev/gitstack/apache/conf/gitstack';
+$gitphp_conf['gitstacksettings'] = 'C:/dev/gitstack/data/settings.ini';
+$gitphp_conf['gitstackinstalldir'] = 'C:/dev/gitstack';
 
 
 
