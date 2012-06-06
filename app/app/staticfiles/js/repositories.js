@@ -35,6 +35,7 @@ $(document).ready(function(){
 					// check which protocol can be used
 					protocol = "http";
 					displayPort = "";
+					baseUrl = ""+window.location.hostname;
 					
 					if (httpsEnbabled == true){
 						protocol = "https";
@@ -54,7 +55,7 @@ $(document).ready(function(){
 					for(i; i < repoList.length; i++){
 						textToInsert[j++] = '<tr class=' + repoList[i].name + '>';
 						textToInsert[j++] = '<td>' + repoList[i].name + '</td>\n';
-						textToInsert[j++] = '<td>git clone ' + protocol + '://localhost' + displayPort + '/' + repoList[i].name + '.git</td>\n';
+						textToInsert[j++] = '<td>git clone ' + protocol + '://' + baseUrl + displayPort + '/' + repoList[i].name + '.git</td>\n';
 
 						textToInsert[j++] = '<td><!-- Icons -->';
 						// for normal (bared) repo
