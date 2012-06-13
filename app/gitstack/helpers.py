@@ -143,7 +143,7 @@ class UpgradeManager(object):
             # create the section location and add a default location
             config.add_section('location')
             config.set('location', 'repositories', settings.INSTALL_DIR + '/repositories')
-            
+            config.set('versionning', 'version', '2.1')
             f = open(settings.SETTINGS_PATH, "w")
             config.write(f)
             f.close()

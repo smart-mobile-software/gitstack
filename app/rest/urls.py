@@ -56,8 +56,11 @@ urlpatterns = patterns('rest.views',
     url(r'^settings/authentication/ldap/test/$', 'rest_settings_authentication_ldap_test'),
     # sync
     url(r'^settings/authentication/ldap/sync/$', 'rest_settings_authentication_ldap_sync'),
-
     url(r'^settings/authentication/$', 'rest_settings_authentication'),
+    
+    # get the license info
+    url(r'^settings/license/$', 'rest_settings_license'),
+
     
     
     

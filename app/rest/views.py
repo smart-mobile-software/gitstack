@@ -1,9 +1,10 @@
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError  
 from gitstack.models import Repository, UserFactory, Apache, Group, UserLdap
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from django.conf import settings
 from gitstack.helpers import LdapHelper
+from gitstack.license import LicenceChecker
 
 
 
@@ -265,10 +266,13 @@ def rest_repo_user(request, repo_name, username):
             return HttpResponseServerError(e)
     # Delete the user
     if request.method == 'DELETE':
-        # Remove the user from the repository
-        repo.remove_user(user)
-        repo.save()
-        return HttpResponse(username + " removed from " + repo_name)
+        try:
+            # Remove the user from the repository
+            repo.remove_user(user)
+            repo.save()
+            return HttpResponse(username + " removed from " + repo_name)
+        except Exception as e:
+            return HttpResponseServerError(e)
     # Get the user permissions
     if request.method == 'GET':
         permissions = {'read' : False, 'write' : False}
@@ -610,13 +614,14 @@ def rest_settings_authentication_ldap_sync(request):
     '''
     return HttpResponse("Synchronization suceeded")
 
-
-
-
-
+# get the license info
+def rest_settings_license(request):   
+    # Perform the sync
+    l = LicenceChecker()
+    license_info = {'isTrial' : l.is_trial(), 'isLicensed' : l.is_licensed()}
+    json_reply = jsonpickle.encode(license_info, unpicklable = False)
     
-
-
+    return HttpResponse(json_reply)
 
 
 

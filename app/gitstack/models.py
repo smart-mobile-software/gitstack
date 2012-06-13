@@ -272,6 +272,14 @@ class User(object):
     
 class UserApache(User):
     def create(self):
+        # Check for each repo the number of users
+        nb_users = User.nb_used_users()
+        
+        # validate with the license
+        l = LicenceChecker()
+        # if the license is not valid
+        l.is_valid(nb_users)
+        
         # check if the user does not already exist
         if self in UserApache.retrieve_all():
             raise Exception("User already exist")
@@ -786,7 +794,7 @@ class Repository:
         # close the files
         repo_config.close()
         template_repo_config.close()
-        
+                
         # save in the repo configuration file
         # if has not gitstack section
         if not self.has_gitstack_section():
@@ -978,6 +986,14 @@ class Repository:
         
     # create the repository
     def create(self):
+        # Check for each repo the number of users
+        nb_users = User.nb_used_users()
+        
+        # validate with the license
+        l = LicenceChecker()
+        # if the license is not valid
+        l.is_valid(nb_users)
+        
         # create the repo
         # change to the repository directory
         os.chdir(Repository.get_location())
