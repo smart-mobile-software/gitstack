@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate
 from django.conf import settings
 from gitstack.helpers import LdapHelper
 from gitstack.license import LicenceChecker
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -506,6 +507,7 @@ def rest_security(request):
 
 # Change authentification settings
 @csrf_exempt
+@login_required
 def rest_settings_authentication(request):
     # Get the settings
     if request.method == 'GET':
@@ -517,7 +519,12 @@ def rest_settings_authentication(request):
         ldap_helper = LdapHelper()     
         
         # build json reply
-        json_reply = '{"authMethod":"' + ldap_helper.auth_method + '","ldap":{"protocol": "' + ldap_helper.protocol +'","host": "' + ldap_helper.host +'","port": "' + ldap_helper.port +'","baseDn": "' + ldap_helper.base_dn +'","attribute": "' + ldap_helper.attribute +'","scope": "' + ldap_helper.scope +'","filter": "' + ldap_helper.filter +'","bindDn": "' + ldap_helper.bind_dn +'","bindPassword": "' + ldap_helper.bind_password + '"}}'
+        # if the ldap password has a value
+        if ldap_helper.bind_password != '':
+            # write "saved" instead of the password
+            displayed_bind_password = "saved"
+        
+        json_reply = '{"authMethod":"' + ldap_helper.auth_method + '","ldap":{"protocol": "' + ldap_helper.protocol +'","host": "' + ldap_helper.host +'","port": "' + ldap_helper.port +'","baseDn": "' + ldap_helper.base_dn +'","attribute": "' + ldap_helper.attribute +'","scope": "' + ldap_helper.scope +'","filter": "' + ldap_helper.filter +'","bindDn": "' + ldap_helper.bind_dn +'","bindPassword": "' + displayed_bind_password + '"}}'
         # json_reply = '{"authMethod":"' + auth_method + '","ldap":{"host": "' + ldap_host +'","baseDn": "' + ldap_base_dn +'","bindDn": "' + ldap_bind_dn +'","bindPassword": "' + ldap_bind_password + '"}}'
         # json_reply = '{"authMethod":"ldap","ldap":{"url": "ldap://10.0.1.24:389/","baseDn": "CN=Users,DC=contoso,DC=com","bindDn": "CN=john,CN=Users,DC=contoso,DC=com","bindPassword": "thepassword"}}'
         return HttpResponse(json_reply)
@@ -541,7 +548,8 @@ def rest_settings_authentication(request):
         ldap_helper.scope = auth_settings['ldap']['scope']
         ldap_helper.filter = auth_settings['ldap']['filter']
         ldap_helper.bind_dn = auth_settings['ldap']['bindDn']
-        ldap_helper.bind_password = auth_settings['ldap']['bindPassword']
+        if auth_settings['ldap']['bindPassword'] != "saved":
+            ldap_helper.bind_password = auth_settings['ldap']['bindPassword']
         
         ldap_helper.save()
         
