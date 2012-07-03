@@ -221,7 +221,14 @@ def rest_repository(request):
 # delete or update a repository
 @csrf_exempt
 def rest_repo_action(request, repo_name):
-    #try:
+    # display repository info
+    if request.method == 'GET':
+        repo = Repository(repo_name)
+        json_reply = jsonpickle.encode(repo, unpicklable = False)
+
+        return HttpResponse(json_reply)
+
+    # delete a repo
     if request.method == 'DELETE':
         repo = Repository(repo_name)
         # delete the repo
@@ -242,8 +249,7 @@ def rest_repo_action(request, repo_name):
             return HttpResponse("The repository was successfully imported.")
     
         return HttpResponseServerError("The repository was not imported successfully.")
-    #except Exception as e:
-    #    return HttpResponseServerError(e)
+
     
     
     
