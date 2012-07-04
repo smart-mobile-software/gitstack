@@ -197,7 +197,7 @@ def rest_repository(request):
             if(name == ""):
                 raise Exception("Please enter a non empty name")
             # create the repo
-            repository = Repository(name)
+            repository = Repository(name, False)
             repository.create()
         except WindowsError as e:
             return HttpResponseServerError(e.strerror)
@@ -211,8 +211,9 @@ def rest_repository(request):
             # change to the repository directory
             repositories = Repository.retrieve_all()
             # remove the .git at the end
-            
+
             json_reply = jsonpickle.encode(repositories, unpicklable = False)
+
             return HttpResponse(json_reply)
         except WindowsError as e:
             return HttpResponseServerError(e.strerror)

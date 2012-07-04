@@ -643,7 +643,8 @@ class Repository:
         return self.name
     
     # contructor
-    def __init__(self, name):
+    # name, load all users data by default
+    def __init__(self, name, load = True):
         # repo name
         self.name = name
         # user list
@@ -672,7 +673,9 @@ class Repository:
             # create a directory for the configuration files
             os.makedirs(config_folder_path) 
            
-        self.load()
+        logger.debug("load! " + str(load))
+        if load == True:
+            self.load()
     
     # equality test  
     def __eq__(self, other) : 
@@ -824,8 +827,10 @@ class Repository:
     @staticmethod     
     def retrieve_all():
         # change to the repository directory
+        logger.debug("Retrieve list of directories")
         str_repository_list = os.listdir(Repository.get_location())
         repository_list = []
+        logger.debug("For each repo")
         for str_repository in str_repository_list:
             # if the repository does not contains a .git at the end, mark it as converted=false
             bare = True
@@ -835,8 +840,13 @@ class Repository:
                 bare = False
                 
             # instantiate the repository
-            repo = Repository(str_repository.replace('.git', ''))
+            logger.debug("instanciate " + str_repository)
+
+            repo = Repository(str_repository.replace('.git', ''), False)
+            logger.debug("set bare")
+
             repo.bare = bare
+            logger.debug("append " + str_repository + " to list")
             repository_list.append(repo)
             
         return repository_list
