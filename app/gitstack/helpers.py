@@ -72,7 +72,7 @@ class UpgradeManager(object):
     # contructor
     def __init__(self):
 
-        self.current_version = 2.1
+        self.current_version = 2.2
         
         pass
     
@@ -93,7 +93,7 @@ class UpgradeManager(object):
         config.read(settings.SETTINGS_PATH)
         previous_version = config.get('versionning', 'version')
         
-        if previous_version == "1.4" or previous_version == "1.5" or previous_version == "2.0":
+        if previous_version == "1.4" or previous_version == "1.5" or previous_version == "2.0" or previous_version == "2.1":
             return True
         else:
             return False
@@ -115,6 +115,10 @@ class UpgradeManager(object):
         # copy the self signed certificates
         self.copy_certificates()
         
+        # write a file for l*c*s*ng purpose
+        open(settings.SETTINGS_PATH + '/core', 'w').close()
+
+        
         # save new apache configuration (update gitphp repo location)
         apache = Apache()
         apache.save()
@@ -132,6 +136,9 @@ class UpgradeManager(object):
         config.read(settings.SETTINGS_PATH)
         previous_version = config.get('versionning', 'version')
         
+        if previous_version == "2.1":
+            # upgrade to 2.2
+            open(settings.SETTINGS_PATH + '/core', 'w').close()
         
         if previous_version == "2.0":
             # upgrade to 2.1
