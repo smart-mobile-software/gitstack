@@ -197,7 +197,7 @@ def rest_repository(request):
             if(name == ""):
                 raise Exception("Please enter a non empty name")
             # create the repo
-            repository = Repository(name, False)
+            repository = Repository(name)
             repository.create()
         except WindowsError as e:
             return HttpResponseServerError(e.strerror)

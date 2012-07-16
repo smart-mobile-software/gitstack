@@ -116,7 +116,7 @@ class UpgradeManager(object):
         self.copy_certificates()
         
         # write a file for l*c*s*ng purpose
-        open(settings.SETTINGS_PATH + '/core', 'w').close()
+        open(settings.INSTALL_DIR + '/data/core', 'w').close()
 
         
         # save new apache configuration (update gitphp repo location)
@@ -138,8 +138,16 @@ class UpgradeManager(object):
         
         if previous_version == "2.1":
             # upgrade to 2.2
-            open(settings.SETTINGS_PATH + '/core', 'w').close()
-        
+            open(settings.INSTALL_DIR + '/data/core', 'w').close()
+            
+            # load the config file
+            config = ConfigParser.ConfigParser()
+            config.read(settings.SETTINGS_PATH)
+            config.set('versionning', 'version', '2.2')
+            f = open(settings.SETTINGS_PATH, "w")
+            config.write(f)
+            f.close()
+
         if previous_version == "2.0":
             # upgrade to 2.1
 

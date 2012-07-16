@@ -49,9 +49,9 @@ class GitPHP_Authentication
 				// Ask for username/password
 				if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
-					header('WWW-Authenticate: Basic realm="Please enter your git repository credentials"');
+					header('WWW-Authenticate: Basic realm="Enter a username/password of a user which has the rights to access to this repository. ADMIN PASSWORD WON\'T WORK"');
 					header('HTTP/1.0 401 Unauthorized');
-					echo 'Your GitStack credentials were not entered correcly. Please ask your GitStack administrator to give you a username/password and give you access to this repository.';
+					echo 'Your GitStack credentials were not entered correcly. Please ask your GitStack administrator to give you a username/password and give you access to this repository. <br />Note : You have to enter the credentials of a user which has at least read access to your repository. Your GitStack administration panel username/password will not work. ';
 					exit;
 				} else {
 					// try to authenticate
@@ -263,7 +263,7 @@ class GitPHP_Authentication
 	private function denyAuthentication(){
 		header('WWW-Authenticate: Basic realm="Please enter your git repository credentials"');
 		header('HTTP/1.0 401 Unauthorized');
-		echo 'Your GitStack credentials were not entered correcly. Please ask your GitStack administrator to give you a username/password and give you access to this repository.';
+		echo 'Your GitStack credentials were not entered correcly. Please ask your GitStack administrator to give you a username/password and give you access to this repository. <br />Note : You have to enter the credentials of a user which has at least read access to your repository. Your GitStack administration panel username/password will not work. ';
 		exit;
 	}
 
