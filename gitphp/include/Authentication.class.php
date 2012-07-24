@@ -78,7 +78,6 @@ class GitPHP_Authentication
 				}
 			}
 			
-
 		}
 		
 	}
@@ -87,7 +86,42 @@ class GitPHP_Authentication
 	// with the read permissions
 	private function readRepositoryReadUsers()
 	{
+		// list of read users
 		$userList = Array();
+		
+		// read all the permissions from a rest request
+		$repoPermissions = $this->readRepoPermissions();
+		
+		$userReadList = $repoPermissions['user_read_list'];
+		// add each user to the list of users
+		foreach ($userReadList as $userInfo){
+			// add the list of users in the array
+			array_push($userList, $userInfo["username"]);
+		}
+		
+		// get all the read group
+		$groupReadList = $repoPermissions['group_read_list'];
+		// echo var_dump($groupReadList);
+		foreach ($groupReadList as $groupInfo){
+			$groupName = $groupInfo["name"];
+			// get the users
+			$groupUsers = $this->getUsersInGroup($groupName);
+			// for each member
+			foreach ($groupUsers as $gUser){
+				array_push($userList, $gUser);
+			}
+
+			
+		}
+		// return the list of users
+		return Array($userList);
+		
+	}
+	
+	
+	
+	// perform a rest request to read all the permissions on the repo
+	private function readRepoPermissions(){
 		// repo name without the .git at the end
 		$repo_name = $this->project_name;
 		$repo_name = substr($repo_name ,0,-4);
@@ -102,16 +136,27 @@ class GitPHP_Authentication
 		
 		// parse the json to retrieve only the list of users
 		$repoPermissions = json_decode($jsonRepoPermissions, true);
-		$userReadList = $repoPermissions['user_read_list'];
-		foreach ($userReadList as $userInfo){
-			// add the list of users in the array
-			array_push($userList, $userInfo["username"]);
-		}
 		
-		// return the list of users
-		return Array($userList);
-		
+		return $repoPermissions;
 	}
+	
+	
+	private function getUsersInGroup($groupName){
+		// perform the request to retrieve the repo permissions
+		
+		$ch = curl_init("http://localhost:8000/rest/group/" . $groupName . "/user/");
+		
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $jsonGroupUsers = curl_exec($ch);       
+        curl_close($ch);
+		
+		// parse the json to retrieve only the list of users
+		$groupUsers = json_decode($jsonGroupUsers, true);
+		
+		return $groupUsers;
+	}
+	
 	
 	// Get the method of authentication
 	private function getAuthMethod(){
