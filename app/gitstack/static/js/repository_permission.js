@@ -124,6 +124,8 @@ $(document).ready(function(){
 
 			var k,j;
 			
+			$('#repoUserList').empty();
+				
 			// for each user
 			for(var i = 0; i < userList.length; i++){
 				// check if user is in read list
