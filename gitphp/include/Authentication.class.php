@@ -87,26 +87,30 @@ class GitPHP_Authentication
 	// with the read permissions
 	private function readRepositoryReadUsers()
 	{
-		// get the repository directory
-		$repo_dir = GitPHP_Config::GetInstance()->GetValue('projectroot', '');
+		$userList = Array();
 		// repo name without the .git at the end
 		$repo_name = $this->project_name;
-	
-		// Path to the "config" file of the directory
-		$configDir = $repo_dir . '/' . $repo_name . '/config';
+		$repo_name = substr($repo_name ,0,-4);
 		
-		$lines = file($configDir);
-		// Parse with sections
-		$ini_array = parse_ini_file($configDir, true);
-		$strReadUsers = $ini_array['gitstack']['readusers'];
-		// if there is at least one user
-		if(strlen($strReadUsers) != 0){
-			$userList = explode(" ", $strReadUsers);
-			return $userList;
-		} else {
-			// no users
-			return Array();
+		// perform the request to retrieve the repo permissions
+		$ch = curl_init("http://localhost:8000/rest/repository/" . $repo_name . "/");
+		
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $jsonRepoPermissions = curl_exec($ch);       
+        curl_close($ch);
+		
+		// parse the json to retrieve only the list of users
+		$repoPermissions = json_decode($jsonRepoPermissions, true);
+		$userReadList = $repoPermissions['user_read_list'];
+		foreach ($userReadList as $userInfo){
+			// add the list of users in the array
+			array_push($userList, $userInfo["username"]);
 		}
+		
+		// return the list of users
+		return Array($userList);
+		
 	}
 	
 	// Get the method of authentication
