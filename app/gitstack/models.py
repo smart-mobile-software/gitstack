@@ -253,18 +253,22 @@ class User(object):
             # add each user to the user list
             for user2 in repo.user_list:
                 user_list.append(user2)
-        
-        # get all the groups
-        group_list = Group.retrieve_all()
-        for group in group_list:
-            group.load()
-            # add each member to the user list
-            for user2 in group.member_list:
-                user_list.append(user2)
                 
+            # for each group in the repo
+            for group in repo.group_list:
+                # print the name of the group
+                logger.debug(group.name)
+                # load the group
+                group.load()
+                # for each user in a group
+                for user2 in group.member_list:
+                    # add the user
+                    user_list.append(user2)
+          
         # remove all the duplicates
         user_list = list(set(user_list))
         nb_users = len(user_list)
+        
         
         return nb_users
 
@@ -673,7 +677,6 @@ class Repository:
             # create a directory for the configuration files
             os.makedirs(config_folder_path) 
            
-        logger.debug("load! " + str(load))
         if load == True:
             self.load()
     
@@ -827,10 +830,8 @@ class Repository:
     @staticmethod     
     def retrieve_all():
         # change to the repository directory
-        logger.debug("Retrieve list of directories")
         str_repository_list = os.listdir(Repository.get_location())
         repository_list = []
-        logger.debug("For each repo")
         for str_repository in str_repository_list:
             # if the repository does not contains a .git at the end, mark it as converted=false
             bare = True
@@ -840,13 +841,10 @@ class Repository:
                 bare = False
                 
             # instantiate the repository
-            logger.debug("instanciate " + str_repository)
 
             repo = Repository(str_repository.replace('.git', ''), False)
-            logger.debug("set bare")
 
             repo.bare = bare
-            logger.debug("append " + str_repository + " to list")
             repository_list.append(repo)
             
         return repository_list
