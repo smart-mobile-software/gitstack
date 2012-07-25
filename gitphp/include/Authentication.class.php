@@ -35,7 +35,6 @@ class GitPHP_Authentication
 			
 			// Read the users of the project
 			$users = $this->readRepositoryReadUsers();
-			
 			// check if the user everyone is in the list
 			if(in_array('everyone', $users))
 			{
@@ -58,6 +57,8 @@ class GitPHP_Authentication
 					$authenticated = false;
 					$username = $_SERVER['PHP_AUTH_USER'];
 					$password = $_SERVER['PHP_AUTH_PW'];
+					
+					
 					// Check if the user is in the array of read users
 					if(in_array($username, $users)){
 						$authMethod = $this->getAuthMethod();
@@ -72,6 +73,7 @@ class GitPHP_Authentication
 							$this->denyAuthentication();
 						}
 					} else {
+						
 						$this->denyAuthentication();
 					}
 					
@@ -114,7 +116,8 @@ class GitPHP_Authentication
 			
 		}
 		// return the list of users
-		return Array($userList);
+		return $userList;
+		//return Array("everyone");
 		
 	}
 	
@@ -127,7 +130,7 @@ class GitPHP_Authentication
 		$repo_name = substr($repo_name ,0,-4);
 		
 		// perform the request to retrieve the repo permissions
-		$ch = curl_init("http://localhost:8000/rest/repository/" . $repo_name . "/");
+		$ch = curl_init($this->restUrl() . "/rest/repository/" . $repo_name . "/");
 		
 		curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -144,7 +147,7 @@ class GitPHP_Authentication
 	private function getUsersInGroup($groupName){
 		// perform the request to retrieve the repo permissions
 		
-		$ch = curl_init("http://localhost:8000/rest/group/" . $groupName . "/user/");
+		$ch = curl_init($this->restUrl() . "/rest/group/" . $groupName . "/user/");
 		
 		curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -307,6 +310,34 @@ class GitPHP_Authentication
 	  @ldap_close($connect);
 	  return(false);
 
+	}
+	
+	// retrieve the restful url from the config file
+	private function restUrl(){
+		$url = "";
+		// get the gitstack config file
+		$configFile = GitPHP_Config::GetInstance()->GetValue('gitstacksettings', '');
+		$configArray = parse_ini_file($configFile, true, INI_SCANNER_RAW );
+		
+		// build the url
+		if ($configArray['protocols']['http'] == "True"){
+			// http
+			$url .= "http://localhost:";
+			// port
+			$port = $configArray['protocols']['httpport'];
+			$url .= $port;
+
+		} else {
+			// https
+			$url .= "https://localhost:";
+			// port
+			$port = $configArray['protocols']['httpsport'];
+			$url .= $port;
+		}
+		
+		
+		return $url;
+		
 	}
 	
 	private function denyAuthentication(){
