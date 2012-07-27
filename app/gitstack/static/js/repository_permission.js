@@ -82,7 +82,7 @@ $(document).ready(function(){
 			buttons: {
 				// add the users to the repo
 				Add: function() {
-					var selectedUsers = [];
+					var nbSelectedUsers = $( ".ui-selected", this ).length;
 					
 					$( ".ui-selected", this ).each(function() {
 						// add each user to the repository
@@ -90,13 +90,19 @@ $(document).ready(function(){
 						var url = '/rest/repository/' + $('#currentRepo').html() + '/user/' + $(this).text() + '/';
 						$.post(url, function(data) {
 							showMessage("success", "Changes successfully saved");
-						}).error(function(error) {
+ 						}).error(function(error) {
 							showMessage("error", error.responseText);
 						});
 						
 					});
 					
-					refreshRepoUserList();
+					// Refresh the user list after then end of all the requests
+					$('#addRepoUserDialog').ajaxStop(function(){
+						console.log("ajaxstop");
+						$(this).unbind("ajaxStop");
+						refreshRepoUserList();
+					});
+					
 					
 					
 					$( this ).dialog( "close" );
