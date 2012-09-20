@@ -240,7 +240,7 @@ class User(object):
     
     
     @staticmethod
-    def nb_used_users():
+    def nb_used_users(count_everyone=True):
         # Check for each repo the number of users
         repo_list = Repository.retrieve_all()
         user_list = []
@@ -267,6 +267,13 @@ class User(object):
           
         # remove all the duplicates
         user_list = list(set(user_list))
+        if count_everyone == False:
+            # check for the everyone user
+            everyone = User("everyone")
+            # remove this user
+            if everyone in user_list:
+                user_list.remove(everyone)
+                
         nb_users = len(user_list)
         
         
@@ -277,11 +284,12 @@ class User(object):
 class UserApache(User):
     def create(self):
         # Check for each repo the number of users
-        nb_users = User.nb_used_users()
+        nb_users = User.nb_used_users(count_everyone=False)
         
         # validate with the license
         l = LicenceChecker()
         # if the license is not valid
+        # check if the number of users is still under the quota
         l.is_valid(nb_users)
         
         # check if the user does not already exist
@@ -605,7 +613,7 @@ class Group:
         
     # add a user to the group
     def add_user(self, user):
-        nb_users = User.nb_used_users()
+        nb_users = User.nb_used_users(count_everyone=False)
         
         # validate with the license
         l = LicenceChecker()
@@ -861,13 +869,19 @@ class Repository:
 
     # Add the user to the repo without any read and write permission
     def add_user(self, user):
-        # Check for each repo the number of users
-        nb_users = User.nb_used_users()
         
-        # validate with the license
-        l = LicenceChecker()
-        if l.is_valid(nb_users):
-            self.user_list.append(user)
+        # do not check license for the user everyone
+        if not user.username == "everyone":
+            # Check for each repo the number of users
+            nb_users = User.nb_used_users(count_everyone=False)
+            
+            # validate with the license
+            l = LicenceChecker()
+            if l.is_valid(nb_users + 1):
+                # an exception should be raised if license issue
+                pass
+        
+        self.user_list.append(user)
 
 
     # Add read permissions to a user on the repository
@@ -995,7 +1009,7 @@ class Repository:
     # create the repository
     def create(self):
         # Check for each repo the number of users
-        nb_users = User.nb_used_users()
+        nb_users = User.nb_used_users(count_everyone=False)
         
         # validate with the license
         l = LicenceChecker()
