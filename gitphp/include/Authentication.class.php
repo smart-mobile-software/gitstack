@@ -133,6 +133,9 @@ class GitPHP_Authentication
 		$ch = curl_init($this->restUrl() . "/rest/repository/" . $repo_name . "/");
 		
 		curl_setopt($ch, CURLOPT_HEADER, 0);
+		// do not check for ssl valid certificate
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $jsonRepoPermissions = curl_exec($ch);       
         curl_close($ch);
