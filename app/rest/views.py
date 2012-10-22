@@ -560,6 +560,12 @@ def rest_settings_authentication(request):
         
         ldap_helper.save()
         
+        # Load and save all the repositories to update the ldap config
+        repositories = Repository.retrieve_all()
+        for repository in repositories:
+            repository.load()
+            repository.save()
+        
         
         return HttpResponse("Settings successfully saved.")
     
