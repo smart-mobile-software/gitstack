@@ -238,6 +238,43 @@ class User(object):
     def __repr__(self):
         return self.__unicode__()
     
+    # check if an user has already been added to another repository
+    @staticmethod
+    def is_user_already_added(user):
+        # Check for each repo the number of users
+        repo_list = Repository.retrieve_all()
+        user_list = []
+        
+        # for each repo
+        for repo in repo_list:
+            repo.load()
+            # count the number of users
+            # nb_users = nb_users + len(repo.user_list)
+            # add each user to the user list
+            for user2 in repo.user_list:
+                user_list.append(user2)
+                
+            # for each group in the repo
+            for group in repo.group_list:
+                # print the name of the group
+                logger.debug(group.name)
+                # load the group
+                group.load()
+                # for each user in a group
+                for user2 in group.member_list:
+                    # add the user
+                    user_list.append(user2)
+          
+        # remove all the duplicates
+        user_list = list(set(user_list))
+        
+        # check if the user is in the user list
+        if user in user_list:
+            return True
+        else:
+            return False
+        
+        
     
     @staticmethod
     def nb_used_users(count_everyone=True):
@@ -877,9 +914,19 @@ class Repository:
             
             # validate with the license
             l = LicenceChecker()
-            if l.is_valid(nb_users + 1):
-                # an exception should be raised if license issue
-                pass
+            logger.debug("nb_users : " + str(nb_users))
+            # if the user has already been added
+            if User.is_user_already_added(user):
+                # check license
+                if l.is_valid(nb_users):
+                    # an exception should be raised if license issue
+                    pass
+            # if not
+            else: 
+                # check the license for one more license
+                if l.is_valid(nb_users + 1):
+                    # an exception should be raised if license issue
+                    pass
         
         self.user_list.append(user)
 
