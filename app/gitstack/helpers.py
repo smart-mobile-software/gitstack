@@ -136,6 +136,18 @@ class UpgradeManager(object):
         config.read(settings.SETTINGS_PATH)
         previous_version = config.get('versionning', 'version')
         
+        if previous_version == "2.2":
+            # upgrade to 2.3
+            open(settings.INSTALL_DIR + '/data/core', 'w').close()
+            
+            # load the config file
+            config = ConfigParser.ConfigParser()
+            config.read(settings.SETTINGS_PATH)
+            config.set('versionning', 'version', '2.3')
+            f = open(settings.SETTINGS_PATH, "w")
+            config.write(f)
+            f.close()
+            
         if previous_version == "2.1":
             # upgrade to 2.2
             open(settings.INSTALL_DIR + '/data/core', 'w').close()
