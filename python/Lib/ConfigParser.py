@@ -436,6 +436,7 @@ class RawConfigParser:
         r'\]'                                 # ]
         )
     OPTCRE = re.compile(
+        r'[ \t]*'                             # ignore any starting white space
         r'(?P<option>[^:=\s][^:=]*)'          # very permissive!
         r'\s*(?P<vi>[:=])\s*'                 # any number of space/tab,
                                               # followed by separator
@@ -444,6 +445,7 @@ class RawConfigParser:
         r'(?P<value>.*)$'                     # everything up to eol
         )
     OPTCRE_NV = re.compile(
+        r'[ \t]*'                             # ignore any starting white space
         r'(?P<option>[^:=\s][^:=]*)'          # very permissive!
         r'\s*(?:'                             # any number of space/tab,
         r'(?P<vi>[:=])\s*'                    # optionally followed by
